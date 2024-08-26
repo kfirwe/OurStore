@@ -1,0 +1,122 @@
+body {
+  font-family: Arial, sans-serif;
+  /* background-color: #f8f9fa; */
+  background-image: url("/background.avif"); /* Relative path to the image */
+  background-size: cover; /* Stretch the image to cover the entire screen width */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-position: center center; /* Center the image */
+  background-attachment: fixed; /* Makes the background fixed while scrolling */
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the title is visible and properly spaced */
+.container h1 {
+  margin-bottom: 20px; /* Add space below the title */
+  margin-top: 20px; /* Add space above the title */
+  font-size: 2rem; /* Ensure the font size is appropriate */
+  color: #000; /* Ensure the title is a visible color */
+}
+
+/* Fix the layout of the cards */
+.card {
+  margin-bottom: 20px; /* Add space between the cards */
+  max-width: 100%; /* Ensure the card fits within its column */
+}
+
+/* Add margin-top to ensure cards start on a new row */
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+/* Adjust the row to clear floating elements */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-wrap: wrap; /* Ensure the row wraps properly */
+}
+
+.col-md-4 {
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box; /* Ensure padding and border are included in width */
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+h1.text-center {
+  margin-top: 20px;
+  font-size: 2rem; /* Ensure the title is prominent */
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#filterForm {
+  background-color: #6f9dda; /* Dark background similar to navbar */
+  padding: 10px 15px; /* Slightly larger padding for clarity */
+  border-radius: 5px;
+  margin-bottom: 20px; /* Space below filter bar */
+  max-width: 100%; /* Ensure it spans the container width */
+  margin-left: auto;
+  margin-right: auto; /* Center the filter bar */
+}
+
+#filterForm .form-control,
+#filterForm .btn {
+  background-color: #495057; /* Slightly lighter dark background for inputs and button */
+  border: none;
+  color: white;
+  font-size: 0.9rem; /* Consistent font size */
+  padding: 8px 12px; /* Increased padding for better readability */
+}
+
+#filterForm .form-control::placeholder {
+  color: #ced4da; /* Placeholder text color */
+}
+
+#filterForm .btn-primary {
+  background-color: #007bff; /* Standard Bootstrap primary button color */
+  border-color: #007bff;
+  font-size: 0.9rem; /* Slightly smaller font size */
+  padding: 8px 12px;
+}
+
+#filterForm .btn-primary:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  border-color: #004085;
+}
+
+#itemsContainer .card {
+  margin-bottom: 20px;
+  max-width: 100%; /* Ensure the card doesn't overflow */
+  min-width: 250px; /* Ensure the card has a minimum width */
+}
+
+#itemsContainer .col-md-4 {
+  display: flex; /* Flexbox to align the cards properly */
+  justify-content: center; /* Center the cards horizontally */
+}
+
+#itemsContainer .card img {
+  height: 150px; /* Ensure image size is consistent */
+  object-fit: cover;
+}
+
+footer {
+  margin-top: 30px;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  background-color: #343a40;
+  color: white;
+  position: relative;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+}

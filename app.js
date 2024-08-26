@@ -1,11 +1,10 @@
 const express = require("express");
-const path = require("path");
 const mongoose = require("mongoose");
+const path = require("path");
 const app = express();
 const loginRoutes = require("./controllers/loginController");
 const signUpRoutes = require("./controllers/signupController");
 
-// Connect to MongoDB
 mongoose
   .connect("mongodb://127.0.0.1:27017/OurStore", {
     useNewUrlParser: true,
@@ -18,25 +17,59 @@ mongoose
     console.error("Could not connect to MongoDB", err);
   });
 
-app.use(express.json()); // To parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // To parse form-encoded bodies
-app.use(express.static("public")); // Serve static files from the 'public' directory
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "views")));
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
-// Route to serve the login page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
-// Route to serve the sign-up page
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "signup.html"));
 });
 
-// Use the login routes for handling login logic
-app.use("/", loginRoutes); // init route path to root path
+app.get("/homePage", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "homePage.html"));
+});
 
-// Use the signup routes for handling signup logic
-app.use("/", signUpRoutes); // init route path to root path
+app.get("/api/items", async (req, res) => {
+  const { filterId, filterName, filterPrice, filterCategory, filterCompany } =
+    req.query;
+
+  let query = {};
+
+  if (filterId) {
+    query._id = filterId; // Assuming MongoDB is used
+  }
+
+  if (filterName) {
+    query.name = { $regex: new RegExp("^" + filterName, "i") }; // Case-insensitive matching
+  }
+
+  if (filterPrice) {
+    query.price = { $lte: parseFloat(filterPrice) }; // Items with price less than or equal to filterPrice
+  }
+
+  if (filterCategory) {
+    query.category = filterCategory;
+  }
+
+  if (filterCompany) {
+    query.company = filterCompany;
+  }
+
+  try {
+    const items = await Item.find(query); // Assuming Item is a Mongoose model
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching items." });
+  }
+});
+
+app.use("/", loginRoutes);
+app.use("/", signUpRoutes);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

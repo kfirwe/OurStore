@@ -165,9 +165,10 @@
           },
           body: JSON.stringify(data),
         })
-          .then((response) => {
-            if (response.ok) {
-              window.location.href = "/dashboard";
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.redirectUrl) {
+              window.location.href = data.redirectUrl;
             } else {
               alert("Login failed. Please check your username and password.");
             }
@@ -177,8 +178,8 @@
             alert("An error occurred. Please try again.");
           });
       }
+
       function redirectToSignUp() {
-        // Redirect to the sign-up page
         window.location.href = "/signup";
       }
     </script>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clothes Store - Home</title>
+    <!-- Bootstrap CSS (Optional) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="homePage.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Clothes Store</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Cart</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Log out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Title -->
+    <div class="container text-center mt-5">
+      <h1 class="text-center">Welcome to Our Clothes Store</h1>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="container mt-4">
+      <form id="filterForm" class="row g-3">
+        <div class="col-md-2">
+          <input
+            type="text"
+            class="form-control"
+            id="filterId"
+            placeholder="Filter by ID"
+          />
+        </div>
+        <div class="col-md-2">
+          <input
+            type="text"
+            class="form-control"
+            id="filterName"
+            placeholder="Filter by Name"
+          />
+        </div>
+        <div class="col-md-2">
+          <select
+            class="form-control"
+            id="priceCondition"
+            onchange="updatePricePlaceholder()"
+          >
+            <option value="equal">Equal to</option>
+            <option value="greater">Greater than</option>
+            <option value="less">Less than</option>
+            <option value="between">Between</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input
+            type="number"
+            class="form-control"
+            id="filterPrice"
+            placeholder="Price"
+          />
+        </div>
+        <div class="col-md-2" id="priceRange" style="display: none">
+          <input
+            type="number"
+            class="form-control"
+            id="filterPriceMax"
+            placeholder="Max Price"
+          />
+        </div>
+        <div class="col-md-2">
+          <input
+            type="text"
+            class="form-control"
+            id="filterCategory"
+            placeholder="Category"
+          />
+        </div>
+        <div class="col-md-2">
+          <input
+            type="text"
+            class="form-control"
+            id="filterCompany"
+            placeholder="Company"
+          />
+        </div>
+        <div class="col-md-2">
+          <button
+            type="button"
+            class="btn btn-primary w-100"
+            onclick="applyFilters()"
+          >
+            Filter
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <div class="row" id="itemsContainer">
+        <!-- Example Item -->
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Item Image"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Item Name</h5>
+              <p class="card-text">Item description goes here.</p>
+              <p class="card-text"><strong>Price:</strong> $50</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+        <!-- Add more items here -->
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+      &copy; 2024 Clothes Store. All rights reserved.
+    </footer>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      function updatePricePlaceholder() {
+        const priceCondition = document.getElementById("priceCondition").value;
+        const filterPrice = document.getElementById("filterPrice");
+        const priceRange = document.getElementById("priceRange");
+
+        if (priceCondition === "equal") {
+          filterPrice.placeholder = "Price";
+          priceRange.style.display = "none";
+        } else if (priceCondition === "greater") {
+          filterPrice.placeholder = "Greater than";
+          priceRange.style.display = "none";
+        } else if (priceCondition === "less") {
+          filterPrice.placeholder = "Less than";
+          priceRange.style.display = "none";
+        } else if (priceCondition === "between") {
+          filterPrice.placeholder = "Min Price";
+          priceRange.style.display = "block";
+        }
+      }
+
+      function applyFilters() {
+        const filterId = document.getElementById("filterId").value;
+        const filterName = document.getElementById("filterName").value;
+        const priceCondition = document.getElementById("priceCondition").value;
+        const filterPrice = document.getElementById("filterPrice").value;
+        const filterPriceMax = document.getElementById("filterPriceMax").value;
+        const filterCategory = document.getElementById("filterCategory").value;
+        const filterCompany = document.getElementById("filterCompany").value;
+
+        let query = {};
+
+        if (filterId) {
+          query.id = filterId;
+        }
+        if (filterName) {
+          query.name = filterName;
+        }
+        if (filterCategory) {
+          query.category = filterCategory;
+        }
+        if (filterCompany) {
+          query.company = filterCompany;
+        }
+
+        // Handle the price condition
+        if (filterPrice) {
+          if (priceCondition === "equal") {
+            query.price = { $eq: parseFloat(filterPrice) };
+          } else if (priceCondition === "greater") {
+            query.price = { $gt: parseFloat(filterPrice) };
+          } else if (priceCondition === "less") {
+            query.price = { $lt: parseFloat(filterPrice) };
+          } else if (priceCondition === "between" && filterPriceMax) {
+            query.price = {
+              $gte: parseFloat(filterPrice),
+              $lte: parseFloat(filterPriceMax),
+            };
+          }
+        }
+
+        console.log("Filters applied:", query);
+      }
+    </script>
+  </body>
+</html>
