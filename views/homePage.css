@@ -1,6 +1,5 @@
 body {
   font-family: Arial, sans-serif;
-  /* background-color: #f8f9fa; */
   background-image: url("/background.avif"); /* Relative path to the image */
   background-size: cover; /* Stretch the image to cover the entire screen width */
   background-repeat: no-repeat; /* Prevent the image from repeating */
@@ -8,6 +7,9 @@ body {
   background-attachment: fixed; /* Makes the background fixed while scrolling */
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure body takes at least the full height of the viewport */
 }
 
 /* Ensure the title is visible and properly spaced */
@@ -56,6 +58,7 @@ h1.text-center {
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  flex: 1; /* Ensure container takes up available space */
 }
 
 #filterForm {
@@ -110,13 +113,11 @@ h1.text-center {
 }
 
 footer {
-  margin-top: 30px;
+  margin-top: auto; /* Pushes the footer to the bottom */
   padding: 10px 0;
   font-size: 0.9rem;
   background-color: #343a40;
   color: white;
-  position: relative;
   width: 100%;
-  bottom: 0;
   text-align: center;
 }

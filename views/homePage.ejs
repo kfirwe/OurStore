@@ -45,6 +45,11 @@
             <li class="nav-item">
               <a class="nav-link" href="#">Log out</a>
             </li>
+            <% if (isAdmin) { %>
+            <li class="nav-item">
+              <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
+            </li>
+            <% } %>
           </ul>
         </div>
       </div>
@@ -52,7 +57,7 @@
 
     <!-- Title -->
     <div class="container text-center mt-5">
-      <h1 class="text-center">Welcome to Our Clothes Store</h1>
+      <h1 class="text-center">Welcome, <%= username %>!</h1>
     </div>
 
     <!-- Filter Section -->
@@ -133,170 +138,62 @@
     <!-- Main Content -->
     <div class="container mt-5">
       <div class="row" id="itemsContainer">
-        <!-- Example Item -->
-        <div class="col-md-4">
-          <div class="card">
+        <% if (products.length === 0) { %>
+        <div class="col-12 text-center">
+          <h2>No items yet!</h2>
+        </div>
+        <% } else { %> <% products.forEach(product => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
             <img
-              src="https://via.placeholder.com/150"
+              src="<%= product.image %>"
               class="card-img-top"
-              alt="Item Image"
+              alt="<%= product.name %>"
             />
             <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text">
+                <strong>Price:</strong> $<%= product.price %>
+              </p>
+              <p class="card-text">
+                <strong>Category:</strong> <%= product.category %>
+              </p>
+              <p class="card-text">
+                <strong>Company:</strong> <%= product.company %>
+              </p>
+              <p class="card-text">
+                <strong>Gender:</strong> <%= product.gender %>
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="handleAddToCart('<%= product.prodId %>')"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <img
-              src="https://via.placeholder.com/150"
-              class="card-img-top"
-              alt="Item Image"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Item Name</h5>
-              <p class="card-text">Item description goes here.</p>
-              <p class="card-text"><strong>Price:</strong> $50</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a>
-            </div>
-          </div>
-        </div>
-        <!-- Add more items here -->
+        <% }) %> <% } %>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-      &copy; 2024 Clothes Store. All rights reserved.
-    </footer>
+    <!-- Include the footer partial -->
+    <%- include('_footer') %>
 
     <!-- Bootstrap JS (Optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script>
+      function renderAdminPage() {
+        window.location.href = "/admin"; // Redirects the user to the /admin page
+      }
+
+      function handleAddToCart(prodId) {
+        console.log("Add to cart clicked for product ID:", prodId);
+        // You can implement the logic to add the product to the cart here
+      }
+
       function updatePricePlaceholder() {
         const priceCondition = document.getElementById("priceCondition").value;
         const filterPrice = document.getElementById("filterPrice");

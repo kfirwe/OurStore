@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Ensure the footer is pushed to the bottom */
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Clothes Store</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/homePage">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/admin">Admin Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Log out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content wrapper to ensure footer stays at the bottom -->
+    <div class="container mt-4 content">
+      <h1>Admin Dashboard</h1>
+
+      <section id="user-management" class="mt-5">
+        <h2>Manage Users</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Country</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(user => { %>
+            <tr>
+              <td><%= user.username %></td>
+              <td><%= user.email %></td>
+              <td><%= user.phone %></td>
+              <td><%= user.city %></td>
+              <td><%= user.country %></td>
+              <td><%= user.role %></td>
+              <td>
+                <form
+                  action="/admin/delete-user"
+                  method="POST"
+                  style="display: inline"
+                >
+                  <input type="hidden" name="userId" value="<%= user._id %>" />
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    Delete
+                  </button>
+                </form>
+                <button
+                  class="btn btn-warning btn-sm"
+                  onclick="openUpdateUserModal('<%= user._id %>', '<%= user.username %>', '<%= user.email %>', '<%= user.phone %>', '<%= user.city %>', '<%= user.country %>', '<%= user.role %>')"
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="product-management" class="mt-5">
+        <h2>Manage Products</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Company</th>
+              <th>Gender</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.forEach(product => { %>
+            <tr>
+              <td><%= product.prodId %></td>
+              <td><%= product.name %></td>
+              <td>$<%= product.price %></td>
+              <td><%= product.category %></td>
+              <td><%= product.company %></td>
+              <td><%= product.gender %></td>
+              <td>
+                <form
+                  action="/admin/delete-product"
+                  method="POST"
+                  style="display: inline"
+                >
+                  <input
+                    type="hidden"
+                    name="productId"
+                    value="<%= product._id %>"
+                  />
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    Delete
+                  </button>
+                </form>
+                <button
+                  class="btn btn-warning btn-sm"
+                  onclick="openUpdateProductModal('<%= product._id %>', '<%= product.name %>', '<%= product.price %>', '<%= product.category %>', '<%= product.company %>', '<%= product.gender %>', '<%= product.image %>')"
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Include the footer partial -->
+    <%- include('_footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function openUpdateUserModal(
+        userId,
+        username,
+        email,
+        phone,
+        city,
+        country,
+        role
+      ) {
+        document.getElementById("updateUserId").value = userId;
+        document.getElementById("updateUsername").value = username;
+        document.getElementById("updateEmail").value = email;
+        document.getElementById("updatePhone").value = phone;
+        document.getElementById("updateCity").value = city;
+        document.getElementById("updateCountry").value = country;
+        document.getElementById("updateRole").value = role;
+        var updateUserModal = new bootstrap.Modal(
+          document.getElementById("updateUserModal")
+        );
+        updateUserModal.show();
+      }
+
+      function openUpdateProductModal(
+        productId,
+        name,
+        price,
+        category,
+        company,
+        gender,
+        image
+      ) {
+        document.getElementById("updateProductId").value = productId;
+        document.getElementById("updateProductName").value = name;
+        document.getElementById("updateProductPrice").value = price;
+        document.getElementById("updateProductCategory").value = category;
+        document.getElementById("updateProductCompany").value = company;
+        document.getElementById("updateProductGender").value = gender;
+        document.getElementById("updateProductImage").value = image;
+        var updateProductModal = new bootstrap.Modal(
+          document.getElementById("updateProductModal")
+        );
+        updateProductModal.show();
+      }
+    </script>
+  </body>
+</html>

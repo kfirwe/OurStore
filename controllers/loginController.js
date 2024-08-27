@@ -18,6 +18,12 @@ router.post("/login", async (req, res) => {
     // Check if the user is an admin
     const isAdmin = user.role === "admin";
 
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+      role: user.role, // Store the role
+    };
+
     // Redirect to the homepage or send a success response
     res
       .status(200)
