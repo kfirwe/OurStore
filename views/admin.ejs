@@ -137,6 +137,7 @@
     <!-- Product Management Section -->
     <section id="product-management" class="mt-5">
       <h2>Manage Products</h2>
+      <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -146,18 +147,14 @@
             <th>Category</th>
             <th>Company</th>
             <th>Gender</th>
+            <th>Image</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <% products.forEach(product => { %>
           <tr>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'prodId', this.innerText)"
-            >
-              <%= product.prodId %>
-            </td>
+            <td><%= product.prodId %></td>
             <td
               contenteditable="true"
               onblur="updateField('<%= product._id %>', 'name', this.innerText)"
@@ -170,11 +167,18 @@
             >
               <%= product.price %>
             </td>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'category', this.innerText)"
-            >
-              <%= product.category %>
+            <td>
+              <select
+                onchange="updateField('<%= product._id %>', 'category', this.value)"
+                class="form-select form-select-sm"
+              >
+                <option value="Tops" <%= product.category === 'Tops' ? 'selected' : '' %>>Tops</option>
+                <option value="Bottoms" <%= product.category === 'Bottoms' ? 'selected' : '' %>>Bottoms</option>
+                <option value="Outerwear" <%= product.category === 'Outerwear' ? 'selected' : '' %>>Outerwear</option>
+                <option value="Underwear" <%= product.category === 'Underwear' ? 'selected' : '' %>>Underwear</option>
+                <option value="Footwear" <%= product.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
+                <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+              </select>
             </td>
             <td
               contenteditable="true"
@@ -182,26 +186,23 @@
             >
               <%= product.company %>
             </td>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'gender', this.innerText)"
-            >
-              <%= product.gender %>
+            <td>
+              <select
+                onchange="updateField('<%= product._id %>', 'gender', this.value)"
+                class="form-select form-select-sm"
+              >
+                <option value="male" <%= product.gender === 'male' ? 'selected' : '' %>>Male</option>
+                <option value="female" <%= product.gender === 'female' ? 'selected' : '' %>>Female</option>
+                <option value="unisex" <%= product.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
+              </select>
             </td>
             <td>
-              <form
-                action="/admin/delete-product"
-                method="POST"
-                style="display: inline"
-              >
-                <input
-                  type="hidden"
-                  name="productId"
-                  value="<%= product._id %>"
-                />
-                <button type="submit" class="btn btn-danger btn-sm">
-                  Delete
-                </button>
+              <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="img-thumbnail" width="100" />
+            </td>
+            <td>
+              <form action="/admin/delete-product" method="POST" style="display: inline">
+                <input type="hidden" name="productId" value="<%= product._id %>" />
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
               <button
                 class="btn btn-warning btn-sm"
@@ -215,6 +216,118 @@
         </tbody>
       </table>
     </section>
+  
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="productName" class="form-label">Name</label>
+                  <input type="text" class="form-control" id="productName" name="name" required />
+                </div>
+                <div class="mb-3">
+                  <label for="productPrice" class="form-label">Price</label>
+                  <input type="number" class="form-control" id="productPrice" name="price" required />
+                </div>
+                <div class="mb-3">
+                  <label for="productCategory" class="form-label">Category</label>
+                  <select class="form-select" id="productCategory" name="category" required>
+                    <option value="Tops">Tops</option>
+                    <option value="Bottoms">Bottoms</option>
+                    <option value="Outerwear">Outerwear</option>
+                    <option value="Underwear">Underwear</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Accessories">Accessories</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="productCompany" class="form-label">Company</label>
+                  <input type="text" class="form-control" id="productCompany" name="company" required />
+                </div>
+                <div class="mb-3">
+                  <label for="productGender" class="form-label">Gender</label>
+                  <select class="form-select" id="productGender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="unisex">Unisex</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="productImage" class="form-label">Image</label>
+                  <input type="file" class="form-control" id="productImage" name="image" accept="image/*" required />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Add Product</button>
+              </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form action="/admin/update-product" method="POST" enctype="multipart/form-data">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateProductModalLabel">Update Product</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="updateProductId" name="productId" />
+              <div class="mb-3">
+                <label for="updateProductName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="updateProductName" name="name" required />
+              </div>
+              <div class="mb-3">
+                <label for="updateProductPrice" class="form-label">Price</label>
+                <input type="number" class="form-control" id="updateProductPrice" name="price" required />
+              </div>
+              <div class="mb-3">
+                <label for="updateProductCategory" class="form-label">Category</label>
+                <select class="form-select" id="updateProductCategory" name="category" required>
+                  <option value="Tops">Tops</option>
+                  <option value="Bottoms">Bottoms</option>
+                  <option value="Outerwear">Outerwear</option>
+                  <option value="Underwear">Underwear</option>
+                  <option value="Footwear">Footwear</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="updateProductCompany" class="form-label">Company</label>
+                <input type="text" class="form-control" id="updateProductCompany" name="company" required />
+              </div>
+              <div class="mb-3">
+                <label for="updateProductGender" class="form-label">Gender</label>
+                <select class="form-select" id="updateProductGender" name="gender" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="unisex">Unisex</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="updateProductImage" class="form-label">Image</label>
+                <input type="file" class="form-control" id="updateProductImage" name="image" accept="image/*" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
   </div>
 
   <!-- Include the footer partial -->
