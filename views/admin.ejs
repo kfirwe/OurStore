@@ -197,19 +197,13 @@
               </select>
             </td>
             <td>
-              <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="img-thumbnail" width="100" />
-            </td>
+                <img src="/product-image/<%= product._id %>" alt="<%= product.name %>" class="img-thumbnail" width="100" />
+            </td>              
             <td>
               <form action="/admin/delete-product" method="POST" style="display: inline">
                 <input type="hidden" name="productId" value="<%= product._id %>" />
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
-              <button
-                class="btn btn-warning btn-sm"
-                onclick="openUpdateProductModal('<%= product._id %>', '<%= product.name %>', '<%= product.price %>', '<%= product.category %>', '<%= product.company %>', '<%= product.gender %>', '<%= product.image %>')"
-              >
-                Edit
-              </button>
             </td>
           </tr>
           <% }) %>
@@ -218,115 +212,118 @@
     </section>
   
     <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
-              <div class="modal-header">
-                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label for="productName" class="form-label">Name</label>
-                  <input type="text" class="form-control" id="productName" name="name" required />
-                </div>
-                <div class="mb-3">
-                  <label for="productPrice" class="form-label">Price</label>
-                  <input type="number" class="form-control" id="productPrice" name="price" required />
-                </div>
-                <div class="mb-3">
-                  <label for="productCategory" class="form-label">Category</label>
-                  <select class="form-select" id="productCategory" name="category" required>
-                    <option value="Tops">Tops</option>
-                    <option value="Bottoms">Bottoms</option>
-                    <option value="Outerwear">Outerwear</option>
-                    <option value="Underwear">Underwear</option>
-                    <option value="Footwear">Footwear</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="productCompany" class="form-label">Company</label>
-                  <input type="text" class="form-control" id="productCompany" name="company" required />
-                </div>
-                <div class="mb-3">
-                  <label for="productGender" class="form-label">Gender</label>
-                  <select class="form-select" id="productGender" name="gender" required>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="unisex">Unisex</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="productImage" class="form-label">Image</label>
-                  <input type="file" class="form-control" id="productImage" name="image" accept="image/*" required />
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Add Product</button>
-              </div>
-            </form>
-        </div>
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="productName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="productName" name="name" required />
+            </div>
+            <div class="mb-3">
+              <label for="productPrice" class="form-label">Price</label>
+              <input type="number" class="form-control" id="productPrice" name="price" required />
+            </div>
+            <div class="mb-3">
+              <label for="productCategory" class="form-label">Category</label>
+              <select class="form-select" id="productCategory" name="category" required>
+                <option value="Tops">Tops</option>
+                <option value="Bottoms">Bottoms</option>
+                <option value="Outerwear">Outerwear</option>
+                <option value="Dresses">Dresses</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Accessories">Accessories</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="productCompany" class="form-label">Company</label>
+              <input type="text" class="form-control" id="productCompany" name="company" required />
+            </div>
+            <div class="mb-3">
+              <label for="productGender" class="form-label">Gender</label>
+              <select class="form-select" id="productGender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="productImage" class="form-label">Image</label>
+              <input type="file" class="form-control" id="productImage" name="image" accept="image/*" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+          </div>
+        </form>
       </div>
     </div>
+  </div>
+  
   
     <!-- Edit Product Modal -->
-    <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form action="/admin/update-product" method="POST" enctype="multipart/form-data">
-            <div class="modal-header">
-              <h5 class="modal-title" id="updateProductModalLabel">Update Product</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Edit Product Modal -->
+<div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/admin/update-product" method="POST" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateProductModalLabel">Update Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="updateProductId" name="productId" />
+            <div class="mb-3">
+              <label for="updateProductName" class="form-label">Product Name</label>
+              <input type="text" class="form-control" id="updateProductName" name="name" required />
             </div>
-            <div class="modal-body">
-              <input type="hidden" id="updateProductId" name="productId" />
-              <div class="mb-3">
-                <label for="updateProductName" class="form-label">Product Name</label>
-                <input type="text" class="form-control" id="updateProductName" name="name" required />
-              </div>
-              <div class="mb-3">
-                <label for="updateProductPrice" class="form-label">Price</label>
-                <input type="number" class="form-control" id="updateProductPrice" name="price" required />
-              </div>
-              <div class="mb-3">
-                <label for="updateProductCategory" class="form-label">Category</label>
-                <select class="form-select" id="updateProductCategory" name="category" required>
-                  <option value="Tops">Tops</option>
-                  <option value="Bottoms">Bottoms</option>
-                  <option value="Outerwear">Outerwear</option>
-                  <option value="Underwear">Underwear</option>
-                  <option value="Footwear">Footwear</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="updateProductCompany" class="form-label">Company</label>
-                <input type="text" class="form-control" id="updateProductCompany" name="company" required />
-              </div>
-              <div class="mb-3">
-                <label for="updateProductGender" class="form-label">Gender</label>
-                <select class="form-select" id="updateProductGender" name="gender" required>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="unisex">Unisex</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="updateProductImage" class="form-label">Image</label>
-                <input type="file" class="form-control" id="updateProductImage" name="image" accept="image/*" />
-              </div>
+            <div class="mb-3">
+              <label for="updateProductPrice" class="form-label">Price</label>
+              <input type="number" class="form-control" id="updateProductPrice" name="price" required />
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Save changes</button>
+            <div class="mb-3">
+              <label for="updateProductCategory" class="form-label">Category</label>
+              <select class="form-select" id="updateProductCategory" name="category" required>
+                <option value="Tops">Tops</option>
+                <option value="Bottoms">Bottoms</option>
+                <option value="Outerwear">Outerwear</option>
+                <option value="Dresses">Dresses</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Accessories">Accessories</option>
+              </select>
             </div>
-          </form>
-        </div>
+            <div class="mb-3">
+              <label for="updateProductCompany" class="form-label">Company</label>
+              <input type="text" class="form-control" id="updateProductCompany" name="company" required />
+            </div>
+            <div class="mb-3">
+              <label for="updateProductGender" class="form-label">Gender</label>
+              <select class="form-select" id="updateProductGender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="updateProductImage" class="form-label">Image</label>
+              <input type="file" class="form-control" id="updateProductImage" name="image" accept="image/*" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
       </div>
     </div>
+  </div>
+  
   
   </div>
 

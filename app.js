@@ -64,6 +64,22 @@ app.get("/homePage", ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.get("/product-image/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product || !product.image || !product.imageType) {
+      return res.status(404).send("Image not found");
+    }
+
+    res.set("Content-Type", product.imageType); // Set the content type to the image's MIME type
+    res.send(product.image); // Send the binary data
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 app.get("/api/items", async (req, res) => {
   const { filterId, filterName, filterPrice, filterCategory, filterCompany } =
     req.query;

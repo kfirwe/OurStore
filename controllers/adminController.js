@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const uuid = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 const router = express.Router();
@@ -9,44 +9,9 @@ const isAdmin = require("../middleware/isAdmin");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
 
-// Define the uploads directory
-const uploadDir = path.join(__dirname, "../uploads");
-
-// Ensure the uploads directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Define storage for uploaded files
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, uuid.v4() + path.extname(file.originalname));
-  },
-});
-
-// File filter to allow only images
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  const mimetype = allowedTypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb(new Error("Only images are allowed"));
-  }
-};
-
-// Initialize upload with multer
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-});
+// Set up multer for file upload
+const storage = multer.memoryStorage(); // Store files in memory, not on disk
+const upload = multer({ storage: storage });
 
 // Example route using the middleware
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
@@ -168,51 +133,72 @@ router.post(
   }
 );
 
-// Route to handle adding a product
 router.post("/admin/add-product", upload.single("image"), async (req, res) => {
   try {
-    const { name, price, category, company, gender } = req.body;
-    const prodId = uuid.v4(); // Generate a unique product ID
-    const image = req.file.filename; // Get the uploaded image's filename
-
     const newProduct = new Product({
-      prodId,
-      name,
-      price,
-      category,
-      company,
-      gender,
-      image,
+      prodId: uuidv4(), // Generate a unique ID
+      name: req.body.name,
+      price: req.body.price,
+      category: req.body.category,
+      company: req.body.company,
+      gender: req.body.gender,
+      image: req.file.buffer, // Store the file buffer (binary data)
+      imageType: req.file.mimetype, // Store the MIME type of the image
     });
 
     await newProduct.save();
     res.redirect("/admin");
-  } catch (error) {
-    console.error("Error adding product:", error);
-    res.status(500).send("Server Error");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
 });
 
-// Admin route to handle product update
 router.post(
   "/admin/update-product",
-  ensureAuthenticated,
-  isAdmin,
   upload.single("image"),
   async (req, res) => {
     try {
-      const { productId, name, price, category, company, gender } = req.body;
-      const image = req.file ? req.file.filename : undefined;
+      const updateData = {
+        name: req.body.name,
+        price: req.body.price,
+        category: req.body.category,
+        company: req.body.company,
+        gender: req.body.gender,
+      };
 
-      const updateData = { name, price, category, company, gender };
-      if (image) {
-        updateData.image = image;
+      // Only update the image if a new one was uploaded
+      if (req.file) {
+        updateData.image = req.file.buffer;
+        updateData.imageType = req.file.mimetype;
       }
 
-      await Product.findByIdAndUpdate(productId, updateData);
+      await Product.findByIdAndUpdate(req.body.productId, updateData);
+      res.redirect("/admin");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+// Admin Controller
+const multer = require("multer");
+
+// Handle image update
+router.post(
+  "/admin/update-product-image",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const productId = req.body.productId;
+      const image = req.file.buffer;
+
+      await Product.findByIdAndUpdate(productId, { image: image });
+
       res.redirect("/admin");
     } catch (error) {
-      console.error("Error updating product:", error);
+      console.error("Error updating product image:", error);
       res.status(500).send("Server error");
     }
   }
