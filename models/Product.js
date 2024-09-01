@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
   gender: { type: String, required: true },
   image: { type: Buffer, required: true }, // Store image as binary data
   imageType: { type: String, required: true }, // Store the image MIME type
+  amount: { type: Number, default: 0, required: true }, // New field for storing product quantity
 });
 
 const Product = mongoose.model("Product", productSchema, "products");

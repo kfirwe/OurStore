@@ -147,67 +147,86 @@
             <th>Category</th>
             <th>Company</th>
             <th>Gender</th>
+            <th>Amount</th>
             <th>Image</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <% products.forEach(product => { %>
-          <tr>
-            <td><%= product.prodId %></td>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'name', this.innerText)"
-            >
-              <%= product.name %>
-            </td>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'price', this.innerText)"
-            >
-              <%= product.price %>
-            </td>
-            <td>
-              <select
-                onchange="updateField('<%= product._id %>', 'category', this.value)"
-                class="form-select form-select-sm"
+            <% products.forEach(product => { %>
+            <tr>
+              <td><%= product.prodId %></td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'name', this.innerText)"
               >
-                <option value="Tops" <%= product.category === 'Tops' ? 'selected' : '' %>>Tops</option>
-                <option value="Bottoms" <%= product.category === 'Bottoms' ? 'selected' : '' %>>Bottoms</option>
-                <option value="Outerwear" <%= product.category === 'Outerwear' ? 'selected' : '' %>>Outerwear</option>
-                <option value="Underwear" <%= product.category === 'Underwear' ? 'selected' : '' %>>Underwear</option>
-                <option value="Footwear" <%= product.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
-                <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
-              </select>
-            </td>
-            <td
-              contenteditable="true"
-              onblur="updateField('<%= product._id %>', 'company', this.innerText)"
-            >
-              <%= product.company %>
-            </td>
-            <td>
-              <select
-                onchange="updateField('<%= product._id %>', 'gender', this.value)"
-                class="form-select form-select-sm"
+                <%= product.name %>
+              </td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'price', this.innerText)"
               >
-                <option value="male" <%= product.gender === 'male' ? 'selected' : '' %>>Male</option>
-                <option value="female" <%= product.gender === 'female' ? 'selected' : '' %>>Female</option>
-                <option value="unisex" <%= product.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
-              </select>
-            </td>
-            <td>
-                <img src="/product-image/<%= product._id %>" alt="<%= product.name %>" class="img-thumbnail" width="100" />
-            </td>              
-            <td>
-              <form action="/admin/delete-product" method="POST" style="display: inline">
-                <input type="hidden" name="productId" value="<%= product._id %>" />
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-              </form>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
+                <%= product.price %>
+              </td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'category', this.innerText)"
+              >
+                <%= product.category %>
+              </td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'company', this.innerText)"
+              >
+                <%= product.company %>
+              </td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'gender', this.innerText)"
+              >
+                <%= product.gender %>
+              </td>
+              <td
+                contenteditable="true"
+                onblur="updateField('<%= product._id %>', 'amount', this.innerText)"
+              >
+                <%= product.amount %>
+              </td>
+              <td>
+                <img
+                  src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
+                  alt="<%= product.name %>"
+                  class="img-thumbnail"
+                  width="100"
+                  style="cursor: pointer;"
+                  onclick="document.getElementById('updateImageInput-<%= product._id %>').click()"
+                />
+                <form
+                  action="/admin/update-product-image"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  style="display: none;"
+                  id="imageUploadForm-<%= product._id %>"
+                >
+                  <input type="hidden" name="productId" value="<%= product._id %>" />
+                  <input
+                    type="file"
+                    id="updateImageInput-<%= product._id %>"
+                    name="image"
+                    accept="image/*"
+                    onchange="document.getElementById('imageUploadForm-<%= product._id %>').submit();"
+                  />
+                </form>
+              </td>
+              <td>
+                <form action="/admin/delete-product" method="POST" style="display: inline">
+                  <input type="hidden" name="productId" value="<%= product._id %>" />
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>          
       </table>
     </section>
   

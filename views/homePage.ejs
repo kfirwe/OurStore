@@ -142,14 +142,23 @@
         <div class="col-12 text-center">
           <h2>No items yet!</h2>
         </div>
-        <% } else { %> <% products.forEach(product => { %>
+        <% } else { %>
+        <% products.forEach(product => { %>
         <div class="col-md-4 mb-4">
           <div class="card h-100">
-            <img
-              src="/product-image/<%= product._id %>"
-              class="card-img-top"
-              alt="<%= product.name %>"
-            />
+            <div style="position: relative;">
+              <img
+                src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
+                class="card-img-top"
+                alt="<%= product.name %>"
+              />
+              <% if (product.amount === 0) { %>
+              <div
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.7); color: white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
+                Sold Out
+              </div>
+              <% } %>
+            </div>
             <div class="card-body">
               <h5 class="card-title"><%= product.name %></h5>
               <p class="card-text">
@@ -167,15 +176,17 @@
               <button
                 class="btn btn-primary"
                 onclick="handleAddToCart('<%= product.prodId %>')"
-              >
+                <%= product.amount === 0 ? 'disabled' : '' %>>
                 Add to Cart
               </button>
             </div>
           </div>
         </div>
-        <% }) %> <% } %>
+        <% }) %>
+        <% } %>
       </div>
     </div>
+    
 
     <!-- Footer -->
     <!-- Include the footer partial -->

@@ -182,9 +182,6 @@ router.post(
   }
 );
 
-// Admin Controller
-const multer = require("multer");
-
 // Handle image update
 router.post(
   "/admin/update-product-image",
