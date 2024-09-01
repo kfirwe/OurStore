@@ -1,192 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Clothes Store - Home</title>
     <!-- Bootstrap CSS (Optional) -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="homePage.css" />
-  </head>
-  <body>
+</head>
+<body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Clothes Store</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Cart</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Log out</a>
-            </li>
-            <% if (isAdmin) { %>
-            <li class="nav-item">
-              <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
-            </li>
-            <% } %>
-          </ul>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Clothes Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Log out</a>
+                    </li>
+                    <% if (isAdmin) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
 
     <!-- Title -->
     <div class="container text-center mt-5">
-      <h1 class="text-center">Welcome, <%= username %>!</h1>
+        <h1 class="text-center">Welcome, <%= username %>!</h1>
     </div>
 
     <!-- Filter Section -->
     <div class="container mt-4">
-      <form id="filterForm" class="row g-3">
-        <div class="col-md-2">
-          <input
-            type="text"
-            class="form-control"
-            id="filterId"
-            placeholder="Filter by ID"
-          />
-        </div>
-        <div class="col-md-2">
-          <input
-            type="text"
-            class="form-control"
-            id="filterName"
-            placeholder="Filter by Name"
-          />
-        </div>
-        <div class="col-md-2">
-          <select
-            class="form-control"
-            id="priceCondition"
-            onchange="updatePricePlaceholder()"
-          >
-            <option value="equal">Equal to</option>
-            <option value="greater">Greater than</option>
-            <option value="less">Less than</option>
-            <option value="between">Between</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <input
-            type="number"
-            class="form-control"
-            id="filterPrice"
-            placeholder="Price"
-          />
-        </div>
-        <div class="col-md-2" id="priceRange" style="display: none">
-          <input
-            type="number"
-            class="form-control"
-            id="filterPriceMax"
-            placeholder="Max Price"
-          />
-        </div>
-        <div class="col-md-2">
-          <input
-            type="text"
-            class="form-control"
-            id="filterCategory"
-            placeholder="Category"
-          />
-        </div>
-        <div class="col-md-2">
-          <input
-            type="text"
-            class="form-control"
-            id="filterCompany"
-            placeholder="Company"
-          />
-        </div>
-        <div class="col-md-2">
-          <button
-            type="button"
-            class="btn btn-primary w-100"
-            onclick="applyFilters()"
-          >
-            Filter
-          </button>
-        </div>
-      </form>
+        <form id="filterForm" class="row g-3" action="/homePage" method="GET">
+            <!-- Name Filter -->
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="filterName" name="name" placeholder="Filter by Name" value="<%= filters.name %>" />
+            </div>
+            <!-- Price Condition -->
+            <div class="col-md-2">
+                <select class="form-control" id="priceCondition" name="priceCondition" onchange="updatePricePlaceholder()">
+                    <option value="equal" <%= filters.priceCondition === 'equal' ? 'selected' : '' %>>Equal to</option>
+                    <option value="greater" <%= filters.priceCondition === 'greater' ? 'selected' : '' %>>Greater than</option>
+                    <option value="less" <%= filters.priceCondition === 'less' ? 'selected' : '' %>>Less than</option>
+                    <option value="between" <%= filters.priceCondition === 'between' ? 'selected' : '' %>>Between</option>
+                </select>
+            </div>
+            <!-- Price Filter -->
+            <div class="col-md-2">
+                <input type="number" class="form-control" id="filterPrice" name="price" placeholder="Price" value="<%= typeof filters.price !== 'undefined' ? filters.price : '' %>" />
+            </div>
+            <!-- Max Price (for 'Between' condition) -->
+            <div class="col-md-2" id="priceRange" style="<%= filters.priceCondition === 'between' ? 'display: block;' : 'display: none;' %>">
+                <input type="number" class="form-control" id="filterPriceMax" name="priceMax" placeholder="Max Price" value="<%= typeof filters.priceMax !== 'undefined' ? filters.priceMax : '' %>" />
+            </div>
+            <!-- Category Filter -->
+            <div class="col-md-2">
+                <select class="form-select" id="filterCategory" name="category">
+                    <option value="">All Categories</option>
+                    <option value="Tops" <%= filters.category === 'Tops' ? 'selected' : '' %>>Tops</option>
+                    <option value="Bottoms" <%= filters.category === 'Bottoms' ? 'selected' : '' %>>Bottoms</option>
+                    <option value="Outerwear" <%= filters.category === 'Outerwear' ? 'selected' : '' %>>Outerwear</option>
+                    <option value="Dresses" <%= filters.category === 'Dresses' ? 'selected' : '' %>>Dresses</option>
+                    <option value="Footwear" <%= filters.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
+                    <option value="Accessories" <%= filters.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+                </select>
+            </div>
+            <!-- Gender Filter -->
+            <div class="col-md-2">
+                <select class="form-select" id="filterGender" name="gender">
+                    <option value="">All Genders</option>
+                    <option value="male" <%= filters.gender === 'male' ? 'selected' : '' %>>Male</option>
+                    <option value="female" <%= filters.gender === 'female' ? 'selected' : '' %>>Female</option>
+                    <option value="unisex" <%= filters.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
+                </select>
+            </div>
+            <!-- Non Sold Out Filter -->
+            <div class="col-md-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="filterNonSoldOut" name="nonSoldOut" value="true" <%= filters.nonSoldOut ? 'checked' : '' %>>
+                    <label class="form-check-label" for="filterNonSoldOut">
+                        Non Sold Out
+                    </label>
+                </div>
+            </div>
+            <!-- Filter Button -->
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+            <!-- Reset Button -->
+            <div class="col-md-2">
+                <button type="button" class="btn btn-secondary w-100" onclick="resetFilters()">Reset</button>
+            </div>
+        </form>
     </div>
 
     <!-- Main Content -->
     <div class="container mt-5">
-      <div class="row" id="itemsContainer">
-        <% if (products.length === 0) { %>
-        <div class="col-12 text-center">
-          <h2>No items yet!</h2>
-        </div>
-        <% } else { %>
-        <% products.forEach(product => { %>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
-            <div style="position: relative;">
-              <img
-                src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
-                class="card-img-top"
-                alt="<%= product.name %>"
-              />
-              <% if (product.amount === 0) { %>
-              <div
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.7); color: white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
-                Sold Out
-              </div>
-              <% } %>
+        <div class="row" id="itemsContainer">
+            <% if (products.length === 0) { %>
+            <div class="col-12 text-center">
+                <h2>No items yet!</h2>
             </div>
-            <div class="card-body">
-              <h5 class="card-title"><%= product.name %></h5>
-              <p class="card-text">
-                <strong>Price:</strong> $<%= product.price %>
-              </p>
-              <p class="card-text">
-                <strong>Category:</strong> <%= product.category %>
-              </p>
-              <p class="card-text">
-                <strong>Company:</strong> <%= product.company %>
-              </p>
-              <p class="card-text">
-                <strong>Gender:</strong> <%= product.gender %>
-              </p>
-              <button
-                class="btn btn-primary"
-                onclick="handleAddToCart('<%= product.prodId %>')"
-                <%= product.amount === 0 ? 'disabled' : '' %>>
-                Add to Cart
-              </button>
+            <% } else { %>
+            <% products.forEach(product => { %>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div style="position: relative;">
+                        <img
+                            src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
+                            class="card-img-top"
+                            alt="<%= product.name %>"
+                        />
+                        <% if (product.amount === 0) { %>
+                        <div
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.7); color: white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
+                            Sold Out
+                        </div>
+                        <% } %>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><%= product.name %></h5>
+                        <p class="card-text">
+                            <strong>Price:</strong> $<%= product.price %>
+                        </p>
+                        <p class="card-text">
+                            <strong>Category:</strong> <%= product.category %>
+                        </p>
+                        <p class="card-text">
+                            <strong>Company:</strong> <%= product.company %>
+                        </p>
+                        <p class="card-text">
+                            <strong>Gender:</strong> <%= product.gender %>
+                        </p>
+                        <button class="btn btn-primary" onclick="handleAddToCart('<%= product.prodId %>')" <%= product.amount === 0 ? 'disabled' : '' %>>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
+            <% }) %>
+            <% } %>
         </div>
-        <% }) %>
-        <% } %>
-      </div>
     </div>
-    
 
     <!-- Footer -->
     <!-- Include the footer partial -->
@@ -196,77 +171,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script>
-      function renderAdminPage() {
-        window.location.href = "/admin"; // Redirects the user to the /admin page
-      }
-
-      function handleAddToCart(prodId) {
-        console.log("Add to cart clicked for product ID:", prodId);
-        // You can implement the logic to add the product to the cart here
-      }
-
-      function updatePricePlaceholder() {
-        const priceCondition = document.getElementById("priceCondition").value;
-        const filterPrice = document.getElementById("filterPrice");
-        const priceRange = document.getElementById("priceRange");
-
-        if (priceCondition === "equal") {
-          filterPrice.placeholder = "Price";
-          priceRange.style.display = "none";
-        } else if (priceCondition === "greater") {
-          filterPrice.placeholder = "Greater than";
-          priceRange.style.display = "none";
-        } else if (priceCondition === "less") {
-          filterPrice.placeholder = "Less than";
-          priceRange.style.display = "none";
-        } else if (priceCondition === "between") {
-          filterPrice.placeholder = "Min Price";
-          priceRange.style.display = "block";
-        }
-      }
-
-      function applyFilters() {
-        const filterId = document.getElementById("filterId").value;
-        const filterName = document.getElementById("filterName").value;
-        const priceCondition = document.getElementById("priceCondition").value;
-        const filterPrice = document.getElementById("filterPrice").value;
-        const filterPriceMax = document.getElementById("filterPriceMax").value;
-        const filterCategory = document.getElementById("filterCategory").value;
-        const filterCompany = document.getElementById("filterCompany").value;
-
-        let query = {};
-
-        if (filterId) {
-          query.id = filterId;
-        }
-        if (filterName) {
-          query.name = filterName;
-        }
-        if (filterCategory) {
-          query.category = filterCategory;
-        }
-        if (filterCompany) {
-          query.company = filterCompany;
+        function renderAdminPage() {
+            window.location.href = "/admin"; // Redirects the user to the /admin page
         }
 
-        // Handle the price condition
-        if (filterPrice) {
-          if (priceCondition === "equal") {
-            query.price = { $eq: parseFloat(filterPrice) };
-          } else if (priceCondition === "greater") {
-            query.price = { $gt: parseFloat(filterPrice) };
-          } else if (priceCondition === "less") {
-            query.price = { $lt: parseFloat(filterPrice) };
-          } else if (priceCondition === "between" && filterPriceMax) {
-            query.price = {
-              $gte: parseFloat(filterPrice),
-              $lte: parseFloat(filterPriceMax),
-            };
-          }
+        function handleAddToCart(prodId) {
+            console.log("Add to cart clicked for product ID:", prodId);
+            // You can implement the logic to add the product to the cart here
         }
 
-        console.log("Filters applied:", query);
-      }
+        function updatePricePlaceholder() {
+            const priceCondition = document.getElementById("priceCondition").value;
+            const filterPrice = document.getElementById("filterPrice");
+            const priceRange = document.getElementById("priceRange");
+
+            if (priceCondition === "equal") {
+                filterPrice.placeholder = "Price";
+                priceRange.style.display = "none";
+            } else if (priceCondition === "greater") {
+                filterPrice.placeholder = "Greater than";
+                priceRange.style.display = "none";
+            } else if (priceCondition === "less") {
+                filterPrice.placeholder = "Less than";
+                priceRange.style.display = "none";
+            } else if (priceCondition === "between") {
+                filterPrice.placeholder = "Min Price";
+                priceRange.style.display = "block";
+            }
+        }
+
+        function resetFilters() {
+            window.location.href = "/homePage"; // Reset filters and redirect to homepage
+        }
     </script>
-  </body>
+</body>
 </html>

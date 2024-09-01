@@ -46,23 +46,10 @@ app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "signup.html"));
 });
 
-// Route to handle the home page
-app.get("/homePage", ensureAuthenticated, async (req, res) => {
-  try {
-    // Fetch products from the database
-    const products = await Product.find();
+const homepageController = require("./controllers/homepageController");
 
-    // Render the homepage with the product data
-    res.render("homePage", {
-      isAdmin: req.session.user.role === "admin",
-      username: req.session.user.username,
-      products: products, // Pass the products to the EJS template
-    });
-  } catch (err) {
-    console.error("Error fetching products:", err);
-    res.status(500).send("Server Error");
-  }
-});
+// Route to handle the home page
+app.get("/homePage", ensureAuthenticated, homepageController.getHomePage);
 
 app.get("/product-image/:id", async (req, res) => {
   try {
