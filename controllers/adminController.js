@@ -8,6 +8,7 @@ const { ensureAuthenticated } = require("../middleware/auth"); // Correct import
 const isAdmin = require("../middleware/isAdmin");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
+const { Purchase } = require("../models/Purchase");
 
 // Set up multer for file upload
 const storage = multer.memoryStorage(); // Store files in memory, not on disk
@@ -19,7 +20,9 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
     // Fetch all users and products to display on the admin page
     const users = await User.find({});
     const products = await Product.find({});
-    res.render("admin", { users, products });
+    const purchases = await Purchase.find().sort({ Date: -1 }).lean(); // Fetch purchases sorted by Date (latest first)
+
+    res.render("admin", { users, products, purchases }); // Pass purchases to the admin view
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -217,5 +220,19 @@ router.post(
     }
   }
 );
+
+// Route to find purchases by username
+router.get("/admin/find-purchases", async (req, res) => {
+  const userName = req.query.userName;
+  try {
+    const users = await User.find({});
+    const products = await Product.find({});
+    const purchases = await Purchase.find({ userName: userName });
+    res.render("admin", { users, products, purchases });
+  } catch (error) {
+    console.error("Error finding purchases:", error);
+    res.status(500).send("Server Error");
+  }
+});
 
 module.exports = router;

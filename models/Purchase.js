@@ -8,6 +8,10 @@ const purchaseSchema = new mongoose.Schema({
     default: uuidv4, // Automatically generates a UUID for each purchase
     unique: true,
   },
+  userName: {
+    type: String,
+    required: true, // Store the username directly
+  },
   productsInfo: [productSchema],
   TotalAmount: {
     type: Number,

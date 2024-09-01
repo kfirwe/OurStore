@@ -343,8 +343,79 @@
     </div>
   </div>
   
+  <section id="purchase-management" class="mt-5">
+    <h2>Recent Purchases</h2>
+
+    <!-- Search Bar for Username -->
+    <form action="/admin/find-purchases" method="GET" class="mb-4 d-flex" onsubmit="saveUserName()">
+        <div class="input-group me-2">
+            <input type="text" class="form-control" id="userNameInput" name="userName" placeholder="Enter username to find purchases" value="<%= typeof userName !== 'undefined' ? userName : '' %>" required>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+        <!-- Reset Button -->
+        <a href="/admin" onclick="resetUserName()" class="btn btn-secondary">Reset</a>
+    </form>
+
+    <!-- Sort Dropdown -->
+    <div class="mb-3">
+        <label for="sortPurchases" class="form-label">Sort by:</label>
+        <select id="sortPurchases" class="form-select" onchange="sortPurchases()">
+            <option value="date_desc">Date (Newest First)</option>
+            <option value="date_asc">Date (Oldest First)</option>
+            <option value="user_asc">User (A-Z)</option>
+            <option value="user_desc">User (Z-A)</option>
+        </select>
+    </div>
+
+    <!-- Purchases Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Purchase ID</th>
+                <th>User Name</th>
+                <th>Total Amount</th>
+                <th>Date</th>
+                <th>Products</th>
+            </tr>
+        </thead>
+        <tbody id="purchasesTableBody">
+            <% purchases.forEach(purchase => { %>
+            <tr>
+                <td><%= purchase.purchaseId %></td>
+                <td><%= purchase.userName %></td>
+                <td>$<%= purchase.TotalAmount %></td>
+                <td><%= new Date(purchase.Date).toLocaleString() %></td>
+                <td>
+                    <ul>
+                        <% purchase.productsInfo.forEach(product => { %>
+                        <li>
+                            <strong>Name:</strong> <%= product.name %><br>
+                            <strong>Price:</strong> $<%= product.price %><br>
+                            <strong>Category:</strong> <%= product.category %><br>
+                            <strong>Company:</strong> <%= product.company %><br>
+                            <strong>Gender:</strong> <%= product.gender %><br>
+                            <strong>quantityPurchased:</strong> <%= product.quantityPurchased %><br>
+                            <img
+                                src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
+                                alt="<%= product.name %>"
+                                class="img-thumbnail"
+                                width="100"
+                            />
+                        </li>
+                        <% }) %>
+                    </ul>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</section>
+
+
   
   </div>
+
+  
 
   <!-- Include the footer partial -->
   <%- include('_footer') %>
@@ -449,8 +520,58 @@
     </div>
   </div>
 
+
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Reset the input value and clear localStorage
+    function resetUserName() {
+        localStorage.removeItem('userName');
+    }
+
+    // Save the input value to localStorage
+    function saveUserName() {
+        const userName = document.getElementById('userNameInput').value;
+        localStorage.setItem('userName', userName);
+    }
+
+    // Retrieve the input value from localStorage on page load
+    window.onload = function() {
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            document.getElementById('userNameInput').value = userName;
+        }
+    };
+
+    function sortPurchases() {
+        const sortBy = document.getElementById('sortPurchases').value;
+        const tableBody = document.getElementById('purchasesTableBody');
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+        let sortedRows;
+        switch (sortBy) {
+            case 'date_asc':
+                sortedRows = rows.sort((a, b) => new Date(a.cells[3].innerText) - new Date(b.cells[3].innerText));
+                break;
+            case 'date_desc':
+                sortedRows = rows.sort((a, b) => new Date(b.cells[3].innerText) - new Date(a.cells[3].innerText));
+                break;
+            case 'user_asc':
+                sortedRows = rows.sort((a, b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText));
+                break;
+            case 'user_desc':
+                sortedRows = rows.sort((a, b) => b.cells[1].innerText.localeCompare(a.cells[1].innerText));
+                break;
+        }
+
+        // Clear the table body
+        tableBody.innerHTML = '';
+
+        // Re-append the sorted rows
+        sortedRows.forEach(row => tableBody.appendChild(row));
+    }
+
+
     function updateField(id, field, value) {
       fetch(`/admin/update-field`, {
         method: "POST",
