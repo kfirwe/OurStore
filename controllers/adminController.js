@@ -9,6 +9,7 @@ const isAdmin = require("../middleware/isAdmin");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
+const { postTweet } = require("./twitterController");
 
 // Set up multer for file upload
 const storage = multer.memoryStorage(); // Store files in memory, not on disk
@@ -288,5 +289,8 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Error fetching purchase data" });
   }
 });
+
+// Add the multer middleware to handle image uploads
+router.post("/admin/post-tweet", upload.single("image"), postTweet);
 
 module.exports = router;

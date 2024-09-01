@@ -430,7 +430,22 @@
     <div id="chart"></div>
 </div>
 
-  
+<section id="tweet-management" class="mt-5">
+    <h2>Post a Tweet</h2>
+    <form action="/admin/post-tweet" method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="tweetText" class="form-label">Tweet Text</label>
+        <textarea class="form-control" id="tweetText" name="tweetText" rows="3" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="tweetImage" class="form-label">Upload Image (Optional)</label>
+        <input class="form-control" type="file" id="tweetImage" name="image" accept="image/*">
+      </div>
+      <button type="submit" class="btn btn-primary">Post Tweet</button>
+    </form>
+  </section>
+    
+
   </div>
 
   
