@@ -235,4 +235,58 @@ router.get("/admin/find-purchases", async (req, res) => {
   }
 });
 
+router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
+  const { range } = req.query;
+  let startDate;
+
+  switch (range) {
+    case "24h":
+      startDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      break;
+    case "7d":
+      startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case "1m":
+      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      break;
+    case "1y":
+      startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+      break;
+    case "5y":
+      startDate = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      startDate = new Date(0); // Get all data
+      break;
+  }
+
+  try {
+    const purchases = await Purchase.aggregate([
+      {
+        $addFields: {
+          Date: { $toDate: "$Date" }, // Convert string date to Date object
+        },
+      },
+      { $match: { Date: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$Date" } },
+          totalAmount: { $sum: "$TotalAmount" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const formattedData = purchases.map((p) => ({
+      date: p._id,
+      amount: p.totalAmount,
+    }));
+
+    res.json(formattedData);
+  } catch (err) {
+    console.error("Error fetching purchase data:", err);
+    res.status(500).json({ error: "Error fetching purchase data" });
+  }
+});
+
 module.exports = router;
