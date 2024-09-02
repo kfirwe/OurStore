@@ -399,6 +399,75 @@
     </div>
   </div>
   
+  <!-- Coupon Management Section -->
+  <section id="coupon-management" class="mt-5">
+    <h2>Manage Coupons</h2>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add New Coupon</button>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Coupon Code</th>
+                <th>Discount Percentage</th>
+                <th>Expire Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% coupons.forEach(coupon => { %>
+            <tr>
+                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'code', this.innerText)">
+                    <%= coupon.code %>
+                </td>
+                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'discountPercentage', this.innerText)">
+                    <%= coupon.discountPercentage %>
+                </td>
+                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'expireDate', this.innerText)">
+                    <%= new Date(coupon.expireDate).toLocaleDateString() %>
+                </td>
+                <td>
+                    <form action="/admin/delete-coupon" method="POST" style="display: inline">
+                        <input type="hidden" name="id" value="<%= coupon._id %>" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+  </section>
+
+  <!-- Add Coupon Modal -->
+  <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <form action="/admin/add-coupon" method="POST">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="addCouponModalLabel">Add New Coupon</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="mb-3">
+                          <label for="couponCode" class="form-label">Coupon Code</label>
+                          <input type="text" class="form-control" id="couponCode" name="code" required />
+                      </div>
+                      <div class="mb-3">
+                          <label for="discountPercentage" class="form-label">Discount Percentage</label>
+                          <input type="number" class="form-control" id="discountPercentage" name="discountPercentage" min="0" max="100" required />
+                      </div>
+                      <div class="mb-3">
+                          <label for="expireDate" class="form-label">Expire Date</label>
+                          <input type="date" class="form-control" id="expireDate" name="expireDate" required />
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary">Add Coupon</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+
   <section id="purchase-management" class="mt-5">
     <h2>Recent Purchases</h2>
 

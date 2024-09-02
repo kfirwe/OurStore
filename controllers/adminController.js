@@ -1,8 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
-const fs = require("fs");
-const path = require("path");
 const router = express.Router();
 const { ensureAuthenticated } = require("../middleware/auth"); // Correct import
 const isAdmin = require("../middleware/isAdmin");
@@ -10,6 +8,7 @@ const User = require("../models/User");
 const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
 const { postTweet } = require("./twitterController");
+const Coupon = require("../models/Coupon");
 
 // Set up multer for file upload
 const storage = multer.memoryStorage(); // Store files in memory, not on disk
@@ -18,12 +17,13 @@ const upload = multer({ storage: storage });
 // Example route using the middleware
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
   try {
-    // Fetch all users and products to display on the admin page
+    // Fetch all users, products, purchases, and coupons to display on the admin page
     const users = await User.find({});
     const products = await Product.find({});
     const purchases = await Purchase.find().sort({ Date: -1 }).lean(); // Fetch purchases sorted by Date (latest first)
+    const coupons = await Coupon.find({}).sort({ expireDate: 1 }); // Fetch coupons sorted by expireDate (soonest first)
 
-    res.render("admin", { users, products, purchases }); // Pass purchases to the admin view
+    res.render("admin", { users, products, purchases, coupons }); // Pass coupons to the admin view
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -47,7 +47,7 @@ router.post(
   }
 );
 
-// Update field for User or Product
+// Update field for User, Product, or Coupon
 router.post(
   "/admin/update-field",
   ensureAuthenticated,
@@ -69,6 +69,12 @@ router.post(
         field === "role"
       ) {
         await User.findByIdAndUpdate(id, { [field]: value });
+      } else if (
+        field === "code" ||
+        field === "discountPercentage" ||
+        field === "expireDate"
+      ) {
+        await Coupon.findByIdAndUpdate(id, { [field]: value });
       } else {
         await Product.findByIdAndUpdate(id, { [field]: value });
       }
@@ -137,6 +143,7 @@ router.post(
   }
 );
 
+// Add product route
 router.post("/admin/add-product", upload.single("image"), async (req, res) => {
   try {
     const newProduct = new Product({
@@ -158,6 +165,7 @@ router.post("/admin/add-product", upload.single("image"), async (req, res) => {
   }
 });
 
+// Update product route
 router.post(
   "/admin/update-product",
   upload.single("image"),
@@ -236,6 +244,7 @@ router.get("/admin/find-purchases", async (req, res) => {
   }
 });
 
+// Purchase data route for charts
 router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
   const { range } = req.query;
   let startDate;
@@ -289,6 +298,70 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Error fetching purchase data" });
   }
 });
+
+// Add coupon route
+router.post(
+  "/admin/add-coupon",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { code, discountPercentage, expireDate } = req.body;
+
+    try {
+      const newCoupon = new Coupon({
+        code,
+        discountPercentage,
+        expireDate,
+      });
+
+      await newCoupon.save();
+      res.redirect("/admin");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Failed to add coupon");
+    }
+  }
+);
+
+// Update coupon route
+router.post(
+  "/admin/update-coupon",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { id, code, discountPercentage, expireDate } = req.body;
+
+    try {
+      await Coupon.findByIdAndUpdate(id, {
+        code,
+        discountPercentage,
+        expireDate,
+      });
+      res.redirect("/admin");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Failed to update coupon");
+    }
+  }
+);
+
+// Delete coupon route
+router.post(
+  "/admin/delete-coupon",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { id } = req.body;
+
+    try {
+      await Coupon.findByIdAndDelete(id);
+      res.redirect("/admin");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Failed to delete coupon");
+    }
+  }
+);
 
 // Add the multer middleware to handle image uploads
 router.post("/admin/post-tweet", upload.single("image"), postTweet);
