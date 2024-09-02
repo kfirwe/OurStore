@@ -39,10 +39,12 @@ exports.getHomePage = async (req, res) => {
     }
 
     const products = await Product.find(filters);
+    const UnFilteredProducts = await Product.find({});
 
     res.render("homePage", {
       isAdmin: req.session.user.role === "admin",
       username: req.session.user.username,
+      UnFilteredProducts,
       products: products,
       filters: req.query, // Pass the filters back to the template to maintain filter values
     });
