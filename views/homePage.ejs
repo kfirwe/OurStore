@@ -12,38 +12,40 @@
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Clothes Store</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">Log out</a>
-                    </li>
-                    <% if (isAdmin) { %>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
-                    </li>
-                    <% } %>
-                </ul>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Clothes Store</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">Log out</a>
+                        </li>
+                        <% if (isAdmin) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Title -->
     <div class="container text-center mt-5">
@@ -51,7 +53,7 @@
     </div>
 
     <!-- Filter Section -->
-    <div class="container mt-4">
+    <aside class="container mt-4">
         <form id="filterForm" class="row g-3" action="/homePage" method="GET">
             <!-- Name Filter -->
             <div class="col-md-2">
@@ -113,64 +115,64 @@
                 <button type="button" class="btn btn-secondary w-100" onclick="resetFilters()">Reset</button>
             </div>
         </form>
-    </div>
+    </aside>
     
     <!-- Sliding Gallery -->
-    <div class="container mt-5">
-      <div id="productCarousel" class="carousel slide mx-auto" data-bs-ride="carousel" data-bs-interval="5000" style="max-width: 600px;">
-          <div class="carousel-inner">
-              <% if (UnFilteredProducts.length > 1) { %>
-                  <% UnFilteredProducts.forEach((product, index) => { %>
-                      <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                          <a href="#">
-                              <div class="carousel-image-container">
-                                  <img 
-                                      src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>" 
-                                      class="d-block w-100" 
-                                      alt="<%= product.name %>" 
-                                      style="object-fit: cover; height: 300px; border-radius: 10px;"
-                                  >
-                                  <% if (product.amount === 0) { %>
-                                      <div class="sold-out-overlay">Sold Out</div>
-                                  <% } %>
-                              </div>
-                          </a>
-                      </div>
-                  <% }) %>
-              <% } else if (UnFilteredProducts.length === 1) { %>
-                  <div class="carousel-item active">
-                      <a href="#">
-                          <div class="carousel-image-container">
-                              <img 
-                                  src="data:image/<%= products[0].imageType %>;base64,<%= products[0].image.toString('base64') %>" 
-                                  class="d-block w-100" 
-                                  alt="<%= products[0].name %>" 
-                                  style="object-fit: cover; height: 300px; border-radius: 10px;"
-                              >
-                              <% if (UnFilteredProducts[0].amount === 0) { %>
-                                  <div class="sold-out-overlay">Sold Out</div>
-                              <% } %>
-                          </div>
-                      </a>
-                  </div>
-              <% } %>
-          </div>
-          <% if (UnFilteredProducts.length > 1) { %>
-              <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-              </button>
-          <% } %>
-      </div>
-  </div>
+    <section class="container mt-5">
+        <div id="productCarousel" class="carousel slide mx-auto" data-bs-ride="carousel" data-bs-interval="5000" style="max-width: 600px;">
+            <div class="carousel-inner">
+                <% if (UnFilteredProducts.length > 1) { %>
+                    <% UnFilteredProducts.forEach((product, index) => { %>
+                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                            <a href="#">
+                                <div class="carousel-image-container">
+                                    <img 
+                                        src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>" 
+                                        class="d-block w-100" 
+                                        alt="<%= product.name %>" 
+                                        style="object-fit: cover; height: 300px; border-radius: 10px;"
+                                    >
+                                    <% if (product.amount === 0) { %>
+                                        <div class="sold-out-overlay">Sold Out</div>
+                                    <% } %>
+                                </div>
+                            </a>
+                        </div>
+                    <% }) %>
+                <% } else if (UnFilteredProducts.length === 1) { %>
+                    <div class="carousel-item active">
+                        <a href="#">
+                            <div class="carousel-image-container">
+                                <img 
+                                    src="data:image/<%= products[0].imageType %>;base64,<%= products[0].image.toString('base64') %>" 
+                                    class="d-block w-100" 
+                                    alt="<%= products[0].name %>" 
+                                    style="object-fit: cover; height: 300px; border-radius: 10px;"
+                                >
+                                <% if (UnFilteredProducts[0].amount === 0) { %>
+                                    <div class="sold-out-overlay">Sold Out</div>
+                                <% } %>
+                            </div>
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+            <% if (UnFilteredProducts.length > 1) { %>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            <% } %>
+        </div>
+    </section>
     
 
     <!-- Main Content -->
-    <div class="container mt-5">
+    <main class="container mt-5">
         <div class="row" id="itemsContainer">
             <% if (products.length === 0) { %>
             <div class="col-12 text-center">
@@ -216,10 +218,9 @@
             <% }) %>
             <% } %>
         </div>
-    </div>
+    </main>
 
     <!-- Footer -->
-    <!-- Include the footer partial -->
     <%- include('_footer') %>
 
     <!-- Bootstrap JS (Optional) -->
@@ -227,53 +228,73 @@
     <!-- Custom JS -->
     <script>
       function handleLogout() {
-    fetch('/logout', {
-      method: 'GET',
-      credentials: 'same-origin'
-    })
-    .then(response => {
-      if (response.redirected) {
-        window.location.href = response.url; // Redirect to the login page
+        fetch('/logout', {
+          method: 'GET',
+          credentials: 'same-origin'
+        })
+        .then(response => {
+          if (response.redirected) {
+            window.location.href = response.url; // Redirect to the login page
+          }
+        })
+        .catch(error => {
+          console.error('Error during logout:', error);
+          alert('An error occurred while logging out.');
+        });
       }
-    })
-    .catch(error => {
-      console.error('Error during logout:', error);
-      alert('An error occurred while logging out.');
-    });
-  }
 
-        function renderAdminPage() {
-            window.location.href = "/admin"; // Redirects the user to the /admin page
-        }
+      function renderAdminPage() {
+          window.location.href = "/admin"; // Redirects the user to the /admin page
+      }
 
-        function handleAddToCart(prodId) {
-            console.log("Add to cart clicked for product ID:", prodId);
-            // You can implement the logic to add the product to the cart here
-        }
+      function handleAddToCart(prodId) {
+          console.log("Add to cart clicked for product ID:", prodId);
+          // You can implement the logic to add the product to the cart here
+      }
 
-        function updatePricePlaceholder() {
-            const priceCondition = document.getElementById("priceCondition").value;
-            const filterPrice = document.getElementById("filterPrice");
-            const priceRange = document.getElementById("priceRange");
+      function updatePricePlaceholder() {
+          const priceCondition = document.getElementById("priceCondition").value;
+          const filterPrice = document.getElementById("filterPrice");
+          const priceRange = document.getElementById("priceRange");
 
-            if (priceCondition === "equal") {
-                filterPrice.placeholder = "Price";
-                priceRange.style.display = "none";
-            } else if (priceCondition === "greater") {
-                filterPrice.placeholder = "Greater than";
-                priceRange.style.display = "none";
-            } else if (priceCondition === "less") {
-                filterPrice.placeholder = "Less than";
-                priceRange.style.display = "none";
-            } else if (priceCondition === "between") {
-                filterPrice.placeholder = "Min Price";
-                priceRange.style.display = "block";
-            }
-        }
+          if (priceCondition === "equal") {
+              filterPrice.placeholder = "Price";
+              priceRange.style.display = "none";
+          } else if (priceCondition === "greater") {
+              filterPrice.placeholder = "Greater than";
+              priceRange.style.display = "none";
+          } else if (priceCondition === "less") {
+              filterPrice.placeholder = "Less than";
+              priceRange.style.display = "none";
+          } else if (priceCondition === "between") {
+              filterPrice.placeholder = "Min Price";
+              priceRange.style.display = "block";
+          }
+      }
 
-        function resetFilters() {
-            window.location.href = "/homePage"; // Reset filters and redirect to homepage
-        }
+      function resetFilters() {
+          window.location.href = "/homePage"; // Reset filters and redirect to homepage
+      }
+
+      // Footer Canvas
+      const canvas = document.getElementById('footerCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = 50;
+
+      // Draw something simple, like a gradient
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0.3)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Ensure the canvas resizes with the window
+      window.addEventListener('resize', () => {
+          canvas.width = window.innerWidth;
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+      });
     </script>
 </body>
 </html>

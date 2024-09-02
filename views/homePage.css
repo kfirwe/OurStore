@@ -1,5 +1,12 @@
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/MyCustomFont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: "MyCustomFont", Arial, sans-serif;
   background-image: url("/background.avif"); /* Relative path to the image */
   background-size: cover; /* Stretch the image to cover the entire screen width */
   background-repeat: no-repeat; /* Prevent the image from repeating */
@@ -50,6 +57,7 @@ body {
 }
 
 h1.text-center {
+  text-shadow: none;
   margin-top: 20px;
   font-size: 2rem; /* Ensure the title is prominent */
   color: #333;
@@ -122,8 +130,10 @@ footer {
   text-align: center;
 }
 
+/* Carousel Styles */
 .carousel-item img {
   max-width: 100%;
+  max-height: 400px; /* Added max-height to restrict image height */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out;
@@ -163,4 +173,24 @@ footer {
 .carousel-control-prev,
 .carousel-control-next {
   z-index: 3; /* Ensure controls are above the overlay */
+}
+
+/* Multi-column layout for content */
+.multi-column-text {
+  column-count: 3; /* Number of columns */
+  column-gap: 20px; /* Space between columns */
+  column-rule: 1px solid #ccc; /* Line between columns */
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .multi-column-text {
+    column-count: 2; /* Fewer columns on smaller screens */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .multi-column-text {
+    column-count: 1; /* Single column on very small screens */
+  }
 }

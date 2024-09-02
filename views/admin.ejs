@@ -10,8 +10,16 @@
   />
   <style>
     /* Ensure the footer is pushed to the bottom */
+    @font-face {
+        font-family: "MyCustomFont";
+        src: url("/MyCustomFont.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+
     body,
     html {
+      font-family: "MyCustomFont", Arial, sans-serif;
       height: 100%;
       margin: 0;
       display: flex;
