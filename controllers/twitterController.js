@@ -1,4 +1,7 @@
 const { TwitterApi } = require("twitter-api-v2");
+const User = require("../models/User");
+const { Product } = require("../models/Product");
+const { Purchase } = require("../models/Purchase");
 
 // Load environment variables
 require("dotenv").config();
@@ -50,9 +53,28 @@ exports.postTweet = async (req, res) => {
       });
     }
 
-    res.redirect("/admin"); // Redirect to the admin page after posting
+    const users = await User.find({});
+    const products = await Product.find({});
+    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+
+    res.render("admin", {
+      users,
+      products,
+      purchases,
+      tweetPosted: true,
+      tweetError: false,
+    }); // Redirect to the admin page after posting
   } catch (error) {
-    console.error("Error posting tweet:", error);
-    res.status(500).send("Failed to post tweet");
+    const users = await User.find({});
+    const products = await Product.find({});
+    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+
+    res.render("admin", {
+      users,
+      products,
+      purchases,
+      tweetPosted: false,
+      tweetError: true,
+    });
   }
 };

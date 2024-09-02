@@ -21,6 +21,52 @@
     .content {
       flex: 1;
     }
+
+    /* Popup container */
+    .popup {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    }
+
+
+    /* Popup content */
+    .popup-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    }
+
+    /* Progress bar container */
+    .progress-bar {
+    width: 100%;
+    height: 5px;
+    background-color: #76c7c0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+    }
+
+    /* Progress bar animation */
+    /* Progress bar animation */
+    .progress {
+    width: 0;
+    height: 100%;
+    background-color: white;
+    transition: width 3s linear;
+    }
+
+
   </style>
   <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -59,7 +105,7 @@
   <!-- Main content wrapper to ensure footer stays at the bottom -->
   <div class="container mt-4 content">
     <h1>Admin Dashboard</h1>
-
+      
     <!-- User Management Section -->
     <section id="user-management" class="mt-5">
       <h2>Manage Users</h2>
@@ -448,7 +494,26 @@
 
   </div>
 
-  
+  <!-- Tweet Success Popup -->
+  <div id="tweetSuccessPopup" class="popup">
+    <div class="popup-content">
+      <p>Your tweet was posted successfully!</p>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Error Popup Container -->
+    <div id="tweetErrorPopup" class="popup" style="background-color: #f44336;">
+        <div class="popup-content">
+            <p>Failed to post tweet. Please try again.</p>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+
 
   <!-- Include the footer partial -->
   <%- include('_footer') %>
@@ -560,6 +625,68 @@
     const width = 800;
     const height = 400;
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        <% if (typeof tweetPosted !== 'undefined' && tweetPosted) { %>
+            showTweetSuccessPopup();
+        <% } else if (typeof tweetError !== 'undefined' && tweetError) { %>
+            showTweetErrorPopup();
+        <% } %>
+    });
+
+    function showTweetSuccessPopup() {
+        const popup = document.getElementById('tweetSuccessPopup');
+        const progress = popup.querySelector('.progress');
+
+        // Reset the progress bar width
+        progress.style.width = '0';
+
+        // Show the popup
+        popup.style.opacity = '1';
+        popup.style.visibility = 'visible';
+
+        // Trigger reflow to ensure the transition occurs
+        progress.offsetWidth; // This forces a reflow, making the transition visible
+
+        // Start the progress bar animation
+        progress.style.width = '100%';
+
+        // Hide the popup after 3 seconds
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.visibility = 'hidden';
+            progress.style.width = '0';
+        }, 3000);
+    }
+
+
+    function showTweetErrorPopup() {
+        const popup = document.getElementById('tweetErrorPopup');
+        const progress = popup.querySelector('.progress');
+
+        // Reset the progress bar width
+        progress.style.width = '0';
+
+        // Show the popup
+        popup.style.opacity = '1';
+        popup.style.visibility = 'visible';
+
+        // Trigger reflow to ensure the transition occurs
+        progress.offsetWidth; // This forces a reflow, making the transition visible
+
+        // Start the progress bar animation
+        progress.style.width = '100%';
+
+        // Hide the popup after 3 seconds
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.visibility = 'hidden';
+            progress.style.width = '0';
+        }, 3000);
+    }
+
+
+
 
     const svg = d3.select("#chart")
         .append("svg")
