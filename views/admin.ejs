@@ -400,7 +400,7 @@
   </div>
   
   <!-- Coupon Management Section -->
-  <section id="coupon-management" class="mt-5">
+<section id="coupon-management" class="mt-5">
     <h2>Manage Coupons</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add New Coupon</button>
     <table class="table table-bordered">
@@ -415,17 +415,32 @@
         <tbody>
             <% coupons.forEach(coupon => { %>
             <tr>
-                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'code', this.innerText)">
+                <td
+                    contenteditable="true"
+                    onblur="updateField('<%= coupon._id %>', 'code', this.innerText)"
+                >
                     <%= coupon.code %>
                 </td>
-                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'discountPercentage', this.innerText)">
+                <td
+                    contenteditable="true"
+                    onblur="updateField('<%= coupon._id %>', 'discountPercentage', this.innerText)"
+                >
                     <%= coupon.discountPercentage %>
                 </td>
-                <td contenteditable="true" onblur="updateField('<%= coupon._id %>', 'expireDate', this.innerText)">
-                    <%= new Date(coupon.expireDate).toLocaleDateString() %>
+                <td>
+                    <input
+                        type="date"
+                        class="form-control"
+                        value="<%= new Date(coupon.expireDate).toISOString().split('T')[0] %>"
+                        onchange="updateField('<%= coupon._id %>', 'expireDate', this.value)"
+                    />
                 </td>
                 <td>
-                    <form action="/admin/delete-coupon" method="POST" style="display: inline">
+                    <form
+                        action="/admin/delete-coupon"
+                        method="POST"
+                        style="display: inline"
+                    >
                         <input type="hidden" name="id" value="<%= coupon._id %>" />
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
@@ -434,7 +449,8 @@
             <% }) %>
         </tbody>
     </table>
-  </section>
+</section>
+
 
   <!-- Add Coupon Modal -->
   <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
@@ -889,23 +905,44 @@
 
 
     function updateField(id, field, value) {
-      fetch(`/admin/update-field`, {
+    // Validation for discountPercentage
+    if (field === 'discountPercentage') {
+        const percentage = parseInt(value, 10);
+        if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+            alert('Discount percentage must be a number between 0 and 100.');
+            return;
+        }
+        value = percentage; // Ensure the value is a valid number
+    }
+
+    // Validation for expireDate
+    if (field === 'expireDate') {
+        const newDate = new Date(value);
+        if (isNaN(newDate.getTime())) {
+            alert('Please enter a valid date.');
+            return;
+        }
+        value = newDate.toISOString(); // Convert the date to a string format suitable for MongoDB
+    }
+
+    fetch(`/admin/update-field`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({ id, field, value }),
-      })
-        .then((response) => {
-          if (!response.ok) {
+    })
+    .then((response) => {
+        if (!response.ok) {
             alert("Error updating field");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("An error occurred while updating the field");
-        });
-    }
+        }
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred while updating the field");
+    });
+}
+
 
     function openUpdateUserModal(
       userId,
