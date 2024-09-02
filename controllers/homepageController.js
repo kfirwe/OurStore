@@ -1,4 +1,5 @@
 const { Product } = require("../models/Product");
+require("dotenv").config();
 
 exports.getHomePage = async (req, res) => {
   try {
@@ -41,9 +42,12 @@ exports.getHomePage = async (req, res) => {
     const products = await Product.find(filters);
     const UnFilteredProducts = await Product.find({});
 
+    const weatherApiKey = process.env.WEATHER_API_KEY;
+
     res.render("homePage", {
       isAdmin: req.session.user.role === "admin",
       username: req.session.user.username,
+      weatherApiKey,
       UnFilteredProducts,
       products: products,
       filters: req.query, // Pass the filters back to the template to maintain filter values
