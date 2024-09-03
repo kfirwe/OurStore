@@ -19,24 +19,21 @@ const upload = multer({ storage: storage });
 // Example route using the middleware
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
   try {
+    const tab = req.query.tab || "users"; // Default to 'users' if no tab is specified
     const users = await User.find({});
     const products = await Product.find({});
-    const purchases = await Purchase.find().sort({ Date: -1 }).lean(); // Fetch purchases sorted by Date (latest first)
-    const coupons = await Coupon.find({}).sort({ expireDate: 1 }); // Fetch coupons sorted by expireDate (soonest first)
+    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+    const coupons = await Coupon.find({}).sort({ expireDate: 1 });
 
-    res.render("admin", { users, products, purchases, coupons });
-    await createLog(
-      "INFO",
-      req.session.user.username,
-      "Admin dashboard accessed."
-    );
+    res.render("admin", {
+      users,
+      products,
+      purchases,
+      coupons,
+      tab, // Pass the active tab to the view
+    });
   } catch (error) {
     console.error(error);
-    await createLog(
-      "ERROR",
-      req.session.user.username,
-      "Failed to load admin dashboard."
-    );
     res.status(500).send("Server error");
   }
 });
@@ -328,7 +325,16 @@ router.get("/admin/find-purchases", async (req, res) => {
     const users = await User.find({});
     const products = await Product.find({});
     const purchases = await Purchase.find({ userName: userName });
-    res.render("admin", { users, products, purchases });
+    const coupons = await Coupon.find({}).sort({ expireDate: 1 });
+
+    res.render("admin", {
+      users,
+      products,
+      purchases,
+      coupons,
+      tab: "purchases", // Ensure the purchases tab is active
+    });
+
     await createLog(
       "INFO",
       req.session.user.username,

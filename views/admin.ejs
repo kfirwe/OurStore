@@ -168,30 +168,31 @@
     <h1>Admin Dashboard</h1>
     <ul class="nav nav-tabs" id="adminTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
+            <a class="nav-link <%= tab === 'users' ? 'active' : '' %>" id="users-tab" href="/admin?tab=users">Users</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="false">Products</button>
+            <a class="nav-link <%= tab === 'products' ? 'active' : '' %>" id="products-tab" href="/admin?tab=products">Products</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons" type="button" role="tab" aria-controls="coupons" aria-selected="false">Coupons</button>
+            <a class="nav-link <%= tab === 'coupons' ? 'active' : '' %>" id="coupons-tab" href="/admin?tab=coupons">Coupons</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab" aria-controls="purchases" aria-selected="false">Purchases</button>
+            <a class="nav-link <%= tab === 'purchases' ? 'active' : '' %>" id="purchases-tab" href="/admin?tab=purchases">Purchases</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false">Logs</button>
+            <a class="nav-link <%= tab === 'logs' ? 'active' : '' %>" id="logs-tab" href="/admin?tab=logs">Logs</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graph" type="button" role="tab" aria-controls="graph" aria-selected="false">Graph</button>
+            <a class="nav-link <%= tab === 'graph' ? 'active' : '' %>" id="graph-tab" href="/admin?tab=graph">Graph</a>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="twitter-tab" data-bs-toggle="tab" data-bs-target="#twitter" type="button" role="tab" aria-controls="twitter" aria-selected="false">Twitter Post</button>
+            <a class="nav-link <%= tab === 'twitter' ? 'active' : '' %>" id="twitter-tab" href="/admin?tab=twitter">Twitter Post</a>
         </li>
-      </ul>
+    </ul>
+    
       
     
-      <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+      <div class="tab-pane fade <%= tab === 'users' ? 'show active' : '' %>" id="users" role="tabpanel" aria-labelledby="users-tab">
     <!-- User Management Section -->
     <section id="user-management" class="mt-5">
         <h2>Manage Users</h2>
@@ -271,7 +272,7 @@
     </section>
   </div>
 
-  <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+  <div class="tab-pane fade <%= tab === 'products' ? 'show active' : '' %>" id="products" role="tabpanel" aria-labelledby="products-tab">
     <!-- Product Management Section -->
     <section id="product-management" class="mt-5">
         <h2>Manage Products</h2>
@@ -483,7 +484,7 @@
     </div>
   </div>
   
-  <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
+  <div class="tab-pane fade <%= tab === 'logs' ? 'show active' : '' %>" id="logs" role="tabpanel" aria-labelledby="logs-tab">
 <!-- Log Management Section -->
 <section id="log-management" class="mt-5">
     <h2>System Logs</h2>
@@ -511,7 +512,7 @@
 </div>
 
 
-<div class="tab-pane fade" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
+<div class="tab-pane fade <%= tab === 'coupons' ? 'show active' : '' %>" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
   <!-- Coupon Management Section -->
   <section id="coupon-management" class="mt-5">
     <h2>Manage Coupons</h2>
@@ -599,7 +600,7 @@
       </div>
   </div>
 
-  <div class="tab-pane fade" id="purchases" role="tabpanel" aria-labelledby="purchases-tab">
+  <div class="tab-pane fade <%= tab === 'purchases' ? 'show active' : '' %>" id="purchases" role="tabpanel" aria-labelledby="purchases-tab">
   <section id="purchase-management" class="mt-5">
     <h2>Recent Purchases</h2>
 
@@ -610,7 +611,7 @@
             <button class="btn btn-primary" type="submit">Search</button>
         </div>
         <!-- Reset Button -->
-        <a href="/admin" onclick="resetUserName()" class="btn btn-secondary">Reset</a>
+        <a href="/admin?tab=purchases" onclick="resetUserName()" class="btn btn-secondary">Reset</a>
     </form>
 
     <!-- Sort Dropdown -->
@@ -670,7 +671,7 @@
 </section>
 </div>
 
-<div class="tab-pane fade" id="graph" role="tabpanel" aria-labelledby="graph-tab">
+<div class="tab-pane fade <%= tab === 'graph' ? 'show active' : '' %>" id="graph" role="tabpanel" aria-labelledby="graph-tab">
 <div class="container mt-5">
     <h2>Purchase Trends</h2>
     <div class="row mb-3">
@@ -689,7 +690,7 @@
 </div>
 </div>
 
-<div class="tab-pane fade" id="twitter" role="tabpanel" aria-labelledby="twitter-tab">
+<div class="tab-pane fade <%= tab === 'twitter' ? 'show active' : '' %>" id="twitter" role="tabpanel" aria-labelledby="twitter-tab">
 <section id="tweet-management" class="mt-5">
     <h2>Post a Tweet</h2>
     <form action="/admin/post-tweet" method="POST" enctype="multipart/form-data">
