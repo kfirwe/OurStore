@@ -118,6 +118,13 @@
         background-color: #555;
     }
 
+    .tab-pane {
+        display: none; /* Hide all sections initially */
+    }
+
+    .tab-pane.active {
+        display: block; /* Show the active section */
+    }
 
 
 
@@ -159,7 +166,32 @@
   <!-- Main content wrapper to ensure footer stays at the bottom -->
   <div class="container mt-4 content">
     <h1>Admin Dashboard</h1>
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="false">Products</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons" type="button" role="tab" aria-controls="coupons" aria-selected="false">Coupons</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab" aria-controls="purchases" aria-selected="false">Purchases</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false">Logs</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graph" type="button" role="tab" aria-controls="graph" aria-selected="false">Graph</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="twitter-tab" data-bs-toggle="tab" data-bs-target="#twitter" type="button" role="tab" aria-controls="twitter" aria-selected="false">Twitter Post</button>
+        </li>
+      </ul>
       
+    
+      <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
     <!-- User Management Section -->
     <section id="user-management" class="mt-5">
         <h2>Manage Users</h2>
@@ -237,7 +269,9 @@
       </table>
     </div>
     </section>
+  </div>
 
+  <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
     <!-- Product Management Section -->
     <section id="product-management" class="mt-5">
         <h2>Manage Products</h2>
@@ -335,6 +369,7 @@
       </table>
       </div>
     </section>
+</div>
   
     <!-- Add Product Modal -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
@@ -448,6 +483,7 @@
     </div>
   </div>
   
+  <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
 <!-- Log Management Section -->
 <section id="log-management" class="mt-5">
     <h2>System Logs</h2>
@@ -472,10 +508,10 @@
         <button id="nextPageBtn" class="btn btn-secondary">Next</button>
     </div>
 </section>
+</div>
 
 
-
-
+<div class="tab-pane fade" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
   <!-- Coupon Management Section -->
   <section id="coupon-management" class="mt-5">
     <h2>Manage Coupons</h2>
@@ -529,7 +565,7 @@
     </table>
     </div>
 </section>
-
+</div>
 
   <!-- Add Coupon Modal -->
   <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
@@ -563,6 +599,7 @@
       </div>
   </div>
 
+  <div class="tab-pane fade" id="purchases" role="tabpanel" aria-labelledby="purchases-tab">
   <section id="purchase-management" class="mt-5">
     <h2>Recent Purchases</h2>
 
@@ -631,7 +668,9 @@
     </table>
 </div>
 </section>
+</div>
 
+<div class="tab-pane fade" id="graph" role="tabpanel" aria-labelledby="graph-tab">
 <div class="container mt-5">
     <h2>Purchase Trends</h2>
     <div class="row mb-3">
@@ -648,7 +687,9 @@
     </div>
     <div id="chart"></div>
 </div>
+</div>
 
+<div class="tab-pane fade" id="twitter" role="tabpanel" aria-labelledby="twitter-tab">
 <section id="tweet-management" class="mt-5">
     <h2>Post a Tweet</h2>
     <form action="/admin/post-tweet" method="POST" enctype="multipart/form-data">
@@ -663,7 +704,7 @@
       <button type="submit" class="btn btn-primary">Post Tweet</button>
     </form>
   </section>
-    
+</div>
 
   </div>
 
