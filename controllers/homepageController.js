@@ -1,4 +1,5 @@
 const { Product } = require("../models/Product");
+const createLog = require("../helpers/logHelper");
 require("dotenv").config();
 
 exports.getHomePage = async (req, res) => {
@@ -52,8 +53,19 @@ exports.getHomePage = async (req, res) => {
       products: products,
       filters: req.query, // Pass the filters back to the template to maintain filter values
     });
+
+    await createLog(
+      "INFO",
+      req.session.user.username,
+      "Home page rendered successfully."
+    );
   } catch (err) {
     console.error("Error fetching products:", err);
+    await createLog(
+      "ERROR",
+      req.session.user.username,
+      "Failed to render home page."
+    );
     res.status(500).send("Server Error");
   }
 };

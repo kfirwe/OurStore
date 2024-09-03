@@ -320,11 +320,6 @@
             window.location.href = "/admin"; // Redirects the user to the /admin page
         }
 
-        function handleAddToCart(prodId) {
-            console.log("Add to cart clicked for product ID:", prodId);
-            // You can implement the logic to add the product to the cart here
-        }
-
         function updatePricePlaceholder() {
             const priceCondition = document.getElementById("priceCondition").value;
             const filterPrice = document.getElementById("filterPrice");
@@ -368,6 +363,24 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         });
+        function handleAddToCart(prodId) {
+          fetch('/add-to-cart', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userName: '<%= username %>', prodId: prodId }),
+          })
+            .then(response => response.json())  // Expecting JSON response
+            .then(data => {
+              alert(data.message); // Show a success message to the user
+            })
+            .catch(error => {
+              console.error('Error adding to cart:', error);
+              alert('Error adding to cart');
+            });
+        }
+
     </script>
 </body>
 

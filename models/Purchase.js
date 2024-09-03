@@ -1,17 +1,11 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
+const { productSchema } = require("./Product");
 
+// Extend the product schema with quantityPurchased field
 const purchaseProductSchema = new mongoose.Schema({
-  prodId: { type: String, required: true },
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  category: { type: String, required: true },
-  company: { type: String, required: true },
-  gender: { type: String, required: true },
-  amount: { type: Number, required: true }, // Store the amount in stock
-  quantityPurchased: { type: Number, required: true }, // Store the quantity purchased
-  image: { type: Buffer, required: true }, // Store image as binary data
-  imageType: { type: String, required: true }, // Store the image MIME type
+  ...productSchema.obj, // Spread the fields of the product schema
+  quantityPurchased: { type: Number, required: true }, // Add the quantityPurchased field
 });
 
 const purchaseSchema = new mongoose.Schema({

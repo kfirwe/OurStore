@@ -74,6 +74,52 @@
     transition: width 3s linear;
     }
 
+    /* Custom styles for the log table */
+    .log-table-container {
+        max-height: 300px; /* Adjust this height as needed */
+        overflow-y: auto;
+        border: 1px solid #ddd; /* Optional: Add a border around the container */
+        padding: 10px; /* Optional: Add some padding */
+        background-color: #f9f9f9; /* Optional: Add a background color */
+    }
+
+    .log-table-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .log-table-container::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+
+    .log-table-container::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    /* Custom styles for tables with scrollbars */
+    .scrollable-table-container {
+        max-height: 300px; /* Adjust this height as needed */
+        overflow-y: auto;
+        border: 1px solid #ddd; /* Optional: Add a border around the container */
+        padding: 10px; /* Optional: Add some padding */
+        background-color: #f9f9f9; /* Optional: Add a background color */
+    }
+
+    .scrollable-table-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-table-container::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+
+    .scrollable-table-container::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+
+
 
   </style>
   <!-- D3.js -->
@@ -116,9 +162,10 @@
       
     <!-- User Management Section -->
     <section id="user-management" class="mt-5">
-      <h2>Manage Users</h2>
-      <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add New User</button>
-      <table class="table table-bordered">
+        <h2>Manage Users</h2>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add New User</button>
+        <div class="scrollable-table-container">
+           <table class="table table-bordered">
         <thead>
           <tr>
             <th>Username</th>
@@ -188,13 +235,15 @@
           <% }) %>
         </tbody>
       </table>
+    </div>
     </section>
 
     <!-- Product Management Section -->
     <section id="product-management" class="mt-5">
-      <h2>Manage Products</h2>
-      <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
-      <table class="table table-bordered">
+        <h2>Manage Products</h2>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
+        <div class="scrollable-table-container">
+           <table class="table table-bordered">
         <thead>
           <tr>
             <th>Product ID</th>
@@ -284,6 +333,7 @@
             <% }) %>
           </tbody>          
       </table>
+      </div>
     </section>
   
     <!-- Add Product Modal -->
@@ -343,7 +393,6 @@
   
   
     <!-- Edit Product Modal -->
-    <!-- Edit Product Modal -->
 <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -399,11 +448,40 @@
     </div>
   </div>
   
+<!-- Log Management Section -->
+<section id="log-management" class="mt-5">
+    <h2>System Logs</h2>
+    <div class="log-table-container" style="max-height: 300px; overflow-y: auto;">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Username</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="logTableBody">
+                <!-- Logs will be injected here -->
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between mt-2">
+        <button id="prevPageBtn" class="btn btn-secondary" disabled>Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPageBtn" class="btn btn-secondary">Next</button>
+    </div>
+</section>
+
+
+
+
   <!-- Coupon Management Section -->
-<section id="coupon-management" class="mt-5">
+  <section id="coupon-management" class="mt-5">
     <h2>Manage Coupons</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add New Coupon</button>
-    <table class="table table-bordered">
+    <div class="scrollable-table-container">
+       <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Coupon Code</th>
@@ -449,6 +527,7 @@
             <% }) %>
         </tbody>
     </table>
+    </div>
 </section>
 
 
@@ -507,7 +586,7 @@
             <option value="user_desc">User (Z-A)</option>
         </select>
     </div>
-
+    <div class="scrollable-table-container">
     <!-- Purchases Table -->
     <table class="table table-bordered">
         <thead>
@@ -550,6 +629,7 @@
             <% }) %>
         </tbody>
     </table>
+</div>
 </section>
 
 <div class="container mt-5">
@@ -719,13 +799,70 @@
     const height = 400;
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
 
+    let currentPage = 1;
+    const limit = 20;
+
     document.addEventListener("DOMContentLoaded", function() {
+        // Existing code that runs on DOMContentLoaded
         <% if (typeof tweetPosted !== 'undefined' && tweetPosted) { %>
             showTweetSuccessPopup();
         <% } else if (typeof tweetError !== 'undefined' && tweetError) { %>
             showTweetErrorPopup();
         <% } %>
+
+        // Add the new code for fetching logs
+        fetchLogs(currentPage);
+
+        document.getElementById("prevPageBtn").addEventListener("click", function() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchLogs(currentPage);
+            }
+        });
+
+        document.getElementById("nextPageBtn").addEventListener("click", function() {
+            currentPage++;
+            fetchLogs(currentPage);
+        });
     });
+
+
+    function fetchLogs(page) {
+        fetch(`/admin/logs?page=${page}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                updateLogTable(data.logs);
+                updatePagination(data.currentPage, data.totalPages);
+            })
+            .catch(error => {
+                console.error("Error fetching logs:", error);
+            });
+    }
+
+    function updateLogTable(logs) {
+        const logTableBody = document.getElementById("logTableBody");
+        logTableBody.innerHTML = "";
+
+        logs.forEach(log => {
+            const row = `
+                <tr>
+                    <td>${new Date(log.Date).toLocaleString()}</td>
+                    <td>${log.type}</td>
+                    <td>${log.username}</td>
+                    <td>${log.message}</td>
+                </tr>
+            `;
+            logTableBody.insertAdjacentHTML("beforeend", row);
+        });
+    }
+
+    function updatePagination(currentPage, totalPages) {
+        document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
+        
+        document.getElementById("prevPageBtn").disabled = currentPage === 1;
+        document.getElementById("nextPageBtn").disabled = currentPage === totalPages;
+    }
+
 
     function showTweetSuccessPopup() {
         const popup = document.getElementById('tweetSuccessPopup');

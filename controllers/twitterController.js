@@ -2,6 +2,7 @@ const { TwitterApi } = require("twitter-api-v2");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
+const createLog = require("../helpers/logHelper"); // Import the log helper
 
 // Load environment variables
 require("dotenv").config();
@@ -16,23 +17,11 @@ const client = new TwitterApi({
 
 const rwClient = client.readWrite;
 
-// exports.postTweet = async (req, res) => {
-//     try {
-//       const { tweetText } = req.body;
-
-//       await client.v2.tweet({ text: tweetText });
-//       res.redirect("/admin"); // Redirect to the admin page after posting
-//     } catch (error) {
-//       console.error("Error posting tweet:", error);
-//       res.status(500).send("Failed to post tweet");
-//     }
-//   };
-
 exports.postTweet = async (req, res) => {
   try {
     const { tweetText } = req.body;
 
-    // If an image is uploaded
+    // Check if an image is uploaded
     if (req.file) {
       // Upload the image to Twitter
       const mediaId = await rwClient.v1.uploadMedia(req.file.buffer, {
@@ -46,11 +35,23 @@ exports.postTweet = async (req, res) => {
           media_ids: [mediaId],
         },
       });
+
+      await createLog(
+        "INFO",
+        req.session.user.username,
+        "Tweet posted with an image."
+      );
     } else {
       // Post the tweet without an image
       await rwClient.v2.tweet({
         text: tweetText,
       });
+
+      await createLog(
+        "INFO",
+        req.session.user.username,
+        "Tweet posted without an image."
+      );
     }
 
     const users = await User.find({});
@@ -63,8 +64,16 @@ exports.postTweet = async (req, res) => {
       purchases,
       tweetPosted: true,
       tweetError: false,
-    }); // Redirect to the admin page after posting
+    });
   } catch (error) {
+    console.error("Error posting tweet:", error);
+
+    await createLog(
+      "ERROR",
+      req.session.user.username,
+      "Failed to post tweet."
+    );
+
     const users = await User.find({});
     const products = await Product.find({});
     const purchases = await Purchase.find().sort({ Date: -1 }).lean();
