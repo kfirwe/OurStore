@@ -197,6 +197,40 @@
     <section id="user-management" class="mt-5">
         <h2>Manage Users</h2>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add New User</button>
+        <!-- Filter Form -->
+        <form action="/admin/filter-users" method="GET" class="mb-3">
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="username" placeholder="Username" value="<%= typeof filters.username !== 'undefined' ? filters.username : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="email" placeholder="Email" value="<%= typeof filters.email !== 'undefined' ? filters.email : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" name="phone" placeholder="Phone" value="<%= typeof filters.phone !== 'undefined' ? filters.phone : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="city" placeholder="City" value="<%= typeof filters.city !== 'undefined' ? filters.city : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="country" placeholder="Country" value="<%= typeof filters.country !== 'undefined' ? filters.country : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="role">
+                        <option value="">All Roles</option>
+                        <option value="customer" <%= filters.role === 'customer' ? 'selected' : '' %>>Customer</option>
+                        <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="/admin?tab=users" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+        </form>
+
         <div class="scrollable-table-container">
            <table class="table table-bordered">
         <thead>
@@ -277,6 +311,41 @@
     <section id="product-management" class="mt-5">
         <h2>Manage Products</h2>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
+        <!-- Filter form -->
+        <form action="/admin/filter-products" method="GET" class="mb-4">
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="prodId" placeholder="Product ID" value="<%= typeof filters.prodId !== 'undefined' ? filters.prodId : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="name" placeholder="Name" value="<%= typeof filters.name !== 'undefined' ? filters.name : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" name="price" placeholder="Price" value="<%= typeof filters.price !== 'undefined' ? filters.price : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="category" placeholder="Category" value="<%= typeof filters.category !== 'undefined' ? filters.category : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="company" placeholder="Company" value="<%= typeof filters.company !== 'undefined' ? filters.company : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <select name="gender" class="form-select">
+                        <option value="">All Genders</option>
+                        <option value="male" <%= filters.gender === 'male' ? 'selected' : '' %>>Male</option>
+                        <option value="female" <%= filters.gender === 'female' ? 'selected' : '' %>>Female</option>
+                        <option value="unisex" <%= filters.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" name="amount" placeholder="Amount" value="<%= typeof filters.amount !== 'undefined' ? filters.amount : '' %>">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="/admin?tab=products" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+        </form>
         <div class="scrollable-table-container">
            <table class="table table-bordered">
         <thead>
@@ -485,31 +554,71 @@
   </div>
   
   <div class="tab-pane fade <%= tab === 'logs' ? 'show active' : '' %>" id="logs" role="tabpanel" aria-labelledby="logs-tab">
-<!-- Log Management Section -->
-<section id="log-management" class="mt-5">
-    <h2>System Logs</h2>
-    <div class="log-table-container" style="max-height: 300px; overflow-y: auto;">
-        <table class="table table-bordered">
+    <!-- Log Management Section -->
+    <section id="log-management" class="mt-5">
+        <h2>System Logs</h2>
+
+        <!-- Filter Form -->
+        <form action="/admin/filter-logs" method="GET" class="mb-4">
+            <div class="row">
+              <div class="col-md-3">
+                <input type="date" class="form-control" name="date" placeholder="Date" value="<%= typeof filters.date !== 'undefined' ? filters.date : '' %>">
+              </div>
+              <div class="col-md-2">
+                <select name="type" class="form-select">
+                  <option value="">All Types</option>
+                  <option value="INFO" <%= filters.type === 'INFO' ? 'selected' : '' %>>INFO</option>
+                  <option value="ERROR" <%= filters.type === 'ERROR' ? 'selected' : '' %>>ERROR</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control" name="username" placeholder="Username" value="<%= typeof filters.username !== 'undefined' ? filters.username : '' %>">
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control" name="message" placeholder="Message" value="<%= typeof filters.message !== 'undefined' ? filters.message : '' %>">
+              </div>
+              <div class="col-md-1">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="/admin?tab=logs" class="btn btn-secondary">Reset</a>
+              </div>
+            </div>
+          </form>
+          
+  
+
+        <!-- Logs Table -->
+        <div class="log-table-container">
+            <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Username</th>
-                    <th>Message</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Username</th>
+                <th>Message</th>
                 </tr>
             </thead>
             <tbody id="logTableBody">
-                <!-- Logs will be injected here -->
+                <% logs.forEach(log => { %>
+                <tr>
+                <td><%= new Date(log.Date).toLocaleString() %></td>
+                <td><%= log.type %></td>
+                <td><%= log.username %></td>
+                <td><%= log.message %></td>
+                </tr>
+                <% }) %>
             </tbody>
-        </table>
-    </div>
-    <div class="d-flex justify-content-between mt-2">
-        <button id="prevPageBtn" class="btn btn-secondary" disabled>Previous</button>
-        <span id="pageInfo"></span>
-        <button id="nextPageBtn" class="btn btn-secondary">Next</button>
-    </div>
-</section>
+            </table>
+        </div>
+  
+
+        <div class="d-flex justify-content-between mt-2">
+            <button id="prevPageBtn" class="btn btn-secondary" disabled>Previous</button>
+            <span id="pageInfo"></span>
+            <button id="nextPageBtn" class="btn btn-secondary">Next</button>
+        </div>
+    </section>
 </div>
+
 
 
 <div class="tab-pane fade <%= tab === 'coupons' ? 'show active' : '' %>" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
@@ -517,6 +626,21 @@
   <section id="coupon-management" class="mt-5">
     <h2>Manage Coupons</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add New Coupon</button>
+    <form action="/admin/filter-coupons" method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="code" placeholder="Coupon Code" value="<%= typeof filters.code !== 'undefined' ? filters.code : '' %>">
+            </div>
+            <div class="col-md-4">
+                <input type="number" class="form-control" name="discountPercentage" placeholder="Discount Percentage" value="<%= typeof filters.discountPercentage !== 'undefined' ? filters.discountPercentage : '' %>">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="/admin?tab=coupons" class="btn btn-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+    
     <div class="scrollable-table-container">
        <table class="table table-bordered">
         <thead>
@@ -856,30 +980,36 @@
         fetchLogs(currentPage);
 
         document.getElementById("prevPageBtn").addEventListener("click", function() {
-            if (currentPage > 1) {
-                currentPage--;
-                fetchLogs(currentPage);
-            }
+        if (currentPage > 1) {
+            currentPage--;
+            fetchLogs(currentPage); // Fetch the previous page with filters
+        }
         });
 
         document.getElementById("nextPageBtn").addEventListener("click", function() {
-            currentPage++;
-            fetchLogs(currentPage);
+        currentPage++;
+        fetchLogs(currentPage); // Fetch the next page with filters
         });
+
     });
 
 
     function fetchLogs(page) {
-        fetch(`/admin/logs?page=${page}&limit=${limit}`)
+        const params = new URLSearchParams(window.location.search); // Get the current URL params (filters)
+        params.set('page', page); // Set the page param
+        params.set('limit', limit); // Set the limit param
+
+        fetch(`/admin/logs?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
-                updateLogTable(data.logs);
-                updatePagination(data.currentPage, data.totalPages);
+            updateLogTable(data.logs);
+            updatePagination(data.currentPage, data.totalPages);
             })
             .catch(error => {
-                console.error("Error fetching logs:", error);
+            console.error("Error fetching logs:", error);
             });
     }
+
 
     function updateLogTable(logs) {
         const logTableBody = document.getElementById("logTableBody");
