@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>By A Thread | Clothing Store</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "MyCustomFont";
+        src: url("/MyCustomFont.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body,
+      html {
+        font-family: "MyCustomFont", Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        /* font-family: Arial, sans-serif; */
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Full-height layout to ensure footer stays at bottom */
+      .content {
+        flex: 1;
+      }
+
+      /* Navbar styles */
+      .navbar {
+        background-color: #333;
+      }
+
+      .navbar a {
+        color: white;
+        padding: 14px 20px;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .navbar a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+
+      /* Disable Profile and Cart links */
+      .navbar .disabled {
+        color: grey;
+        pointer-events: none;
+      }
+
+      /* Slider */
+      .slider {
+        position: relative;
+        height: 80vh;
+        overflow: hidden;
+      }
+
+      .slider img,
+      .slider video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .slider .slides {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        animation: slide 12s infinite;
+      }
+
+      @keyframes slide {
+        0% {
+          transform: translateX(0);
+        }
+        33% {
+          transform: translateX(-100%);
+        }
+        66% {
+          transform: translateX(-200%);
+        }
+      }
+
+      .slider .slide {
+        min-width: 100%;
+        transition: opacity 1s ease;
+      }
+
+      .centered-buttons {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .centered-buttons button {
+        background-color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 24px;
+        cursor: pointer;
+        margin: 10px;
+        transition: transform 0.3s;
+      }
+
+      .centered-buttons button:hover {
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
+          By A Thread
+      </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <!-- Homepage Link -->
+            <li class="nav-item">
+              <a class="nav-link" href="/homePage">Homepage</a>
+            </li>
+
+            <!-- Show "Login" if not logged in, otherwise show "Logout" -->
+            <% if (!username) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+            <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">Logout</a>
+              </li>
+            <% } %>
+
+            <!-- Disabled Profile and Cart Links if not logged in -->
+            <li class="nav-item">
+              <a class="nav-link <%= !username ? 'disabled' : '' %>" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= !username ? 'disabled' : '' %>" href="#">Cart</a>
+            </li>
+
+            <!-- Show Admin Tools if user is an admin -->
+            <% if (isAdmin) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin">Admin Tools</a>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content wrapper -->
+    <div class="content">
+      <!-- Slider Section -->
+      <div class="slider">
+        <div class="slides">
+          <!-- Slide 1 -->
+          <div class="slide">
+            <img src="1.jpg" alt="Image 1" />
+          </div>
+          <!-- Slide 2 -->
+          <div class="slide">
+            <video src="2.mp4" autoplay muted loop></video>
+          </div>
+          <!-- Slide 3 -->
+          <div class="slide">
+            <img src="3.png" alt="Image 3" />
+          </div>
+          <!-- Slide 4 -->
+          <div class="slide">
+            <img src="4.png" alt="Image 4" />
+          </div>
+        </div>
+
+        <!-- Centered Buttons -->
+        <div class="centered-buttons">
+          <button onclick="redirectToFilteredPage('male')">Man</button>
+          <button onclick="redirectToFilteredPage('female')">Woman</button>
+          <button onclick="redirectToFilteredPage('unisex')">Unisex</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('_footer') %>
+
+    <script>
+      function redirectToFilteredPage(gender) {
+        // Redirect to the home page with the selected gender filter
+        window.location.href = `/homePage?gender=${gender}`;
+      }
+
+      function handleLogout() {
+        // Perform logout operation
+        fetch('/logout', {
+          method: 'GET',
+          credentials: 'same-origin'
+        })
+        .then(response => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          }
+        })
+        .catch(error => {
+          console.error('Error during logout:', error);
+          alert('An error occurred while logging out.');
+        });
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

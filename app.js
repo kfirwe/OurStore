@@ -51,6 +51,18 @@ app.use(express.static(path.join(__dirname, "views")));
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
 app.get("/", (req, res) => {
+  const username = req.session.user ? req.session.user.username : null;
+  const isAdmin = req.session.user && req.session.user.role === "admin";
+
+  res.render("LandingPage", {
+    username, // Pass username to the view
+    isAdmin, // Pass isAdmin to the view
+  });
+});
+
+app.get("/login", (req, res) => {
+  // Store the current filters in session before login
+  req.session.previousFilters = req.query; // Store filters in session
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
@@ -59,7 +71,7 @@ app.get("/signup", (req, res) => {
 });
 
 // Route to handle the home page
-app.get("/homePage", ensureAuthenticated, homepageController.getHomePage);
+app.get("/homePage", homepageController.getHomePage);
 
 app.use("/", loginRoutes);
 app.use("/", cartRoutes);

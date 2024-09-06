@@ -34,6 +34,8 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
       logs,
       tab, // Pass the active tab to the view
       filters: {},
+      username: req.session.user ? req.session.user.username : null, // Pass username from session or null
+      isAdmin: req.session.user && req.session.user.role === "admin", // Check if user is admin
     });
   } catch (error) {
     console.error(error);
@@ -322,40 +324,47 @@ router.post(
 );
 
 // Route to find purchases by username
-router.get("/admin/find-purchases", async (req, res) => {
-  const userName = req.query.userName;
-  try {
-    const logs = await Log.find({}).sort({ Date: -1 });
-    const users = await User.find({});
-    const products = await Product.find({});
-    const purchases = await Purchase.find({ userName: userName });
-    const coupons = await Coupon.find({}).sort({ expireDate: 1 });
+router.get(
+  "/admin/find-purchases",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const userName = req.query.userName;
+    try {
+      const logs = await Log.find({}).sort({ Date: -1 });
+      const users = await User.find({});
+      const products = await Product.find({});
+      const purchases = await Purchase.find({ userName: userName });
+      const coupons = await Coupon.find({}).sort({ expireDate: 1 });
 
-    res.render("admin", {
-      users,
-      products,
-      purchases,
-      coupons,
-      logs,
-      tab: "purchases", // Ensure the purchases tab is active
-      filters: {},
-    });
+      res.render("admin", {
+        users,
+        products,
+        purchases,
+        coupons,
+        logs,
+        tab: "purchases", // Ensure the purchases tab is active
+        filters: {},
+        username: req.session.user ? req.session.user.username : null, // Pass the username
+        isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
+      });
 
-    await createLog(
-      "INFO",
-      req.session.user.username,
-      `Purchases retrieved for user ${userName}.`
-    );
-  } catch (error) {
-    console.error("Error finding purchases:", error);
-    await createLog(
-      "ERROR",
-      req.session.user.username,
-      `Failed to find purchases for user ${userName}.`
-    );
-    res.status(500).send("Server Error");
+      await createLog(
+        "INFO",
+        req.session.user.username,
+        `Purchases retrieved for user ${userName}.`
+      );
+    } catch (error) {
+      console.error("Error finding purchases:", error);
+      await createLog(
+        "ERROR",
+        req.session.user.username,
+        `Failed to find purchases for user ${userName}.`
+      );
+      res.status(500).send("Server Error");
+    }
   }
-});
+);
 
 // Purchase data route for charts
 router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
@@ -553,143 +562,171 @@ router.get("/admin/logs", ensureAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
-router.get("/admin/filter-users", async (req, res) => {
-  const { username, email, phone, city, country, role } = req.query;
+router.get(
+  "/admin/filter-users",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { username, email, phone, city, country, role } = req.query;
 
-  let query = {};
+    let query = {};
 
-  if (username) query.username = new RegExp(username, "i"); // Case-insensitive search
-  if (email) query.email = new RegExp(email, "i");
-  if (phone) query.phone = new RegExp(phone, "i");
-  if (city) query.city = new RegExp(city, "i");
-  if (country) query.country = new RegExp(country, "i");
-  if (role) query.role = role;
+    if (username) query.username = new RegExp(username, "i"); // Case-insensitive search
+    if (email) query.email = new RegExp(email, "i");
+    if (phone) query.phone = new RegExp(phone, "i");
+    if (city) query.city = new RegExp(city, "i");
+    if (country) query.country = new RegExp(country, "i");
+    if (role) query.role = role;
 
-  try {
-    const logs = await Log.find({}).sort({ Date: -1 });
-    const users = await User.find(query);
-    const products = await Product.find({});
-    const coupons = await Coupon.find({});
-    const purchases = await Purchase.find({});
+    try {
+      const logs = await Log.find({}).sort({ Date: -1 });
+      const users = await User.find(query);
+      const products = await Product.find({});
+      const coupons = await Coupon.find({});
+      const purchases = await Purchase.find({});
 
-    res.render("admin", {
-      users,
-      products,
-      coupons,
-      purchases,
-      logs,
-      tab: "users",
-      filters: req.query,
-    });
-  } catch (error) {
-    console.error("Error filtering users:", error);
-    res.status(500).send("Server Error");
+      res.render("admin", {
+        users,
+        products,
+        coupons,
+        purchases,
+        logs,
+        tab: "users",
+        filters: req.query,
+        username: req.session.user ? req.session.user.username : null, // Pass the username
+        isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
+      });
+    } catch (error) {
+      console.error("Error filtering users:", error);
+      res.status(500).send("Server Error");
+    }
   }
-});
+);
 
-router.get("/admin/filter-products", async (req, res) => {
-  const { prodId, name, price, category, company, gender, amount } = req.query;
+router.get(
+  "/admin/filter-products",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { prodId, name, price, category, company, gender, amount } =
+      req.query;
 
-  let query = {};
+    let query = {};
 
-  if (prodId) query.prodId = new RegExp(prodId, "i");
-  if (name) query.name = new RegExp(name, "i");
-  if (price) query.price = price; // You might want to add a price range check here if needed
-  if (category) query.category = category;
-  if (company) query.company = new RegExp(company, "i");
-  if (gender) query.gender = gender;
-  if (amount) query.amount = amount;
+    if (prodId) query.prodId = new RegExp(prodId, "i");
+    if (name) query.name = new RegExp(name, "i");
+    if (price) query.price = price;
+    if (category) query.category = category;
+    if (company) query.company = new RegExp(company, "i");
+    if (gender) query.gender = gender;
+    if (amount) query.amount = amount;
 
-  try {
-    const logs = await Log.find({}).sort({ Date: -1 });
-    const users = await User.find({});
-    const products = await Product.find(query); // Filtered products
-    const purchases = await Purchase.find({});
-    const coupons = await Coupon.find({});
+    try {
+      const logs = await Log.find({}).sort({ Date: -1 });
+      const users = await User.find({});
+      const products = await Product.find(query);
+      const purchases = await Purchase.find({});
+      const coupons = await Coupon.find({});
 
-    // Pass the filters back to the view to maintain form state
-    res.render("admin", {
-      users,
-      products,
-      purchases,
-      coupons,
-      logs,
-      tab: "products",
-      filters: req.query,
-    });
-  } catch (error) {
-    console.error("Error filtering products:", error);
-    res.status(500).send("Server Error");
+      res.render("admin", {
+        users,
+        products,
+        purchases,
+        coupons,
+        logs,
+        tab: "products",
+        filters: req.query,
+        username: req.session.user ? req.session.user.username : null, // Pass the username
+        isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
+      });
+    } catch (error) {
+      console.error("Error filtering products:", error);
+      res.status(500).send("Server Error");
+    }
   }
-});
+);
 
-router.get("/admin/filter-coupons", async (req, res) => {
-  const { code, discountPercentage } = req.query;
+router.get(
+  "/admin/filter-coupons",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { code, discountPercentage } = req.query;
 
-  let query = {};
+    let query = {};
 
-  if (code) query.code = new RegExp(code, "i"); // case-insensitive match
-  if (discountPercentage) query.discountPercentage = discountPercentage;
+    if (code) query.code = new RegExp(code, "i"); // case-insensitive match
+    if (discountPercentage) query.discountPercentage = discountPercentage;
 
-  try {
-    const logs = await Log.find({}).sort({ Date: -1 });
-    const users = await User.find({});
-    const products = await Product.find({});
-    const purchases = await Purchase.find({});
-    const coupons = await Coupon.find(query); // Filtered coupons
+    try {
+      const logs = await Log.find({}).sort({ Date: -1 });
+      const users = await User.find({});
+      const products = await Product.find({});
+      const purchases = await Purchase.find({});
+      const coupons = await Coupon.find(query); // Filtered coupons
 
-    res.render("admin", {
-      users,
-      products,
-      purchases,
-      coupons,
-      logs,
-      tab: "coupons",
-      filters: req.query,
-    });
-  } catch (error) {
-    console.error("Error filtering coupons:", error);
-    res.status(500).send("Server Error");
+      res.render("admin", {
+        users,
+        products,
+        purchases,
+        coupons,
+        logs,
+        tab: "coupons",
+        filters: req.query,
+        username: req.session.user ? req.session.user.username : null, // Pass the username
+        isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
+      });
+    } catch (error) {
+      console.error("Error filtering coupons:", error);
+      res.status(500).send("Server Error");
+    }
   }
-});
+);
 
-router.get("/admin/filter-logs", async (req, res) => {
-  const { date, type, username, message } = req.query;
+router.get(
+  "/admin/filter-logs",
+  ensureAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    const { date, type, username, message } = req.query;
 
-  let query = {};
+    let query = {};
 
-  if (date) {
-    const dateStart = new Date(date);
-    const dateEnd = new Date(date);
-    dateEnd.setHours(23, 59, 59, 999); // End of the day
-    query.Date = { $gte: dateStart, $lte: dateEnd }; // Filter logs by date range
+    if (date) {
+      const dateStart = new Date(date);
+      const dateEnd = new Date(date);
+      dateEnd.setHours(23, 59, 59, 999); // End of the day
+      query.Date = { $gte: dateStart, $lte: dateEnd }; // Filter logs by date range
+    }
+    if (type) query.type = type; // Match type (INFO, ERROR, etc.)
+    if (username) query.username = new RegExp(username, "i"); // Case-insensitive match
+    if (message) query.message = new RegExp(message, "i"); // Case-insensitive match
+
+    try {
+      const logs = await Log.find(query).sort({ Date: -1 }); // Sort by date in descending order
+
+      const users = await User.find({});
+      const products = await Product.find({});
+      const purchases = await Purchase.find({});
+      const coupons = await Coupon.find({});
+
+      res.render("admin", {
+        users,
+        products,
+        purchases,
+        coupons,
+        logs,
+        tab: "logs",
+        filters: req.query,
+        username: req.session.user ? req.session.user.username : null, // Pass the username
+        isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
+      });
+    } catch (error) {
+      console.error("Error filtering logs:", error);
+      res.status(500).send("Server Error");
+    }
   }
-  if (type) query.type = type; // Match type (INFO, ERROR, etc.)
-  if (username) query.username = new RegExp(username, "i"); // Case-insensitive match
-  if (message) query.message = new RegExp(message, "i"); // Case-insensitive match
-
-  try {
-    const logs = await Log.find(query).sort({ Date: -1 }); // Sort by date in descending order
-
-    const users = await User.find({});
-    const products = await Product.find({});
-    const purchases = await Purchase.find({});
-    const coupons = await Coupon.find({});
-
-    res.render("admin", {
-      users,
-      products,
-      purchases,
-      coupons,
-      logs,
-      tab: "logs",
-      filters: req.query, // Pass the query params as filters to keep the state of the form
-    });
-  } catch (error) {
-    console.error("Error filtering logs:", error);
-    res.status(500).send("Server Error");
-  }
-});
+);
 
 // Add the multer middleware to handle image uploads
 router.post("/admin/post-tweet", upload.single("image"), postTweet);

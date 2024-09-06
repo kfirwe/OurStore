@@ -133,35 +133,51 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">Clothes Store</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/homePage">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/admin">Admin Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Log out</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
+                    By A Thread
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="/homePage">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Landing Page</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">Profile</a>
+                        </li>
+
+                        <!-- Show "Login" if not logged in, otherwise show "Logout" -->
+                        <% if (!username) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                        <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">Logout</a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
   <!-- Main content wrapper to ensure footer stays at the bottom -->
   <div class="container mt-4 content">
@@ -816,7 +832,10 @@
 
 <div class="tab-pane fade <%= tab === 'twitter' ? 'show active' : '' %>" id="twitter" role="tabpanel" aria-labelledby="twitter-tab">
 <section id="tweet-management" class="mt-5">
-    <h2>Post a Tweet</h2>
+    <h2>
+        <img src="/twitter.png" alt="Twitter Logo" style="height: 40px; margin-right: 10px;">
+        Post a Tweet
+    </h2>
     <form action="/admin/post-tweet" method="POST" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="tweetText" class="form-label">Tweet Text</label>
@@ -1061,6 +1080,29 @@
         }, 3000);
     }
 
+    // Logout function
+    function handleLogout() {
+            fetch('/logout', {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // Redirect to the login page
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                    alert('An error occurred while logging out.');
+                });
+        }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+            window.location.href = "/login";
+        <% } %>
+    }
 
     function showTweetErrorPopup() {
         const popup = document.getElementById('tweetErrorPopup');

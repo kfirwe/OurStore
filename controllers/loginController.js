@@ -28,10 +28,29 @@ router.post("/login", async (req, res) => {
 
     await createLog("INFO", user.username, "Login successful.");
 
-    // Redirect to the homepage or send a success response
-    res
-      .status(200)
-      .json({ message: "Login successful", isAdmin, redirectUrl: "/homePage" });
+    // Check if there are filters saved in the session from before login
+    const previousFilters = req.session.previousFilters || {};
+
+    // If no filters are saved, apply default gender=unisex filter
+    if (!previousFilters.gender) {
+      previousFilters.gender = "unisex";
+    }
+
+    // Construct the filter query string
+    const filterQuery = new URLSearchParams(previousFilters).toString();
+
+    // Redirect to homePage with the filter (either saved filters or default unisex filter)
+    const redirectUrl = `/homePage?${filterQuery}`;
+
+    // Clear the saved filters after redirection
+    delete req.session.previousFilters;
+
+    // Redirect to the homepage with or without filters
+    res.status(200).json({
+      message: "Login successful",
+      isAdmin,
+      redirectUrl, // Include the filters if available
+    });
   } catch (error) {
     console.error("Login error:", error);
     await createLog("ERROR", username, "An error occurred during login.");
