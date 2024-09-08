@@ -6,6 +6,9 @@ require("dotenv").config();
 exports.getHomePage = async (req, res) => {
   try {
     const filters = {};
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const limit = 3; // Limit the products to 6 per page
+    const skip = (page - 1) * limit;
 
     // Apply name filter if provided
     if (req.query.name) {
@@ -46,22 +49,28 @@ exports.getHomePage = async (req, res) => {
       filters.amount = { $gt: 0 }; // Fetch only products with stock > 0
     }
 
-    // Fetch products with filters
-    const products = await Product.find(filters);
+    // Fetch products with pagination
+    const products = await Product.find(filters).skip(skip).limit(limit);
 
     // Fetch all products without filters for sidebar or other purposes
     const UnFilteredProducts = await Product.find({});
 
+    // Fetch total number of filtered products for pagination calculation
+    const totalProducts = await Product.countDocuments(filters);
+    const totalPages = Math.ceil(totalProducts / limit); // Calculate the total number of pages
+
     // Fetch weather API key for any potential weather data integration
     const weatherApiKey = process.env.WEATHER_API_KEY;
 
-    // Render the homepage with filtered products and other data
+    // Render the homepage with filtered products, pagination, and other data
     res.render("homePage", {
       isAdmin: req.session.user ? req.session.user.role === "admin" : false, // Check if the user is an admin
       username: req.session.user ? req.session.user.username : "", // Pass the logged-in user's username
       weatherApiKey, // Weather API key if needed on the page
       UnFilteredProducts, // All products for any additional use
       products, // Filtered products to display
+      currentPage: page, // Current page number
+      totalPages, // Total number of pages
       filters: req.query, // Pass the filters to maintain filter values in the form
     });
   } catch (err) {
