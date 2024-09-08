@@ -10,6 +10,13 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="homePage.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+
+
+
 </head>
 
 <body>
@@ -17,10 +24,10 @@
     <header>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
           <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-              <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
-              By A Thread
-            </a>
+              <a class="navbar-brand d-flex align-items-center" href="/">
+                  <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
+                  By A Thread
+              </a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                   aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
@@ -28,35 +35,48 @@
               <div class="collapse navbar-collapse" id="navbarNav">
                   <ul class="navbar-nav ms-auto">
                       <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="/homePage">Home</a>
+                          <a class="nav-link active" aria-current="page" href="/homePage">
+                              <i class="fas fa-home fa-lg"></i> Home
+                          </a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="/">Landing Page</a>
+                          <a class="nav-link" href="/">
+                              <i class="fas fa-flag fa-lg"></i> Landing Page
+                          </a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="#">About</a>
+                          <a class="nav-link" href="#">
+                              <i class="fas fa-info-circle fa-lg"></i> About
+                          </a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">Cart</a>
+                          <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                              <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                          </a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">Profile</a>
+                          <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                              <i class="fas fa-user fa-lg"></i> Profile
+                          </a>
                       </li>
-
-                      <!-- Show "Login" if not logged in, otherwise show "Logout" -->
                       <% if (!username) { %>
                       <li class="nav-item">
-                          <a class="nav-link" href="/login">Login</a>
+                          <a class="nav-link" href="/login">
+                              <i class="fas fa-sign-in-alt fa-lg"></i> Login
+                          </a>
                       </li>
                       <% } else { %>
                       <li class="nav-item">
-                          <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">Logout</a>
+                          <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
+                              <i class="fas fa-sign-out-alt fa-lg"></i> Logout
+                          </a>
                       </li>
                       <% } %>
-                      
                       <% if (isAdmin) { %>
                       <li class="nav-item">
-                          <a class="nav-link" onclick="renderAdminPage()">Admin tools</a>
+                          <a class="nav-link" onclick="renderAdminPage()">
+                              <i class="fas fa-tools fa-lg"></i> Admin tools
+                          </a>
                       </li>
                       <% } %>
                   </ul>
@@ -64,6 +84,9 @@
           </div>
       </nav>
   </header>
+  
+    
+    
 
     <!-- Title -->
     <div class="container text-center mt-5">
@@ -383,26 +406,44 @@
         }
 
         function handleAddToCart(prodId) {
-            <% if (!username) { %>
-                window.location.href = '/login'; // Redirect to login if not authenticated
-            <% } else { %>
-                fetch('/add-to-cart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userName: '<%= username %>', prodId: prodId }),
-                })
-                .then(response => response.json())  // Expecting JSON response
-                .then(data => {
-                    alert(data.message); // Show a success message to the user
-                })
-                .catch(error => {
-                    console.error('Error adding to cart:', error);
-                    alert('Error adding to cart');
-                });
-            <% } %>
+  <% if (!username) { %>
+    window.location.href = '/login'; // Redirect to login if not authenticated
+  <% } else { %>
+    // Check product availability before adding to cart
+    fetch(`/product-availability/${prodId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (!data.available) {
+          alert('The product is not available now!');
+        } else if (data.inCart) {
+          alert('The product is already in your cart! Please change the amount in the cart tab.');
+        } else {
+          // Proceed to add the product to the cart if available and not already added
+          fetch('/add-to-cart', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userName: '<%= username %>', prodId: prodId }),
+          })
+          .then(response => response.json())
+          .then(result => {
+            alert(result.message); // Show success or error message
+          })
+          .catch(error => {
+            console.error('Error adding to cart:', error);
+            alert('Error adding to cart.');
+          });
         }
+      })
+      .catch(error => {
+        console.error('Error checking product availability:', error);
+        alert('Error checking product availability.');
+      });
+  <% } %>
+}
+
+
 
     </script>
 </body>

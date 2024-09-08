@@ -72,6 +72,11 @@ app.get("/signup", (req, res) => {
 
 // Route to handle the home page
 app.get("/homePage", homepageController.getHomePage);
+app.get(
+  "/product-availability/:prodId",
+  homepageController.checkProductAvailability
+);
+app.post("/add-to-cart", homepageController.addToCart);
 
 app.use("/", loginRoutes);
 app.use("/", cartRoutes);

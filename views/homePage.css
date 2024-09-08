@@ -19,6 +19,28 @@ body {
   min-height: 100vh; /* Ensure body takes at least the full height of the viewport */
 }
 
+.navbar .nav-link i {
+  margin-right: 5px; /* Reduce space between icon and text */
+}
+
+.navbar .nav-item {
+  margin-left: 20px; /* Increase space between each tab */
+}
+
+/* Ensure proper size and visibility for Font Awesome icons */
+.navbar .fa {
+  font-size: 24px !important;
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Ensure proper padding around icons */
+.navbar .nav-link i {
+  margin-right: 8px;
+  vertical-align: middle; /* Align icon vertically with text */
+}
+
 /* Ensure the title is visible and properly spaced */
 .container h1 {
   margin-bottom: 20px; /* Add space below the title */

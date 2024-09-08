@@ -1,4 +1,5 @@
 const { Product } = require("../models/Product");
+const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const createLog = require("../helpers/logHelper");
 require("dotenv").config();
 
@@ -67,5 +68,99 @@ exports.getHomePage = async (req, res) => {
     // Handle any errors that occur during the fetch or render process
     console.error("Error fetching products:", err);
     res.status(500).send("Server Error");
+  }
+};
+
+// Product availability check endpoint
+exports.checkProductAvailability = async (req, res) => {
+  try {
+    const prodId = req.params.prodId;
+
+    // Fetch the product by prodId
+    const product = await Product.findOne({ prodId });
+
+    // If product not found
+    if (!product) {
+      return res.status(404).json({
+        available: false,
+        inCart: false,
+        message: "Product not found",
+      });
+    }
+
+    // Check if product is out of stock
+    const isAvailable = product.amount > 0;
+
+    // Check if the product is already in the user's cart
+    const cart = await Cart.findOne({
+      userId: req.session.user ? req.session.user.id : null,
+    });
+
+    let isInCart = false;
+    if (cart && cart.items) {
+      // Check if the product is already in the cart
+      isInCart = cart.items.some((item) => item.prodId === prodId);
+    }
+
+    // Return product availability and cart status
+    return res.json({ available: isAvailable, inCart: isInCart });
+  } catch (err) {
+    console.error("Error checking product availability:", err);
+    return res
+      .status(500)
+      .json({ available: false, inCart: false, message: "Server error" });
+  }
+};
+
+exports.addToCart = async (req, res) => {
+  try {
+    const { userName, prodId } = req.body;
+
+    // Find the product by prodId
+    const product = await Product.findOne({ prodId });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Check if the product is available (amount > 0)
+    if (product.amount <= 0) {
+      return res
+        .status(400)
+        .json({ message: "The product is not available now!" });
+    }
+
+    // Find the user's cart or create a new one if it doesn't exist
+    let cart = await Cart.findOne({ userName });
+
+    if (!cart) {
+      // Create a new cart for the user if it doesn't exist
+      cart = new Cart({ userName, products: [] });
+    }
+
+    // Check if the product is already in the cart
+    const productInCart = cart.products.find((item) => item.prodId === prodId);
+
+    if (productInCart) {
+      return res.status(400).json({
+        message:
+          "The product is already in your cart! Please change the quantity in the cart tab.",
+      });
+    }
+
+    // Add the product to the cart with default quantity 1
+    cart.products.push({
+      ...product.toObject(),
+      quantity: 1,
+    });
+
+    await cart.save(); // Save the cart
+
+    return res
+      .status(200)
+      .json({ message: "Product added to cart successfully!" });
+  } catch (err) {
+    console.error("Error adding product to cart:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
