@@ -34,6 +34,18 @@ exports.getHomePage = async (req, res) => {
       }
     }
 
+    // username
+    username = req.session.user ? req.session.user.username : "";
+
+    // Fetch the cart for the current user
+    let cartItemCount = 0;
+    if (username) {
+      const cart = await Cart.findOne({ userName: username });
+      if (cart) {
+        cartItemCount = cart.products.length;
+      }
+    }
+
     // Apply category filter if provided
     if (req.query.category) {
       filters.category = req.query.category;
@@ -65,7 +77,8 @@ exports.getHomePage = async (req, res) => {
     // Render the homepage with filtered products, pagination, and other data
     res.render("homePage", {
       isAdmin: req.session.user ? req.session.user.role === "admin" : false, // Check if the user is an admin
-      username: req.session.user ? req.session.user.username : "", // Pass the logged-in user's username
+      username, // Pass the logged-in user's username
+      cartItemCount,
       weatherApiKey, // Weather API key if needed on the page
       UnFilteredProducts, // All products for any additional use
       products, // Filtered products to display
