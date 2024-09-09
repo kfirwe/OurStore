@@ -1,4 +1,5 @@
 const { Product } = require("../models/Product");
+const { Wishlist } = require("../models/Wishlist");
 const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const createLog = require("../helpers/logHelper");
 require("dotenv").config();
@@ -7,15 +8,31 @@ exports.getHomePage = async (req, res) => {
   try {
     const filters = {};
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-    const limit = 3; // Limit the products to 6 per page
+    const limit = 6; // Limit the products to 6 per page
     const skip = (page - 1) * limit;
 
-    // Apply name filter if provided
+    // Fetch the current user's username
+    const username = req.session.user ? req.session.user.username : "";
+
+    // Check if the user is filtering by wishlist
+    if (req.query.wishlist === "true") {
+      if (!username) {
+        return res.redirect("/login"); // Redirect to login if user is not logged in
+      }
+      // Fetch the user's wishlist
+      const wishlist = await Wishlist.findOne({ userName: username });
+      if (wishlist && wishlist.products.length > 0) {
+        filters.prodId = { $in: wishlist.products.map((p) => p.prodId) }; // Filter products in the wishlist
+      } else {
+        filters.prodId = { $in: [] }; // If no wishlist, return no products
+      }
+    }
+
+    // Apply other filters (name, price, category, gender, etc.)
     if (req.query.name) {
       filters.name = new RegExp(req.query.name, "i"); // case-insensitive search
     }
 
-    // Apply price filter if provided
     if (req.query.price) {
       const priceCondition = req.query.priceCondition || "equal";
       const priceValue = parseFloat(req.query.price);
@@ -34,26 +51,31 @@ exports.getHomePage = async (req, res) => {
       }
     }
 
-    // username
-    username = req.session.user ? req.session.user.username : "";
-
     // Fetch the cart for the current user
     let cartItemCount = 0;
     if (username) {
       const cart = await Cart.findOne({ userName: username });
       if (cart) {
-        cartItemCount = cart.products.length;
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
       }
     }
 
-    // Apply category filter if provided
+    // Fetch the user's wishlist
+    let wishlist = [];
+    if (username) {
+      const userWishlist = await Wishlist.findOne({ userName: username });
+      wishlist = userWishlist
+        ? userWishlist.products.map((product) => product.prodId)
+        : [];
+    }
+
+    // Apply category and gender filters
     if (req.query.category) {
       filters.category = req.query.category;
     }
 
-    // Apply gender filter if provided
     if (req.query.gender) {
-      filters.gender = req.query.gender; // this will filter products by gender
+      filters.gender = req.query.gender; // Filter products by gender
     }
 
     // Apply non-sold-out filter if provided
@@ -61,11 +83,11 @@ exports.getHomePage = async (req, res) => {
       filters.amount = { $gt: 0 }; // Fetch only products with stock > 0
     }
 
-    // Fetch products with pagination
+    // Fetch products with pagination and filters
     const products = await Product.find(filters).skip(skip).limit(limit);
 
     // Fetch all products without filters for sidebar or other purposes
-    const UnFilteredProducts = await Product.find({});
+    const UnFilteredProducts = await Product.find({}); // Fetch all products
 
     // Fetch total number of filtered products for pagination calculation
     const totalProducts = await Product.countDocuments(filters);
@@ -74,20 +96,20 @@ exports.getHomePage = async (req, res) => {
     // Fetch weather API key for any potential weather data integration
     const weatherApiKey = process.env.WEATHER_API_KEY;
 
-    // Render the homepage with filtered products, pagination, and other data
+    // Render the homepage with filtered products, unfiltered products, pagination, and other data
     res.render("homePage", {
       isAdmin: req.session.user ? req.session.user.role === "admin" : false, // Check if the user is an admin
       username, // Pass the logged-in user's username
-      cartItemCount,
-      weatherApiKey, // Weather API key if needed on the page
-      UnFilteredProducts, // All products for any additional use
+      cartItemCount, // Number of distinct items in the cart
+      wishlist, // Pass the wishlist product IDs to the front end
+      weatherApiKey, // Weather API key for integration
       products, // Filtered products to display
-      currentPage: page, // Current page number
-      totalPages, // Total number of pages
+      UnFilteredProducts, // All products without filters
+      currentPage: page, // Current page number for pagination
+      totalPages, // Total number of pages for pagination
       filters: req.query, // Pass the filters to maintain filter values in the form
     });
   } catch (err) {
-    // Handle any errors that occur during the fetch or render process
     console.error("Error fetching products:", err);
     res.status(500).send("Server Error");
   }

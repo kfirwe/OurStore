@@ -6,6 +6,7 @@ const path = require("path");
 const session = require("express-session");
 const app = express();
 const loginRoutes = require("./controllers/loginController");
+const wishListRoutes = require("./controllers/wishlistController");
 const cartRoutes = require("./controllers/cartController");
 const signUpRoutes = require("./controllers/signupController");
 const logoutRoutes = require("./controllers/logoutController");
@@ -79,6 +80,7 @@ app.get(
 app.post("/add-to-cart", homepageController.addToCart);
 
 app.use("/", loginRoutes);
+app.use("/", wishListRoutes);
 app.use("/", cartRoutes);
 app.use("/", logoutRoutes);
 app.use("/", signUpRoutes);
