@@ -13,6 +13,7 @@ const logoutRoutes = require("./controllers/logoutController");
 const adminRoutes = require("./controllers/adminController"); // Import admin routes
 const { ensureAuthenticated } = require("./middleware/auth"); // Import middleware
 const { Product } = require("./models/Product");
+const { Cart } = require("./models/Cart");
 const homepageController = require("./controllers/homepageController");
 const createLog = require("./helpers/logHelper"); // Import the log helper
 
@@ -51,12 +52,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "views")));
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   const username = req.session.user ? req.session.user.username : null;
   const isAdmin = req.session.user && req.session.user.role === "admin";
 
+  // Fetch the cart for the current user
+  let cartItemCount = 0;
+  if (req.session.user?.username) {
+    const cart = await Cart.findOne({ userName: username });
+    if (cart) {
+      cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+    }
+  }
+
   res.render("LandingPage", {
     username, // Pass username to the view
+    cartItemCount,
     isAdmin, // Pass isAdmin to the view
   });
 });

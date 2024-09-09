@@ -6,6 +6,7 @@ const { ensureAuthenticated } = require("../middleware/auth");
 const isAdmin = require("../middleware/isAdmin");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
+const { Cart } = require("../models/Cart");
 const { Purchase } = require("../models/Purchase");
 const { postTweet } = require("./twitterController");
 const Coupon = require("../models/Coupon");
@@ -26,11 +27,21 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
     const purchases = await Purchase.find().sort({ Date: -1 }).lean();
     const coupons = await Coupon.find({}).sort({ expireDate: 1 });
 
+    // Fetch the cart for the current user
+    let cartItemCount = 0;
+    if (req.session.user?.username) {
+      const cart = await Cart.findOne({ userName: req.session.user.username });
+      if (cart) {
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+      }
+    }
+
     res.render("admin", {
       users,
       products,
       purchases,
       coupons,
+      cartItemCount,
       logs,
       tab, // Pass the active tab to the view
       filters: {},

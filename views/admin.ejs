@@ -138,6 +138,24 @@
         margin-left: 20px; /* Increase space between each tab */
     }
 
+    .cart-badge {
+  position: absolute;
+  top: -8px; /* Adjusts vertical position of the badge */
+  right: -10px; /* Adjusts horizontal position of the badge */
+  background-color: red; /* Red background for the badge */
+  color: white; /* White text color for the badge */
+  border-radius: 50%; /* Makes the badge circular */
+  padding: 2px 6px; /* Padding inside the badge */
+  font-size: 12px; /* Font size of the number */
+  font-weight: bold; /* Makes the number bold */
+  display: flex; /* Flexbox to center the text */
+  justify-content: center; /* Centers the text horizontally */
+  align-items: center; /* Centers the text vertically */
+  min-width: 20px; /* Ensures the badge is at least 20px wide */
+  height: 20px; /* Ensures the badge is 20px tall */
+}
+
+
 /* Default navbar styles */
 .navbar {
   background-color: #333;
@@ -203,11 +221,14 @@
                                 <i class="fas fa-info-circle fa-lg"></i> About
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item position-relative">
                             <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
-                                <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                              <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                              <% if (cartItemCount > 0) { %>
+                                <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                              <% } %>
                             </a>
-                        </li>
+                          </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
                                 <i class="fas fa-user fa-lg"></i> Profile

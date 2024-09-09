@@ -29,6 +29,24 @@ html {
   flex-direction: column;
 }
 
+.cart-badge {
+  position: absolute;
+  top: -8px; /* Adjusts vertical position of the badge */
+  right: -10px; /* Adjusts horizontal position of the badge */
+  background-color: red; /* Red background for the badge */
+  color: white; /* White text color for the badge */
+  border-radius: 50%; /* Makes the badge circular */
+  padding: 2px 6px; /* Padding inside the badge */
+  font-size: 12px; /* Font size of the number */
+  font-weight: bold; /* Makes the number bold */
+  display: flex; /* Flexbox to center the text */
+  justify-content: center; /* Centers the text horizontally */
+  align-items: center; /* Centers the text vertically */
+  min-width: 20px; /* Ensures the badge is at least 20px wide */
+  height: 20px; /* Ensures the badge is 20px tall */
+}
+
+
 .content {
   flex: 1;
   display: flex;
@@ -189,10 +207,13 @@ footer {
                           <i class="fas fa-user fa-lg"></i> Profile
                       </a>
                   </li>
-                  <li class="nav-item">
-                      <a class="nav-link <%= !username ? 'disabled' : '' %>" href="#">
-                          <i class="fas fa-shopping-cart fa-lg"></i> Cart
-                      </a>
+                  <li class="nav-item position-relative">
+                    <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                      <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                      <% if (cartItemCount > 0) { %>
+                        <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                      <% } %>
+                    </a>
                   </li>
   
                   <!-- Show Admin Tools if user is an admin -->
@@ -266,6 +287,13 @@ footer {
           alert('An error occurred while logging out.');
         });
       }
+
+      // Redirect to login if not logged in
+      function redirectToLoginIfNotLoggedIn() {
+            <% if (!username) { %>
+                window.location.href = "/login";
+            <% } %>
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
