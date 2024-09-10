@@ -1,5 +1,6 @@
 const { Product } = require("../models/Product");
 const { Wishlist } = require("../models/Wishlist");
+const Discount = require("../models/Discount"); // Include the discount model
 const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const createLog = require("../helpers/logHelper");
 require("dotenv").config();
@@ -83,8 +84,47 @@ exports.getHomePage = async (req, res) => {
       filters.amount = { $gt: 0 }; // Fetch only products with stock > 0
     }
 
+    // If "Products with Discounts" filter is checked
+    if (req.query.discounted === "true") {
+      const discountedProducts = await Discount.find({});
+      const productIdsWithDiscounts = discountedProducts.flatMap(
+        (discount) => discount.prodIds
+      );
+
+      filters.prodId = { $in: productIdsWithDiscounts }; // Only fetch products with discounts
+    }
+
     // Fetch products with pagination and filters
     const products = await Product.find(filters).skip(skip).limit(limit);
+
+    // Fetch discounts for products that appear in the prodIds array
+    const discounts = await Discount.find({
+      prodIds: { $in: products.map((p) => p.prodId) },
+    });
+
+    // Attach the highest valid discount to each product
+    const productsWithDiscounts = products.map((product) => {
+      const now = new Date();
+
+      // Filter for discounts that are valid and apply to the product
+      const validProductDiscounts = discounts.filter(
+        (d) =>
+          d.prodIds.includes(product.prodId) &&
+          new Date(d.validFrom) <= now && // Check if the discount is active
+          new Date(d.validUntil) >= now
+      );
+
+      // Find the highest discount percentage among valid discounts
+      const maxDiscount =
+        validProductDiscounts.length > 0
+          ? Math.max(...validProductDiscounts.map((d) => d.discountPercentage))
+          : null;
+
+      return {
+        ...product.toObject(),
+        discountPercentage: maxDiscount, // Attach the highest valid discount, if any
+      };
+    });
 
     // Fetch all products without filters for sidebar or other purposes
     const UnFilteredProducts = await Product.find({}); // Fetch all products
@@ -103,7 +143,7 @@ exports.getHomePage = async (req, res) => {
       cartItemCount, // Number of distinct items in the cart
       wishlist, // Pass the wishlist product IDs to the front end
       weatherApiKey, // Weather API key for integration
-      products, // Filtered products to display
+      products: productsWithDiscounts, // Filtered products to display
       UnFilteredProducts, // All products without filters
       currentPage: page, // Current page number for pagination
       totalPages, // Total number of pages for pagination

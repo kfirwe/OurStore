@@ -179,6 +179,15 @@
                             </label>
                         </div>
                     </div>
+                    <!-- Discount -->
+                    <div class="col-md-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterDiscounted" name="discounted" value="true" <%= filters.discounted ? 'checked' : '' %>>
+                        <label class="form-check-label" for="filterDiscounted">
+                          Only Products with Discounts
+                        </label>
+                      </div>
+                    </div>                    
                     <!-- Filter Button -->
                     <div class="col-md-2">
                       <button type="submit" class="btn btn-primary w-100">
@@ -276,6 +285,12 @@
               <div class="col-md-4 mb-4">
                 <div class="card h-100">
                   <div style="position: relative;">
+                    <!-- Discount Badge -->
+              <% if (product.discountPercentage) { %>
+                <div class="discount-badge">
+                  <span><%= product.discountPercentage %>% OFF</span>
+                </div>
+              <% } %>
                     <img src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
                          class="card-img-top" alt="<%= product.name %>" />
                     <% if (product.amount === 0) { %>

@@ -12,6 +12,7 @@ const { postTweet } = require("./twitterController");
 const Coupon = require("../models/Coupon");
 const createLog = require("../helpers/logHelper");
 const { Log } = require("../models/Log");
+const Discount = require("../models/Discount");
 
 // Set up multer for file upload
 const storage = multer.memoryStorage(); // Store files in memory, not on disk
@@ -20,6 +21,9 @@ const upload = multer({ storage: storage });
 // Example route using the middleware
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
   try {
+    // Fetch discounts
+    const discounts = await Discount.find();
+
     const tab = req.query.tab || "users"; // Default to 'users' if no tab is specified
     const logs = await Log.find({}).sort({ Date: -1 });
     const users = await User.find({});
@@ -40,6 +44,7 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
       users,
       products,
       purchases,
+      discounts,
       coupons,
       cartItemCount,
       logs,
@@ -89,11 +94,12 @@ router.post(
   async (req, res) => {
     let { id, field, value } = req.body;
 
-    if (typeof value == "string") {
+    if (typeof value === "string") {
       value = value.trim();
     }
 
     try {
+      // Update User fields
       if (
         field === "username" ||
         field === "email" ||
@@ -103,14 +109,56 @@ router.post(
         field === "role"
       ) {
         await User.findByIdAndUpdate(id, { [field]: value });
-      } else if (
+      }
+      // Update Coupon fields
+      else if (
         field === "code" ||
         field === "discountPercentage" ||
         field === "expireDate"
       ) {
         await Coupon.findByIdAndUpdate(id, { [field]: value });
-      } else {
+      }
+      // Update Product fields
+      else if (
+        field === "name" ||
+        field === "price" ||
+        field === "category" ||
+        field === "company" ||
+        field === "gender" ||
+        field === "amount"
+      ) {
         await Product.findByIdAndUpdate(id, { [field]: value });
+      }
+      // Update Discount fields
+      else if (
+        field === "DiscountPercentage" ||
+        field === "validFrom" ||
+        field === "validUntil"
+      ) {
+        // Validate numeric range for discountPercentage
+        if (field === "DiscountPercentage") {
+          const percentage = parseInt(value, 10);
+          if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+            return res
+              .status(400)
+              .send("Discount percentage must be between 0 and 100.");
+          }
+          field = "discountPercentage";
+          value = percentage;
+        }
+
+        // Validate and update dates for validFrom and validUntil
+        if (field === "validFrom" || field === "validUntil") {
+          const newDate = new Date(value);
+          if (isNaN(newDate.getTime())) {
+            return res.status(400).send("Please enter a valid date.");
+          }
+          value = newDate;
+        }
+
+        await Discount.findByIdAndUpdate(id, { [field]: value });
+      } else {
+        return res.status(400).send("Invalid field");
       }
 
       // Update session if the logged-in user changed their own username
@@ -348,10 +396,26 @@ router.get(
       const purchases = await Purchase.find({ userName: userName });
       const coupons = await Coupon.find({}).sort({ expireDate: 1 });
 
+      // Fetch discounts
+      const discounts = await Discount.find();
+
+      // Fetch the cart for the current user
+      let cartItemCount = 0;
+      if (req.session.user?.username) {
+        const cart = await Cart.findOne({
+          userName: req.session.user.username,
+        });
+        if (cart) {
+          cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+        }
+      }
+
       res.render("admin", {
         users,
         products,
+        discounts,
         purchases,
+        cartItemCount,
         coupons,
         logs,
         tab: "purchases", // Ensure the purchases tab is active
@@ -596,10 +660,26 @@ router.get(
       const coupons = await Coupon.find({});
       const purchases = await Purchase.find({});
 
+      // Fetch discounts
+      const discounts = await Discount.find();
+
+      // Fetch the cart for the current user
+      let cartItemCount = 0;
+      if (req.session.user?.username) {
+        const cart = await Cart.findOne({
+          userName: req.session.user.username,
+        });
+        if (cart) {
+          cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+        }
+      }
+
       res.render("admin", {
         users,
         products,
+        discounts,
         coupons,
+        cartItemCount,
         purchases,
         logs,
         tab: "users",
@@ -639,10 +719,26 @@ router.get(
       const purchases = await Purchase.find({});
       const coupons = await Coupon.find({});
 
+      // Fetch discounts
+      const discounts = await Discount.find();
+
+      // Fetch the cart for the current user
+      let cartItemCount = 0;
+      if (req.session.user?.username) {
+        const cart = await Cart.findOne({
+          userName: req.session.user.username,
+        });
+        if (cart) {
+          cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+        }
+      }
+
       res.render("admin", {
         users,
         products,
+        discounts,
         purchases,
+        cartItemCount,
         coupons,
         logs,
         tab: "products",
@@ -676,9 +772,25 @@ router.get(
       const purchases = await Purchase.find({});
       const coupons = await Coupon.find(query); // Filtered coupons
 
+      // Fetch discounts
+      const discounts = await Discount.find();
+
+      // Fetch the cart for the current user
+      let cartItemCount = 0;
+      if (req.session.user?.username) {
+        const cart = await Cart.findOne({
+          userName: req.session.user.username,
+        });
+        if (cart) {
+          cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+        }
+      }
+
       res.render("admin", {
         users,
         products,
+        discounts,
+        cartItemCount,
         purchases,
         coupons,
         logs,
@@ -721,9 +833,25 @@ router.get(
       const purchases = await Purchase.find({});
       const coupons = await Coupon.find({});
 
+      // Fetch discounts
+      const discounts = await Discount.find();
+
+      // Fetch the cart for the current user
+      let cartItemCount = 0;
+      if (req.session.user?.username) {
+        const cart = await Cart.findOne({
+          userName: req.session.user.username,
+        });
+        if (cart) {
+          cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+        }
+      }
+
       res.render("admin", {
         users,
         products,
+        discounts,
+        cartItemCount,
         purchases,
         coupons,
         logs,
@@ -738,6 +866,128 @@ router.get(
     }
   }
 );
+
+// Route to add a new discount
+router.post("/admin/add-discount", async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const { prodIds, discountPercentage, validFrom, validUntil } = req.body;
+
+    // Ensure prodIds is properly parsed as an array
+    let parsedProdIds;
+    if (Array.isArray(prodIds)) {
+      parsedProdIds = prodIds.map((id) => id.trim()); // Handle case where prodIds is already an array
+    } else {
+      parsedProdIds = prodIds.split(",").map((id) => id.trim()); // Split into array if it's a string
+    }
+
+    // Validate required fields
+    if (parsedProdIds.length === 0) {
+      throw new Error("At least one Product ID is required.");
+    }
+    if (
+      !discountPercentage ||
+      discountPercentage < 0 ||
+      discountPercentage > 100
+    ) {
+      throw new Error("Discount percentage must be between 0 and 100.");
+    }
+    if (!validFrom || !validUntil) {
+      throw new Error("Valid from and valid until dates are required.");
+    }
+
+    // Parse the dates into Date objects
+    const parsedValidFrom = new Date(validFrom);
+    const parsedValidUntil = new Date(validUntil);
+
+    if (isNaN(parsedValidFrom.getTime()) || isNaN(parsedValidUntil.getTime())) {
+      throw new Error("Invalid date format.");
+    }
+
+    // Create and save the new discount
+    const newDiscount = new Discount({
+      prodIds: parsedProdIds, // Store as an array of product IDs
+      discountPercentage,
+      validFrom: parsedValidFrom,
+      validUntil: parsedValidUntil,
+    });
+
+    // Log the object before saving to ensure everything is correct
+    console.log("Discount object to be saved:", newDiscount);
+
+    await newDiscount.save();
+    res.redirect("/admin?tab=discounts");
+  } catch (err) {
+    console.error("Error adding discount:", err.message); // Log the actual error
+    res.status(500).send("Error adding discount: " + err.message); // Send the error message back for debugging
+  }
+});
+
+// Route to delete a discount
+router.post("/admin/delete-discount", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    // Delete the discount by ID
+    await Discount.findByIdAndDelete(id);
+
+    res.redirect("/admin?tab=discounts"); // Redirect back to the discounts tab after deletion
+  } catch (err) {
+    console.error("Error deleting discount:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+// Route to filter discounts based on criteria
+router.get("/admin/filter-discounts", async (req, res) => {
+  try {
+    const { discountPercentage } = req.query;
+    const filters = {};
+
+    // Apply discountPercentage filter if provided
+    if (discountPercentage) {
+      filters.discountPercentage = parseInt(discountPercentage, 10); // Ensure it's an integer
+    }
+
+    // Fetch discounts based on the filters
+    const discounts = await Discount.find(filters);
+
+    // Fetch other data needed for the admin page
+    const logs = await Log.find({}).sort({ Date: -1 });
+    const users = await User.find({});
+    const products = await Product.find({});
+    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+    const coupons = await Coupon.find({}).sort({ expireDate: 1 });
+
+    // Fetch the cart for the current user
+    let cartItemCount = 0;
+    if (req.session.user?.username) {
+      const cart = await Cart.findOne({ userName: req.session.user.username });
+      if (cart) {
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+      }
+    }
+
+    // Render the admin page with the filtered discounts
+    res.render("admin", {
+      users,
+      products,
+      purchases,
+      discounts,
+      coupons,
+      cartItemCount,
+      logs,
+      tab: "discounts", // Pass the active tab to the view
+      filters: req.query,
+      username: req.session.user ? req.session.user.username : null, // Pass username from session or null
+      isAdmin: req.session.user && req.session.user.role === "admin", // Check if user is admin
+    });
+  } catch (err) {
+    console.error("Error filtering discounts:", err);
+    res.status(500).send("Server Error");
+  }
+});
 
 // Add the multer middleware to handle image uploads
 router.post("/admin/post-tweet", upload.single("image"), postTweet);

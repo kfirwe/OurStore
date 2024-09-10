@@ -155,6 +155,20 @@
   height: 20px; /* Ensures the badge is 20px tall */
 }
 
+.list-group {
+  padding-left: 0; /* Remove default padding */
+  margin-bottom: 0; /* Remove default margin */
+}
+
+.list-group-item {
+  border: none; /* Remove borders */
+  padding: 5px; /* Adjust padding */
+}
+
+.list-group-item:hover {
+  background-color: #f5f5f5; /* Optional hover effect */
+}
+
 
 /* Default navbar styles */
 .navbar {
@@ -185,6 +199,35 @@
 .navbar-nav .nav-item {
   margin-left: 20px;
 }
+
+.scrollable-row {
+  max-width: 300px; /* Set the maximum width of the cell */
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 0; /* Remove extra padding */
+  box-sizing: border-box; /* Ensure padding/borders are included in width */
+}
+
+.badge {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.scrollable-row::-webkit-scrollbar {
+  height: 6px; /* Set the height of the horizontal scrollbar */
+}
+
+.scrollable-row::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.scrollable-row::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+
 
 
   </style>
@@ -280,6 +323,9 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link <%= tab === 'purchases' ? 'active' : '' %>" id="purchases-tab" href="/admin?tab=purchases">Purchases</a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link <%= tab === 'discounts' ? 'active' : '' %>" id="discounts-tab" href="/admin?tab=discounts">Discounts</a>
+        </li>          
         <li class="nav-item" role="presentation">
             <a class="nav-link <%= tab === 'logs' ? 'active' : '' %>" id="logs-tab" href="/admin?tab=logs">Logs</a>
         </li>
@@ -484,17 +530,29 @@
               >
                 <%= product.name %>
               </td>
-              <td
-                contenteditable="true"
-                onblur="updateField('<%= product._id %>', 'price', this.innerText)"
-              >
-                <%= product.price %>
+              <td>
+                <input
+                  type="number"
+                  class="form-control"
+                  value="<%= product.price %>"
+                  min="0"
+                  step="0.01"
+                  onblur="updateField('<%= product._id %>', 'price', this.value)"
+                  required
+                />
               </td>
-              <td
-                contenteditable="true"
-                onblur="updateField('<%= product._id %>', 'category', this.innerText)"
-              >
-                <%= product.category %>
+              <td>
+                <select
+                  class="form-select"
+                  onchange="updateField('<%= product._id %>', 'category', this.value)"
+                >
+                  <option value="Tops" <%= product.category === 'Tops' ? 'selected' : '' %>>Tops</option>
+                  <option value="Bottoms" <%= product.category === 'Bottoms' ? 'selected' : '' %>>Bottoms</option>
+                  <option value="Outerwear" <%= product.category === 'Outerwear' ? 'selected' : '' %>>Outerwear</option>
+                  <option value="Dresses" <%= product.category === 'Dresses' ? 'selected' : '' %>>Dresses</option>
+                  <option value="Footwear" <%= product.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
+                  <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+                </select>
               </td>
               <td
                 contenteditable="true"
@@ -502,17 +560,26 @@
               >
                 <%= product.company %>
               </td>
-              <td
-                contenteditable="true"
-                onblur="updateField('<%= product._id %>', 'gender', this.innerText)"
-              >
-                <%= product.gender %>
+              <td>
+                <select
+                  class="form-select"
+                  onchange="updateField('<%= product._id %>', 'gender', this.value)"
+                >
+                  <option value="male" <%= product.gender === 'male' ? 'selected' : '' %>>Male</option>
+                  <option value="female" <%= product.gender === 'female' ? 'selected' : '' %>>Female</option>
+                  <option value="unisex" <%= product.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
+                </select>
               </td>
-              <td
-                contenteditable="true"
-                onblur="updateField('<%= product._id %>', 'amount', this.innerText)"
-              >
-                <%= product.amount %>
+              <td>
+                <input
+                    type="number"
+                    class="form-control"
+                    value="<%= product.amount %>"
+                    min="0"
+                    step="1"
+                    onblur="updateField('<%= product._id %>', 'amount', this.value)"
+                    required
+                />
               </td>
               <td>
                 <img
@@ -573,9 +640,9 @@
               <input type="text" class="form-control" id="productName" name="name" required />
             </div>
             <div class="mb-3">
-              <label for="productPrice" class="form-label">Price</label>
-              <input type="number" class="form-control" id="productPrice" name="price" required />
-            </div>
+                <label for="productPrice" class="form-label">Price</label>
+                <input type="number" class="form-control" id="productPrice" name="price" min="0" step="0.01" required />
+            </div>              
             <div class="mb-3">
               <label for="productCategory" class="form-label">Category</label>
               <select class="form-select" id="productCategory" name="category" required>
@@ -750,6 +817,159 @@
     </section>
 </div>
 
+<!-- Discount section -->
+<div class="tab-pane fade <%= tab === 'discounts' ? 'show active' : '' %>" id="discounts" role="tabpanel" aria-labelledby="discounts-tab">
+    <!-- Discount Management Section -->
+    <section id="discount-management" class="mt-5">
+      <h2>Manage Discounts</h2>
+      <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addDiscountModal">
+          <i class="fas fa-plus"></i> Add New Discount
+      </button>
+  
+      <!-- Filter Form -->
+      <form action="/admin/filter-discounts" method="GET" class="mb-4">
+          <div class="row">
+              <div class="col-md-4">
+                  <input type="number" class="form-control" name="discountPercentage" placeholder="Discount Percentage" value="<%= typeof filters.discountPercentage !== 'undefined' ? filters.discountPercentage : '' %>" min="0" max="100">
+              </div>
+              <div class="col-md-4">
+                  <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-filter"></i> Filter
+                  </button>
+                  <a href="/admin?tab=discounts" class="btn btn-secondary">
+                      <i class="fas fa-sync-alt"></i> Reset
+                  </a>
+              </div>
+          </div>
+      </form>
+  
+      <div class="scrollable-table-container">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Discount Percentage</th>
+              <th>Valid From</th>
+              <th>Valid Until</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% discounts.forEach(discount => { %>
+                <tr>
+                    <td>
+                        <!-- Scrollable horizontal container for product IDs with max-width -->
+                        <div style="max-width: 300px; overflow-x: auto; box-sizing: border-box; padding: 0;">
+                          <% discount.prodIds.forEach(prodId => { %>
+                            <span class="badge bg-secondary" style="margin-right: 5px; display: inline-block;"><%= prodId %></span>
+                          <% }) %>
+                        </div>
+                      </td>
+                      
+                                        
+                  <td>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      min="0" 
+                      max="100" 
+                      value="<%= discount.discountPercentage %>" 
+                      onblur="updateField('<%= discount._id %>', 'DiscountPercentage', this.value)" 
+                      required
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="date"
+                      class="form-control"
+                      value="<%= new Date(discount.validFrom).toISOString().split('T')[0] %>"
+                      onchange="updateField('<%= discount._id %>', 'validFrom', this.value)"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="date"
+                      class="form-control"
+                      value="<%= new Date(discount.validUntil).toISOString().split('T')[0] %>"
+                      onchange="updateField('<%= discount._id %>', 'validUntil', this.value)"
+                    />
+                  </td>
+                  <td>
+                    <form
+                      action="/admin/delete-discount"
+                      method="POST"
+                      style="display: inline"
+                    >
+                      <input type="hidden" name="id" value="<%= discount._id %>" />
+                      <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+              
+              
+              
+              
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add Discount Modal -->
+<div class="modal fade" id="addDiscountModal" tabindex="-1" aria-labelledby="addDiscountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addDiscountForm" action="/admin/add-discount" method="POST">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addDiscountModalLabel">
+                <i class="fas fa-plus"></i> Add New Discount
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Product IDs Dropdown (multiple selection) -->
+              <div class="mb-3">
+                <label for="discountProdId" class="form-label">Select Product IDs</label>
+                <select class="form-select" id="discountProdId" name="prodIds" multiple required>
+                  <% products.forEach(product => { %>
+                    <option value="<%= product.prodId %>"><%= product.prodId %> - <%= product.name %></option>
+                  <% }) %>
+                </select>
+                <small>Select one or more products for this discount (use Ctrl/Cmd for multiple selection)</small>
+              </div>
+          
+              <div class="mb-3">
+                <label for="discountPercentage" class="form-label">Discount Percentage</label>
+                <input type="number" class="form-control" id="discountPercentage" name="discountPercentage" min="0" max="100" required />
+              </div>
+              <div class="mb-3">
+                <label for="validFrom" class="form-label">Valid From</label>
+                <input type="date" class="form-control" id="validFrom" name="validFrom" required />
+              </div>
+              <div class="mb-3">
+                <label for="validUntil" class="form-label">Valid Until</label>
+                <input type="date" class="form-control" id="validUntil" name="validUntil" required />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times"></i> Close
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Discount
+              </button>
+            </div>
+          </form>
+          
+          
+      </div>
+    </div>
+  </div>
+  
+
 
 
 <div class="tab-pane fade <%= tab === 'coupons' ? 'show active' : '' %>" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
@@ -797,12 +1017,17 @@
                 >
                     <%= coupon.code %>
                 </td>
-                <td
-                    contenteditable="true"
-                    onblur="updateField('<%= coupon._id %>', 'discountPercentage', this.innerText)"
-                >
-                    <%= coupon.discountPercentage %>
-                </td>
+                <td>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      min="0" 
+                      max="100" 
+                      value="<%= coupon.discountPercentage %>" 
+                      onblur="updateField('<%= coupon._id %>', 'discountPercentage', this.value)" 
+                      required
+                    />
+                </td>                  
                 <td>
                     <input
                         type="date"
@@ -1393,8 +1618,8 @@
 
 
     function updateField(id, field, value) {
-    // Validation for discountPercentage
-    if (field === 'discountPercentage') {
+    // Validation for discountPercentage or DiscountPercentage
+    if (field === 'discountPercentage' || field === 'DiscountPercentage') {
         const percentage = parseInt(value, 10);
         if (isNaN(percentage) || percentage < 0 || percentage > 100) {
             alert('Discount percentage must be a number between 0 and 100.');

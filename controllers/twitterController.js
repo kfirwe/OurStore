@@ -2,6 +2,10 @@ const { TwitterApi } = require("twitter-api-v2");
 const User = require("../models/User");
 const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
+const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
+const Coupon = require("../models/Coupon");
+const { Log } = require("../models/Log");
+const Discount = require("../models/Discount");
 const createLog = require("../helpers/logHelper"); // Import the log helper
 
 // Load environment variables
@@ -54,14 +58,38 @@ exports.postTweet = async (req, res) => {
       );
     }
 
+    const tab = req.query.tab || "users"; // Default to 'users' if no tab is specified
+
+    const logs = await Log.find({}).sort({ Date: -1 });
     const users = await User.find({});
     const products = await Product.find({});
-    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+    const coupons = await Coupon.find({});
+    const purchases = await Purchase.find({});
+
+    // Fetch discounts
+    const discounts = await Discount.find();
+
+    // Fetch the cart for the current user
+    let cartItemCount = 0;
+    if (req.session.user?.username) {
+      const cart = await Cart.findOne({ userName: req.session.user.username });
+      if (cart) {
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+      }
+    }
 
     res.render("admin", {
       users,
       products,
+      discounts,
+      cartItemCount,
       purchases,
+      coupons,
+      logs,
+      tab,
+      filters: {},
+      username: req.session.user ? req.session.user.username : null, // Pass the username
+      isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
       tweetPosted: true,
       tweetError: false,
     });
@@ -74,14 +102,38 @@ exports.postTweet = async (req, res) => {
       "Failed to post tweet."
     );
 
+    const tab = req.query.tab || "users"; // Default to 'users' if no tab is specified
+
+    const logs = await Log.find({}).sort({ Date: -1 });
     const users = await User.find({});
     const products = await Product.find({});
-    const purchases = await Purchase.find().sort({ Date: -1 }).lean();
+    const coupons = await Coupon.find({});
+    const purchases = await Purchase.find({});
+
+    // Fetch discounts
+    const discounts = await Discount.find();
+
+    // Fetch the cart for the current user
+    let cartItemCount = 0;
+    if (req.session.user?.username) {
+      const cart = await Cart.findOne({ userName: req.session.user.username });
+      if (cart) {
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+      }
+    }
 
     res.render("admin", {
       users,
       products,
+      discounts,
+      cartItemCount,
       purchases,
+      coupons,
+      logs,
+      tab,
+      filters: {},
+      username: req.session.user ? req.session.user.username : null, // Pass the username
+      isAdmin: req.session.user && req.session.user.role === "admin", // Pass isAdmin
       tweetPosted: false,
       tweetError: true,
     });
