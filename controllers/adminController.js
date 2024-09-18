@@ -13,10 +13,14 @@ const Coupon = require("../models/Coupon");
 const createLog = require("../helpers/logHelper");
 const { Log } = require("../models/Log");
 const Discount = require("../models/Discount");
+const mapToObject = require("../helpers/homepageHelper");
 
 // Set up multer for file upload
 const storage = multer.memoryStorage(); // Store files in memory, not on disk
 const upload = multer({ storage: storage });
+
+// Valid sizes allowed
+const validSizes = ["S", "M", "L", "XL", "XXL"];
 
 // Example route using the middleware
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
@@ -40,9 +44,19 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
       }
     }
 
+    const productsWithColors = products.map((product) => {
+      // Convert Map to a plain object before sending to the EJS template
+      const colorsObject = mapToObject(product.colors);
+
+      return {
+        ...product.toObject(), // Convert the Mongoose document to a plain object
+        colors: colorsObject, // Replace the colors Map with the converted plain object
+      };
+    });
+
     res.render("admin", {
       users,
-      products,
+      products: productsWithColors,
       purchases,
       discounts,
       coupons,
@@ -267,6 +281,7 @@ router.post("/admin/add-product", upload.single("image"), async (req, res) => {
       gender: req.body.gender,
       image: req.file.buffer, // Store the file buffer (binary data)
       imageType: req.file.mimetype, // Store the MIME type of the image
+      colors: {},
     });
 
     await newProduct.save();
@@ -410,9 +425,19 @@ router.get(
         }
       }
 
+      const productsWithColors = products.map((product) => {
+        // Convert Map to a plain object before sending to the EJS template
+        const colorsObject = mapToObject(product.colors);
+
+        return {
+          ...product.toObject(), // Convert the Mongoose document to a plain object
+          colors: colorsObject, // Replace the colors Map with the converted plain object
+        };
+      });
+
       res.render("admin", {
         users,
-        products,
+        products: productsWithColors,
         discounts,
         purchases,
         cartItemCount,
@@ -446,6 +471,7 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
   const { range } = req.query;
   let startDate;
 
+  // Determine the start date based on the selected range
   switch (range) {
     case "24h":
       startDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -463,33 +489,47 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
       startDate = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000);
       break;
     default:
-      startDate = new Date(0); // Get all data
+      startDate = new Date(0); // Get all data if no range is provided
       break;
   }
 
   try {
     const purchases = await Purchase.aggregate([
+      // Ensure the `Date` field is properly converted to Date type
       {
         $addFields: {
-          Date: { $toDate: "$Date" }, // Convert string date to Date object
+          Date: { $toDate: "$Date" }, // Convert the string date to a proper Date object
         },
       },
-      { $match: { Date: { $gte: startDate } } },
       {
+        // Filter the purchases by the start date
+        $match: { Date: { $gte: startDate } },
+      },
+      {
+        // Group by the date, summing the total amount and collecting usernames
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$Date" } },
           totalAmount: { $sum: "$TotalAmount" },
+          users: { $addToSet: "$userName" }, // Collect distinct usernames
         },
       },
-      { $sort: { _id: 1 } },
+      {
+        // Sort by date ascending
+        $sort: { _id: 1 },
+      },
     ]);
 
+    // Format the aggregated data for the response
     const formattedData = purchases.map((p) => ({
       date: p._id,
       amount: p.totalAmount,
+      username: p.users.join(", "), // Combine multiple usernames into a string for display
     }));
 
+    // Send the formatted data back as JSON
     res.json(formattedData);
+
+    // Log the success action
     await createLog(
       "INFO",
       req.session.user.username,
@@ -497,6 +537,8 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
     );
   } catch (err) {
     console.error("Error fetching purchase data:", err);
+
+    // Log the error action
     await createLog(
       "ERROR",
       req.session.user.username,
@@ -674,9 +716,19 @@ router.get(
         }
       }
 
+      const productsWithColors = products.map((product) => {
+        // Convert Map to a plain object before sending to the EJS template
+        const colorsObject = mapToObject(product.colors);
+
+        return {
+          ...product.toObject(), // Convert the Mongoose document to a plain object
+          colors: colorsObject, // Replace the colors Map with the converted plain object
+        };
+      });
+
       res.render("admin", {
         users,
-        products,
+        products: productsWithColors,
         discounts,
         coupons,
         cartItemCount,
@@ -733,9 +785,19 @@ router.get(
         }
       }
 
+      const productsWithColors = products.map((product) => {
+        // Convert Map to a plain object before sending to the EJS template
+        const colorsObject = mapToObject(product.colors);
+
+        return {
+          ...product.toObject(), // Convert the Mongoose document to a plain object
+          colors: colorsObject, // Replace the colors Map with the converted plain object
+        };
+      });
+
       res.render("admin", {
         users,
-        products,
+        products: productsWithColors,
         discounts,
         purchases,
         cartItemCount,
@@ -786,9 +848,19 @@ router.get(
         }
       }
 
+      const productsWithColors = products.map((product) => {
+        // Convert Map to a plain object before sending to the EJS template
+        const colorsObject = mapToObject(product.colors);
+
+        return {
+          ...product.toObject(), // Convert the Mongoose document to a plain object
+          colors: colorsObject, // Replace the colors Map with the converted plain object
+        };
+      });
+
       res.render("admin", {
         users,
-        products,
+        products: productsWithColors,
         discounts,
         cartItemCount,
         purchases,
@@ -847,9 +919,19 @@ router.get(
         }
       }
 
+      const productsWithColors = products.map((product) => {
+        // Convert Map to a plain object before sending to the EJS template
+        const colorsObject = mapToObject(product.colors);
+
+        return {
+          ...product.toObject(), // Convert the Mongoose document to a plain object
+          colors: colorsObject, // Replace the colors Map with the converted plain object
+        };
+      });
+
       res.render("admin", {
         users,
-        products,
+        products: productsWithColors,
         discounts,
         cartItemCount,
         purchases,
@@ -969,10 +1051,20 @@ router.get("/admin/filter-discounts", async (req, res) => {
       }
     }
 
+    const productsWithColors = products.map((product) => {
+      // Convert Map to a plain object before sending to the EJS template
+      const colorsObject = mapToObject(product.colors);
+
+      return {
+        ...product.toObject(), // Convert the Mongoose document to a plain object
+        colors: colorsObject, // Replace the colors Map with the converted plain object
+      };
+    });
+
     // Render the admin page with the filtered discounts
     res.render("admin", {
       users,
-      products,
+      products: productsWithColors,
       purchases,
       discounts,
       coupons,
@@ -986,6 +1078,133 @@ router.get("/admin/filter-discounts", async (req, res) => {
   } catch (err) {
     console.error("Error filtering discounts:", err);
     res.status(500).send("Server Error");
+  }
+});
+
+router.post("/admin/update-color-size", async (req, res) => {
+  const { productId, color, size, quantity } = req.body;
+  try {
+    await Product.updateOne(
+      { _id: productId },
+      { $set: { [`colors.${color}.${size}`]: quantity } }
+    );
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error updating color size:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+// Route to add a new size to an existing color
+router.post("/admin/add-size", async (req, res) => {
+  let { productId, color, newSize, newQuantity } = req.body;
+
+  // Convert the color to lowercase and newSize to uppercase
+  color = color.toLowerCase();
+  newSize = newSize.toUpperCase();
+
+  try {
+    // Validate if the size is valid
+    if (!validSizes.includes(newSize)) {
+      return res
+        .status(400)
+        .send("Invalid size. Allowed sizes are: S, M, L, XL, XXL.");
+    }
+
+    // Fetch the product to check if the color and size already exist
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).send("Product not found.");
+    }
+
+    // Check if the color exists
+    if (!product.colors.has(color)) {
+      return res.status(400).send("Color does not exist.");
+    }
+
+    // Check if the size already exists under the color
+    if (product.colors.get(color).hasOwnProperty(newSize)) {
+      return res.status(400).send("Size already exists under this color.");
+    }
+
+    // Add the new size to the existing color
+    await Product.updateOne(
+      { _id: productId },
+      { $set: { [`colors.${color}.${newSize}`]: newQuantity } }
+    );
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error adding new size:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/admin/delete-size", async (req, res) => {
+  const { productId, color, size } = req.body;
+  try {
+    await Product.updateOne(
+      { _id: productId },
+      { $unset: { [`colors.${color}.${size}`]: 1 } }
+    );
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error deleting size:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+// Route to add a new color with a size and quantity
+router.post("/admin/add-color", async (req, res) => {
+  let { productId, newColor, newSize, newQuantity } = req.body;
+
+  // Convert the newColor to lowercase and newSize to uppercase
+  newColor = newColor.toLowerCase();
+  newSize = newSize.toUpperCase();
+
+  try {
+    // Validate if the size is valid
+    if (!validSizes.includes(newSize)) {
+      return res
+        .status(400)
+        .send("Invalid size. Allowed sizes are: S, M, L, XL, XXL.");
+    }
+
+    // Fetch the product to check if the color already exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).send("Product not found.");
+    }
+
+    // Check if the color already exists
+    if (product.colors.has(newColor)) {
+      return res.status(400).send("Color already exists.");
+    }
+
+    // Add the new color with the specified size and quantity
+    await Product.updateOne(
+      { _id: productId },
+      { $set: { [`colors.${newColor}`]: { [newSize]: newQuantity } } }
+    );
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error adding new color:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/admin/delete-color", async (req, res) => {
+  const { productId, color } = req.body;
+  try {
+    await Product.updateOne(
+      { _id: productId },
+      { $unset: { [`colors.${color}`]: 1 } }
+    );
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error deleting color:", error);
+    res.status(500).send("Server error");
   }
 });
 

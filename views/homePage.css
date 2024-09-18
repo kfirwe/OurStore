@@ -68,6 +68,90 @@ body {
   animation-delay: 0.2s;
 }
 
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-square {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.color-square:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.size-square {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.size-square {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border: 1px solid #000;
+  text-align: center;
+  line-height: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.size-square.selected-size {
+  background-color: #007bff; /* Blue background for selected size */
+  color: white;
+  border-color: #007bff;
+}
+
+.size-square.unavailable {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #fff;
+}
+
+.size-square:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.unavailable {
+  cursor: not-allowed;
+  text-decoration: line-through;
+  color: #999;
+}
+
+.unavailable:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .discount-badge {
   position: absolute;
   top: 10px;

@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/favicon.webp" type="image/webp">
+
   <title>Admin Dashboard</title>
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -265,7 +267,7 @@
                             </a>
                         </li>
                         <li class="nav-item position-relative">
-                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                            <a class="nav-link" href="/cart" onclick="redirectToLoginIfNotLoggedIn()">
                               <i class="fas fa-shopping-cart fa-lg"></i> Cart
                               <% if (cartItemCount > 0) { %>
                                 <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
@@ -517,6 +519,7 @@
             <th>Gender</th>
             <th>Amount</th>
             <th>Image</th>
+            <th>Colors and Sizes</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -607,6 +610,57 @@
                   />
                 </form>
               </td>
+              <td>
+                <!-- Color and Size Management -->
+                <div>
+                  <% Object.keys(product.colors).forEach((color) => { %>
+                    <div>
+                      <strong><%= color %></strong>
+                      <ul>
+                        <% Object.keys(product.colors[color]).forEach((size) => { %>
+                          <li>
+                            <span>Size: <%= size %> - Quantity: <%= product.colors[color][size] %></span>
+                            <input 
+                              type="number" 
+                              class="form-control d-inline-block" 
+                              value="<%= product.colors[color][size] %>" 
+                              min="0" 
+                              style="width: 80px;"
+                              onblur="updateColorSizeQuantity('<%= product._id %>', '<%= color %>', '<%= size %>', this.value)"
+                            />
+                            <button class="btn btn-danger btn-sm" onclick="deleteSize('<%= product._id %>', '<%= color %>', '<%= size %>')">
+                              <i class="fas fa-trash"></i> Delete Size
+                            </button>
+                          </li>
+                        <% }); %>
+                      </ul>
+                      <button class="btn btn-primary btn-sm" onclick="addNewSize('<%= product._id %>', '<%= color %>')">
+                        <i class="fas fa-plus"></i> Add Size
+                      </button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteColor('<%= product._id %>', '<%= color %>')">
+                        <i class="fas fa-trash"></i> Delete Color
+                      </button>
+                    </div>
+                  <% }); %>
+              
+                  <!-- Add new color -->
+                  <div class="mt-3">
+                    <select class="form-select d-inline-block" id="newColorSelect-<%= product._id %>" style="width: 120px;">
+                      <option value="">Select Color</option>
+                      <option value="Red">Red</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Yellow">Yellow</option>
+                      <option value="Black">Black</option>
+                      <option value="White">White</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="addNewColor('<%= product._id %>')">
+                      <i class="fas fa-plus"></i> Add Color
+                    </button>
+                  </div>
+                </div>
+              </td>
+              
               <td>
                 <form action="/admin/delete-product" method="POST" style="display: inline">
                   <input type="hidden" name="productId" value="<%= product._id %>" />
@@ -1150,6 +1204,10 @@
                             <strong>Category:</strong> <%= product.category %><br>
                             <strong>Company:</strong> <%= product.company %><br>
                             <strong>Gender:</strong> <%= product.gender %><br>
+                            <strong>Color:</strong> 
+                            <span style="display: inline-block; width: 20px; height: 20px; background-color: <%= product.color %>; border: 1px solid #000; margin-right: 5px;"></span>
+                            <%= product.color %><br>
+                            <strong>size:</strong> <%= product.size %><br>
                             <strong>quantityPurchased:</strong> <%= product.quantityPurchased %><br>
                             <img
                                 src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
@@ -1344,10 +1402,131 @@
   <script>
     const width = 800;
     const height = 400;
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+    const margin = { top: 30, right: 30, bottom: 30, left: 40 };
 
     let currentPage = 1;
     const limit = 20;
+
+    // Update color and size quantity
+function updateColorSizeQuantity(productId, color, size, quantity) {
+  fetch(`/admin/update-color-size`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ productId, color, size, quantity }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        alert('Error updating quantity.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+// Add new size to an existing color
+function addNewSize(productId, color) {
+  const newSize = prompt('Enter the size (e.g., S, M, L):');
+  const newQuantity = prompt('Enter the quantity for the new size:');
+  if (newSize && newQuantity) {
+    fetch(`/admin/add-size`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, color, newSize, newQuantity }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          alert('Error adding new size.');
+        } else {
+          window.location.reload(); // Reload the page to show changes
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+}
+
+// Delete size
+function deleteSize(productId, color, size) {
+  if (confirm(`Are you sure you want to delete size ${size} for color ${color}?`)) {
+    fetch(`/admin/delete-size`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, color, size }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          alert('Error deleting size.');
+        } else {
+          window.location.reload(); // Reload the page to show changes
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+}
+
+// Add new color
+function addNewColor(productId) {
+  const newColor = document.getElementById(`newColorSelect-${productId}`).value;
+  if (newColor) {
+    const newSize = prompt('Enter the size for the new color (e.g., S, M, L):');
+    const newQuantity = prompt('Enter the quantity for the new color and size:');
+    if (newSize && newQuantity) {
+      fetch(`/admin/add-color`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, newColor, newSize, newQuantity }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            alert('Error adding new color.');
+          } else {
+            window.location.reload(); // Reload the page to show changes
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+  } else {
+    alert('Please select a color.');
+  }
+}
+
+// Delete color
+function deleteColor(productId, color) {
+  if (confirm(`Are you sure you want to delete color ${color}?`)) {
+    fetch(`/admin/delete-color`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, color }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          alert('Error deleting color.');
+        } else {
+          window.location.reload(); // Reload the page to show changes
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+}
+
 
     document.addEventListener("DOMContentLoaded", function() {
         // Existing code that runs on DOMContentLoaded
@@ -1516,33 +1695,42 @@
     }
 
     function renderChart(data) {
+    // Remove any existing elements from the chart before re-rendering
     svg.selectAll("*").remove();
 
+    // Ensure the x-axis scales properly with dates
     const x = d3.scaleTime()
-        .domain(d3.extent(data, d => new Date(d.date)))
+        .domain(d3.extent(data, d => new Date(d.date)))  // Extent automatically adjusts the range
         .range([0, width]);
 
+    // Append x-axis to the SVG
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(5)); // Adjust the number of ticks if needed
 
+    // Ensure the y-axis scales properly with the `amount`
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.amount)])
+        .domain([0, d3.max(data, d => d.amount)]) // Dynamic scaling based on max `amount`
         .range([height, 0]);
 
+    // Append y-axis to the SVG
     svg.append("g")
         .call(d3.axisLeft(y));
 
+    // Line generator function for plotting data points
+    const line = d3.line()
+        .x(d => x(new Date(d.date)))
+        .y(d => y(d.amount));
+
+    // Append the line to the SVG
     svg.append("path")
-        .datum(data)
+        .datum(data) // Bind data
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
-        .attr("d", d3.line()
-            .x(d => x(new Date(d.date)))
-            .y(d => y(d.amount))
-        );
+        .attr("d", line);
 
+    // Create circles for each data point
     svg.selectAll("dot")
         .data(data)
         .enter()
@@ -1557,13 +1745,15 @@
                 .attr("x", x(new Date(d.date)) + 10)
                 .attr("y", y(d.amount) - 10)
                 .attr("id", "tooltip")
-                .text(`Amount: ${d.amount}`);
+                .text(`Amount: ${d.amount}, User: ${d.username}`);
         })
         .on("mouseout", function() {
             d3.select(this).attr("r", 5).attr("fill", "red");
             svg.select("#tooltip").remove();
         });
 }
+
+
 
 
     // Initial chart load

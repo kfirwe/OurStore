@@ -3,6 +3,7 @@ const { Wishlist } = require("../models/Wishlist");
 const Discount = require("../models/Discount"); // Include the discount model
 const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const createLog = require("../helpers/logHelper");
+const mapToObject = require("../helpers/homepageHelper");
 require("dotenv").config();
 
 exports.getHomePage = async (req, res) => {
@@ -15,15 +16,31 @@ exports.getHomePage = async (req, res) => {
     // Fetch the current user's username
     const username = req.session.user ? req.session.user.username : "";
 
+    // Fetch the cart for the current user and calculate cart item count
+    let cartItemCount = 0;
+    if (username) {
+      const cart = await Cart.findOne({ userName: username });
+      if (cart) {
+        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
+      }
+    }
+
+    // Initialize wishlist array to store product IDs
+    let wishlist = [];
+    if (username) {
+      const userWishlist = await Wishlist.findOne({ userName: username });
+      if (userWishlist) {
+        wishlist = userWishlist.products.map((product) => product.prodId); // Get all product IDs from the user's wishlist
+      }
+    }
+
     // Check if the user is filtering by wishlist
     if (req.query.wishlist === "true") {
       if (!username) {
         return res.redirect("/login"); // Redirect to login if user is not logged in
       }
-      // Fetch the user's wishlist
-      const wishlist = await Wishlist.findOne({ userName: username });
-      if (wishlist && wishlist.products.length > 0) {
-        filters.prodId = { $in: wishlist.products.map((p) => p.prodId) }; // Filter products in the wishlist
+      if (wishlist.length > 0) {
+        filters.prodId = { $in: wishlist }; // Filter products in the wishlist
       } else {
         filters.prodId = { $in: [] }; // If no wishlist, return no products
       }
@@ -52,24 +69,6 @@ exports.getHomePage = async (req, res) => {
       }
     }
 
-    // Fetch the cart for the current user
-    let cartItemCount = 0;
-    if (username) {
-      const cart = await Cart.findOne({ userName: username });
-      if (cart) {
-        cartItemCount = cart.products.length; // Count the number of distinct items in the cart
-      }
-    }
-
-    // Fetch the user's wishlist
-    let wishlist = [];
-    if (username) {
-      const userWishlist = await Wishlist.findOne({ userName: username });
-      wishlist = userWishlist
-        ? userWishlist.products.map((product) => product.prodId)
-        : [];
-    }
-
     // Apply category and gender filters
     if (req.query.category) {
       filters.category = req.query.category;
@@ -79,9 +78,38 @@ exports.getHomePage = async (req, res) => {
       filters.gender = req.query.gender; // Filter products by gender
     }
 
+    // Apply color and size filters
+    if (req.query.color) {
+      filters[`colors.${req.query.color}`] = { $exists: true }; // Filter by color
+    }
+
+    if (req.query.size) {
+      const sizeQuery = req.query.size.toUpperCase(); // Ensure consistency with uppercase sizes
+      filters.$expr = {
+        $gt: [
+          {
+            $sum: {
+              $map: {
+                input: { $objectToArray: "$colors" },
+                as: "color",
+                in: {
+                  $cond: [
+                    { $ifNull: [`$$color.v.${sizeQuery}`, false] },
+                    `$$color.v.${sizeQuery}`,
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          0,
+        ],
+      };
+    }
+
     // Apply non-sold-out filter if provided
     if (req.query.nonSoldOut === "true") {
-      filters.amount = { $gt: 0 }; // Fetch only products with stock > 0
+      // We will handle this filter after we calculate the `isSoldOut` field dynamically below
     }
 
     // If "Products with Discounts" filter is checked
@@ -90,20 +118,19 @@ exports.getHomePage = async (req, res) => {
       const productIdsWithDiscounts = discountedProducts.flatMap(
         (discount) => discount.prodIds
       );
-
       filters.prodId = { $in: productIdsWithDiscounts }; // Only fetch products with discounts
     }
 
     // Fetch products with pagination and filters
-    const products = await Product.find(filters).skip(skip).limit(limit);
+    let products = await Product.find(filters).skip(skip).limit(limit);
 
     // Fetch discounts for products that appear in the prodIds array
     const discounts = await Discount.find({
       prodIds: { $in: products.map((p) => p.prodId) },
     });
 
-    // Attach the highest valid discount to each product
-    const productsWithDiscounts = products.map((product) => {
+    // Attach the highest valid discount and calculate `isSoldOut` dynamically
+    let productsWithDiscounts = products.map((product) => {
       const now = new Date();
 
       // Filter for discounts that are valid and apply to the product
@@ -120,14 +147,63 @@ exports.getHomePage = async (req, res) => {
           ? Math.max(...validProductDiscounts.map((d) => d.discountPercentage))
           : null;
 
+      // Calculate the discounted price (if any)
+      let discountedPrice = null;
+      if (maxDiscount) {
+        discountedPrice = (product.price * (1 - maxDiscount / 100)).toFixed(2); // Round to 2 decimal places
+      }
+
+      // Convert Map to a plain object before sending to the EJS template
+      const colorsObject = mapToObject(product.colors);
+
+      // Calculate total stock for the product
+      let totalAmount = 0;
+      for (const color in colorsObject) {
+        const sizes = colorsObject[color];
+        totalAmount += Object.values(sizes).reduce(
+          (sum, quantity) => sum + quantity,
+          0
+        );
+      }
+
       return {
         ...product.toObject(),
+        isSoldOut: totalAmount === 0, // If totalAmount is 0, mark as sold out
         discountPercentage: maxDiscount, // Attach the highest valid discount, if any
+        discountedPrice, // Attach the calculated discounted price, if any
+        colors: colorsObject, // Now colors is a plain object
       };
     });
 
+    // Apply `nonSoldOut` filter after mapping
+    if (req.query.nonSoldOut === "true") {
+      productsWithDiscounts = productsWithDiscounts.filter(
+        (product) => !product.isSoldOut
+      );
+    }
+
     // Fetch all products without filters for sidebar or other purposes
     const UnFilteredProducts = await Product.find({}); // Fetch all products
+
+    // Map over the products to calculate `isSoldOut` for each product
+    const mappedProducts = UnFilteredProducts.map((product) => {
+      const colors = mapToObject(product.colors); // Convert Map to Object
+      let totalAmount = 0;
+
+      // Calculate total stock for the product
+      for (const color in colors) {
+        const sizes = colors[color];
+        totalAmount += Object.values(sizes).reduce(
+          (sum, quantity) => sum + quantity,
+          0
+        );
+      }
+
+      return {
+        ...product.toObject(),
+        isSoldOut: totalAmount === 0, // Product is sold out if total quantity is 0
+      };
+    });
 
     // Fetch total number of filtered products for pagination calculation
     const totalProducts = await Product.countDocuments(filters);
@@ -144,7 +220,7 @@ exports.getHomePage = async (req, res) => {
       wishlist, // Pass the wishlist product IDs to the front end
       weatherApiKey, // Weather API key for integration
       products: productsWithDiscounts, // Filtered products to display
-      UnFilteredProducts, // All products without filters
+      UnFilteredProducts: mappedProducts, // All products without filters
       currentPage: page, // Current page number for pagination
       totalPages, // Total number of pages for pagination
       filters: req.query, // Pass the filters to maintain filter values in the form
@@ -172,8 +248,21 @@ exports.checkProductAvailability = async (req, res) => {
       });
     }
 
-    // Check if product is out of stock
-    const isAvailable = product.amount > 0;
+    // Calculate total stock dynamically based on the colors and sizes
+    const colors = product.colors; // Assuming product.colors is a Map or similar object
+    let totalAmount = 0;
+
+    // Iterate through colors and sizes to calculate total stock
+    for (const color in colors) {
+      const sizes = colors[color];
+      totalAmount += Object.values(sizes).reduce(
+        (sum, quantity) => sum + quantity,
+        0
+      );
+    }
+
+    // Check if the product is out of stock based on total calculated stock
+    const isAvailable = totalAmount > 0;
 
     // Check if the product is already in the user's cart
     const cart = await Cart.findOne({
@@ -196,55 +285,55 @@ exports.checkProductAvailability = async (req, res) => {
   }
 };
 
-exports.addToCart = async (req, res) => {
-  try {
-    const { userName, prodId } = req.body;
+// exports.addToCart = async (req, res) => {
+//   try {
+//     const { userName, prodId } = req.body;
 
-    // Find the product by prodId
-    const product = await Product.findOne({ prodId });
+//     // Find the product by prodId
+//     const product = await Product.findOne({ prodId });
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
 
-    // Check if the product is available (amount > 0)
-    if (product.amount <= 0) {
-      return res
-        .status(400)
-        .json({ message: "The product is not available now!" });
-    }
+//     // Check if the product is available (amount > 0)
+//     if (product.amount <= 0) {
+//       return res
+//         .status(400)
+//         .json({ message: "The product is not available now!" });
+//     }
 
-    // Find the user's cart or create a new one if it doesn't exist
-    let cart = await Cart.findOne({ userName });
+//     // Find the user's cart or create a new one if it doesn't exist
+//     let cart = await Cart.findOne({ userName });
 
-    if (!cart) {
-      // Create a new cart for the user if it doesn't exist
-      cart = new Cart({ userName, products: [] });
-    }
+//     if (!cart) {
+//       // Create a new cart for the user if it doesn't exist
+//       cart = new Cart({ userName, products: [] });
+//     }
 
-    // Check if the product is already in the cart
-    const productInCart = cart.products.find((item) => item.prodId === prodId);
+//     // Check if the product is already in the cart
+//     const productInCart = cart.products.find((item) => item.prodId === prodId);
 
-    if (productInCart) {
-      return res.status(400).json({
-        message:
-          "The product is already in your cart! Please change the quantity in the cart tab.",
-      });
-    }
+//     if (productInCart) {
+//       return res.status(400).json({
+//         message:
+//           "The product is already in your cart! Please change the quantity in the cart tab.",
+//       });
+//     }
 
-    // Add the product to the cart with default quantity 1
-    cart.products.push({
-      ...product.toObject(),
-      quantity: 1,
-    });
+//     // Add the product to the cart with default quantity 1
+//     cart.products.push({
+//       ...product.toObject(),
+//       quantity: 1,
+//     });
 
-    await cart.save(); // Save the cart
+//     await cart.save(); // Save the cart
 
-    return res
-      .status(200)
-      .json({ message: "Product added to cart successfully!" });
-  } catch (err) {
-    console.error("Error adding product to cart:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
+//     return res
+//       .status(200)
+//       .json({ message: "Product added to cart successfully!" });
+//   } catch (err) {
+//     console.error("Error adding product to cart:", err);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// };

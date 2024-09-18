@@ -82,13 +82,48 @@ app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "signup.html"));
 });
 
+app.get("/confirmation", async (req, res) => {
+  const { purchaseId, country, city, street, number } = req.query;
+
+  // Assuming you have `username` stored in session or JWT token
+  const username = req.session.username; // adjust according to how you store the user
+
+  const isAdmin = req.session.user && req.session.user.role === "admin";
+
+  // Example: Fetch cartItemCount from database, assuming you have a Cart model or similar
+  let cartItemCount = 0;
+
+  try {
+    // Assuming the cart is stored in the DB and linked to the user's session or ID
+    const cart = await Cart.findOne({ userId: username }); // Adjust accordingly
+    cartItemCount = cart ? cart.products.length : 0;
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    cartItemCount = 0;
+  }
+
+  // Render the confirmation page with all the data
+  res.render("confirmed", {
+    purchaseId: purchaseId,
+    username: username,
+    isAdmin,
+    cartItemCount: cartItemCount,
+    user: {
+      country: country,
+      city: city,
+      street: street,
+      number: number,
+    },
+  });
+});
+
 // Route to handle the home page
 app.get("/homePage", homepageController.getHomePage);
 app.get(
   "/product-availability/:prodId",
   homepageController.checkProductAvailability
 );
-app.post("/add-to-cart", homepageController.addToCart);
+// app.post("/add-to-cart", homepageController.addToCart);
 
 app.use("/", loginRoutes);
 app.use("/", wishListRoutes);

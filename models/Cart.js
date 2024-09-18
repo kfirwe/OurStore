@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-const { productSchema } = require("./Product");
+const { productInPurchaseSchema } = require("./Purchase");
 
 // Extend the product schema to include a quantity field
 const cartProductSchema = new mongoose.Schema({
-  ...productSchema.obj,
+  ...productInPurchaseSchema.obj,
   quantity: { type: Number, required: true, default: 1 }, // Default quantity to 1
 });
 

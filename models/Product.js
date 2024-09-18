@@ -9,7 +9,14 @@ const productSchema = new mongoose.Schema({
   gender: { type: String, required: true },
   image: { type: Buffer, required: true }, // Store image as binary data
   imageType: { type: String, required: true }, // Store the image MIME type
-  amount: { type: Number, default: 0, required: true }, // New field for storing product quantity
+  colors: {
+    type: Map,
+    of: {
+      type: Map,
+      of: Number, // The amount for each size under a specific color
+    },
+    required: true,
+  },
 });
 
 const Product = mongoose.model("Product", productSchema, "products");

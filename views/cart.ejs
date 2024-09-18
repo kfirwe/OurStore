@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.webp" type="image/webp">
+
+  <title>Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Ensure the footer is pushed to the bottom */
+    @font-face {
+        font-family: "MyCustomFont";
+        src: url("/MyCustomFont.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* General Styling */
+    body {
+      font-family: "MyCustomFont", Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+      background-color: #343a40; /* Dark background for the navbar */
+    }
+
+    .navbar-nav .nav-link {
+      color: #ffffff; /* White color for the nav links */
+    }
+
+    .navbar-brand img {
+      height: 40px;
+    }
+
+    .navbar .nav-link:hover {
+      color: #85827a; /* Hover color for links */
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      padding: 0.3em 0.6em;
+      background-color: red; /* Cart badge background */
+    }
+
+    /* Table Styling */
+    table {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table th,
+    table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    table img {
+      border-radius: 8px;
+    }
+
+    /* Button Styling */
+    .btn {
+      border-radius: 20px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      padding: 10px 20px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    /* Coupon Section Styling */
+    .input-group {
+      margin-top: 20px;
+    }
+
+    /* Custom CSS for active nav links */
+    .nav-link.active {
+        font-weight: bold;
+        color: #efefec !important; /* Gold color for active links */
+        background-color: #343a40; /* Same as navbar background to keep it seamless */
+        border-bottom: 3px solid #FFD700; /* Adds a nice gold underline for active state */
+        padding-bottom: 8px; /* Adjust space for underline */
+    }
+
+
+    /* Cart Summary Section */
+    #cart-total {
+      margin-top: 20px;
+      font-size: 1.5rem;
+    }
+
+    #prevPrice {
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    #priceArrow {
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
+          By A Thread
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link <% if (currentPage === 'home') { %>active<% } %>" aria-current="page" href="/homePage">
+                <i class="fas fa-home fa-lg"></i> Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <% if (currentPage === 'landing') { %>active<% } %>" href="/">
+                <i class="fas fa-flag fa-lg"></i> Landing Page
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <% if (currentPage === 'about') { %>active<% } %>" href="#">
+                <i class="fas fa-info-circle fa-lg"></i> About
+              </a>
+            </li>
+            <li class="nav-item position-relative">
+              <a class="nav-link <% if (currentPage === 'cart') { %>active<% } %>" href="/cart">
+                <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                <% if (cartItemCount > 0) { %>
+                  <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                <% } %>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <% if (currentPage === 'profile') { %>active<% } %>" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                <i class="fas fa-user fa-lg"></i> Profile
+              </a>
+            </li>
+  
+            <!-- Show "Login" if not logged in, otherwise show "Logout" -->
+            <% if (!username) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">
+                <i class="fas fa-sign-in-alt fa-lg"></i> Login
+              </a>
+            </li>
+            <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt fa-lg"></i> Logout
+              </a>
+            </li>
+            <% } %>
+  
+            <!-- Show "Admin tools" if user is admin -->
+            <% if (isAdmin) { %>
+            <li class="nav-item">
+              <a class="nav-link" onclick="renderAdminPage()">
+                <i class="fas fa-tools fa-lg"></i> Admin tools
+              </a>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+
+  <!-- Cart Content -->
+  <div class="container mt-5">
+    <h1>Your Cart</h1>
+
+    <% if (cart.length === 0) { %>
+    <div class="alert alert-info">
+      Your cart is currently empty.
+    </div>
+    <% } else { %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Product Image</th>
+          <th>Product</th>
+          <th>Color</th>
+          <th>Size</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cart.forEach(item => { %>
+        <tr data-prod-id="<%= item.prodId %>" data-color="<%= item.color %>" data-size="<%= item.size %>">
+          <td>
+            <img src="data:image/<%= item.imageType %>;base64,<%= item.image.toString('base64') %>" alt="<%= item.name %>" style="width: 60px; height: 60px; object-fit: cover;">
+          </td>
+          <td><%= item.name %></td>
+          <td><%= item.color %></td>
+          <td><%= item.size %></td>
+          <td>
+            <input type="number" value="<%= item.quantity %>" class="form-control cart-quantity-input" min="1" max="99" onchange="updateCartItem('<%= item.prodId %>', '<%= item.color %>', '<%= item.size %>', this.value)">
+          </td>
+          <td>
+            <% if (item.originalPrice !== item.discountedPrice) { %>
+            <span style="text-decoration: line-through;">$<%= item.originalPrice.toFixed(2) %></span>
+            <span style="color: red;">$<%= item.discountedPrice %></span>
+            <% } else { %>
+            $<%= item.originalPrice.toFixed(2) %>
+            <% } %>
+          </td>
+          <td>$<%= (item.discountedPrice * item.quantity).toFixed(2) %></td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="removeCartItem('<%= item.prodId %>', '<%= item.color %>', '<%= item.size %>')">
+              <i class="fas fa-trash"></i> Remove
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Total Price Section -->
+    <div id="cart-total">
+      <h4>
+        <span id="prevPrice" style="text-decoration: line-through; margin-right: 10px; display:none;"></span>
+        <i id="priceArrow" style="margin-right: 10px; display:none;">→</i>
+        Total: $<span id="totalPrice"><%= cartTotal %></span>
+      </h4>
+    </div>
+
+    <% } %>
+  </div>
+
+  <!-- Add Coupon Section -->
+  <div class="container">
+    <div class="mb-3">
+      <label for="couponCode" class="form-label">Apply Coupon</label>
+      <div class="input-group">
+        <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code" />
+        <button class="btn btn-primary" onclick="applyCoupon()">Apply</button>
+        <button class="btn btn-secondary" onclick="removeCoupon()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Form -->
+  <div class="container mt-5">
+    <h1>Checkout</h1>
+
+    <h3>Shipping Information</h3>
+    <form id="shippingForm">
+      <div class="row mb-3">
+        <div class="col">
+          <label for="country" class="form-label">Country</label>
+          <input type="text" class="form-control" id="country" value="<%= user.country %>" readonly>
+        </div>
+        <div class="col">
+          <label for="city" class="form-label">City</label>
+          <input type="text" class="form-control" id="city" value="<%= user.city %>" readonly>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col">
+          <label for="street" class="form-label">Street</label>
+          <input type="text" class="form-control" id="street" value="<%= user.street || '' %>" required>
+        </div>
+        <div class="col">
+          <label for="number" class="form-label">House Number</label>
+          <input type="number" class="form-control" id="number" value="<%= user.number || '' %>" required>
+        </div>
+      </div>
+    </form>
+
+    <h3>Payment Information</h3>
+    <form id="paymentForm">
+      <div class="row mb-3">
+        <div class="col">
+          <label for="cardNumber" class="form-label">Card Number</label>
+          <input type="number" class="form-control" id="cardNumber" required>
+        </div>
+        <div class="col">
+          <label for="expiryDate" class="form-label">Expiration Date (MM/YY)</label>
+          <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col">
+          <label for="cvv" class="form-label">CVV</label>
+          <input type="number" class="form-control" id="cvv" required>
+        </div>
+      </div>
+    </form>
+
+    <button class="btn btn-primary btn-lg" onclick="completePurchase()">Complete Purchase</button>
+  </div>
+
+  <!-- Footer (optional include if you have a footer template) -->
+  <%- include('_footer') %>
+
+  <!-- Bootstrap JS (Optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function completePurchase() {
+    const couponCode = document.getElementById('couponCode').value.trim(); // Get coupon code if applied
+
+    // Get shipping details from the form
+    const shippingData = {
+      street: document.getElementById('street').value,
+      number: document.getElementById('number').value,
+      country: document.getElementById('country').value,  // Assuming you have these fields available in the form
+      city: document.getElementById('city').value         // Same assumption for the city
+    };
+
+    const paymentData = {
+      cardNumber: document.getElementById('cardNumber').value,
+      expiryDate: document.getElementById('expiryDate').value,
+      cvv: document.getElementById('cvv').value,
+    };
+
+    fetch('/cart/purchase', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ shippingData, paymentData, couponCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Purchase completed successfully!');
+        
+        // Get the required data from the response (modify this based on your backend structure)
+        const purchaseId = data.purchaseId;  // Make sure your server returns `purchaseId`
+        const userCountry = shippingData.country;  // You already have this from the form
+        const userCity = shippingData.city;
+        const userStreet = shippingData.street;
+        const userNumber = shippingData.number;
+
+        // Redirect with the required query params
+        window.location.href = `/confirmation?purchaseId=${purchaseId}&country=${encodeURIComponent(userCountry)}&city=${encodeURIComponent(userCity)}&street=${encodeURIComponent(userStreet)}&number=${encodeURIComponent(userNumber)}`;
+
+      } else {
+        alert('Error during purchase: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred during purchase.');
+    });
+}
+
+
+// Function to apply the coupon
+function applyCoupon() {
+  const couponCode = document.getElementById('couponCode').value.trim();
+  if (!couponCode) {
+      alert('Please enter a coupon code.');
+      return;
+  }
+
+  fetch('/cart/apply-coupon', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ couponCode })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.success) {
+          alert('Coupon applied successfully!');
+
+          // Disable all quantity inputs
+          document.querySelectorAll('.cart-quantity-input').forEach(input => {
+              input.disabled = true;
+          });
+
+          // Show the previous price as the price after discount but before the coupon
+          document.getElementById('prevPrice').textContent = `$${data.originalTotalPrice}`; // Price after product discounts
+          
+          // Show the new discounted price (after both discounts and coupon)
+          document.getElementById('totalPrice').textContent = `${data.discountedTotalPrice}`;
+
+          // Set the new price in red
+          document.getElementById('totalPrice').style.color = 'red';
+
+          // Make the previous price and arrow visible
+          document.getElementById('prevPrice').style.display = 'inline';
+          document.getElementById('priceArrow').style.display = 'inline';
+
+      } else {
+          alert(data.message || 'Failed to apply coupon');
+      }
+  })
+  .catch(error => {
+      console.error('Error applying coupon:', error);
+  });
+}
+
+
+    // Function to remove the coupon
+function removeCoupon() {
+    const couponCode = document.getElementById('couponCode').value.trim();
+
+    // Check if a coupon was entered or applied
+    if (!couponCode) {
+        alert('Please enter a coupon first.');
+        return;
+    }
+
+    // Proceed with removing the coupon
+    fetch('/cart/remove-coupon', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Coupon removed successfully!');
+
+            // Enable all quantity inputs
+            document.querySelectorAll('.cart-quantity-input').forEach(input => {
+                input.disabled = false;
+            });
+
+            location.reload(); // Refresh the page to update prices
+        } else {
+            alert('Failed to remove coupon');
+        }
+    })
+    .catch(error => {
+        console.error('Error removing coupon:', error);
+    });
+}
+
+
+function updateCartItem(prodId, color, size, newQuantity) {
+  fetch('/cart/update-item', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prodId, color, size, newQuantity }), // Now passing color and size
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload(); // Reload the page to reflect the updated cart
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+
+function removeCartItem(prodId, color, size) {
+  fetch('/cart/remove-item', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prodId, color, size }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Enable all quantity inputs
+      document.querySelectorAll('.cart-quantity-input').forEach(input => {
+        input.disabled = false;
+      });
+
+      // Remove the item from the table
+      const itemElement = document.querySelector(`[data-prod-id="${prodId}"][data-color="${color}"][data-size="${size}"]`);
+      if (itemElement) {
+        itemElement.remove();
+      }
+
+      // Update the cart total and cart badge count
+      document.getElementById('totalPrice').innerText = `${data.cartTotal}`;
+      const cartItemCountElement = document.getElementById('cartItemCount');
+
+      // If cart is empty
+      if (data.cartItemCount === 0) {
+        // Remove the cart badge
+        if (cartItemCountElement) {
+          cartItemCountElement.remove(); // Remove the cart count badge
+        }
+
+        // Show the empty cart message
+        document.querySelector('table').remove(); // Remove the table
+        document.querySelector('.container').innerHTML += `
+          <div class="alert alert-info">
+            Your cart is currently empty.
+          </div>`;
+        
+
+      } else {
+        // Update cart item count badge
+        if (cartItemCountElement) {
+          cartItemCountElement.innerText = `${data.cartItemCount}`;
+        }
+      }
+
+      // If the coupon should be reset, remove coupon-related CSS
+      if (data.resetCoupon) {
+        document.getElementById('prevPrice').style.display = 'none'; // Hide strikethrough price
+        document.getElementById('priceArrow').style.display = 'none'; // Hide arrow
+        document.getElementById('totalPrice').style.color = ''; // Reset color to default
+      }
+    } else {
+      alert(data.message);
+    }
+    location.reload();  // Force page reload after deletion
+
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+
+
+    // function handlePurchase() {
+    //   if (confirm('Are you sure you want to purchase these items?')) {
+    //     fetch('/cart/purchase', {
+    //       method: 'POST',
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       if (data.success) {
+    //         alert('Purchase successful!');
+    //         window.location.href = '/homePage'; // Redirect to homepage after successful purchase
+    //       } else {
+    //         alert('Purchase failed: ' + data.message);
+    //       }
+    //     });
+    //   }
+    // }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+            window.location.href = "/login";
+        <% } %>
+    }
+
+    // Logout function
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the login page
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+                alert('An error occurred while logging out.');
+            });
+    }
+
+    function renderAdminPage() {
+        window.location.href = "/admin"; // Redirects the user to the /admin page
+    }
+
+  </script>
+</body>
+
+</html>

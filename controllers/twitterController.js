@@ -7,6 +7,7 @@ const Coupon = require("../models/Coupon");
 const { Log } = require("../models/Log");
 const Discount = require("../models/Discount");
 const createLog = require("../helpers/logHelper"); // Import the log helper
+const mapToObject = require("../helpers/homepageHelper");
 
 // Load environment variables
 require("dotenv").config();
@@ -78,9 +79,19 @@ exports.postTweet = async (req, res) => {
       }
     }
 
+    const productsWithColors = products.map((product) => {
+      // Convert Map to a plain object before sending to the EJS template
+      const colorsObject = mapToObject(product.colors);
+
+      return {
+        ...product.toObject(), // Convert the Mongoose document to a plain object
+        colors: colorsObject, // Replace the colors Map with the converted plain object
+      };
+    });
+
     res.render("admin", {
       users,
-      products,
+      products: productsWithColors,
       discounts,
       cartItemCount,
       purchases,
@@ -122,9 +133,19 @@ exports.postTweet = async (req, res) => {
       }
     }
 
+    const productsWithColors = products.map((product) => {
+      // Convert Map to a plain object before sending to the EJS template
+      const colorsObject = mapToObject(product.colors);
+
+      return {
+        ...product.toObject(), // Convert the Mongoose document to a plain object
+        colors: colorsObject, // Replace the colors Map with the converted plain object
+      };
+    });
+
     res.render("admin", {
       users,
-      products,
+      products: productsWithColors,
       discounts,
       cartItemCount,
       purchases,
