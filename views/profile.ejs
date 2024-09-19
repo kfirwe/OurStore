@@ -19,6 +19,11 @@
     />
 
 </head>
+<% 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+%>
 <body>
     <!--Navigation Bar-->
     <header>
@@ -91,11 +96,11 @@
     <div class="welcome-user">
         <div class="row">
             <div class="col-sm-9">
-                <h2>Hello <%= username %>!</h1>
+                <h2>Hello <%= capitalizeFirstLetter(username) %>!</h1>
                 <a href="">🧾 <%= purchasesCount %> Recent Orders</a>
             </div>
             <div class="col-sm-3">
-                <img class="user-img" src="../public/user.png">
+                <img class="user-img" src="/user.png">
             </div>
         </div>
     </div>
@@ -137,7 +142,9 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <h1> No Recent purchases</h1>
+                    </br>
+                    <h4>You Have not Made Any Purchases Yet,</h4>
+                    <h4>Start Your Shopping Journey Now💗</h4>
                 <% } %>
             </div>
             <div class="col-sm-5 personal-info">
