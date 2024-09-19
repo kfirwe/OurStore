@@ -108,7 +108,7 @@
     </div>
     <div class="profile border-bottom">
         <div class="row">
-            <div class="col-sm-5">
+            <div class="col-sm-10">
                 <h2>Orders History</h2>
                 <% if (lastpurchase && lastpurchaseItemsCount > 0) { %>
                     <div class="order-history">
@@ -149,24 +149,7 @@
                     <h4>Start Your Shopping Journey Now💗</h4>
                 <% } %>
             </div>
-            <div class="col-sm-5 personal-info">
-                <!--Get placeholder information from DB-->
-                <h2>Personal Information</h2>
-                <div class="information-form">
-                    <p>User Name <input placeholder="<%= user.username %>"></p>
-                    <p>Password  <input placeholder="*******" type="password"></p>
-                    <p>Email Address <input placeholder="<%= user.email %>"></p>
-                    <p>Phone Number <input placeholder="<%= user.phone %>"></p>
-                    <p>City <input placeholder="<%= user.city %>"></p>
-                    <p>Country <input placeholder="<%= user.country %>"></p>
-                    <button onclick="updateValues()">Save Changes</button>
-                </div>
-            </div>
         </div>
-    </div>
-    <div class="user-stats">
-        <h2>Purchase statistics</h2>
-        <p>Amount of money spent in site per month</p>
     </div>
 </body>
 </html>
