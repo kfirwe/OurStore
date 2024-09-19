@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+
+    <!-- Bootstrap CSS (Optional) -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    />
+
+    <!--Custom page CSS-->
+    <link rel="stylesheet" href="profile.css">
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+    />
+
+</head>
+<body>
+    <!--Navigation Bar-->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" />
+                    By A Thread
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/homePage">
+                                <i class="fas fa-home fa-lg"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-flag fa-lg"></i> Landing Page
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-info-circle fa-lg"></i> About
+                            </a>
+                        </li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                                <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                                <% if (cartItemCount > 0) { %>
+                                <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                                <i class="fas fa-user fa-lg"></i> Profile
+                            </a>
+                        </li>
+                        <% if (!username) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">
+                                <i class="fas fa-sign-in-alt fa-lg"></i> Login
+                            </a>
+                        </li>
+                        <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt fa-lg"></i> Logout
+                            </a>
+                        </li>
+                        <% } %>
+                        <% if (isAdmin) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="renderAdminPage()">
+                                <i class="fas fa-tools fa-lg"></i> Admin tools
+                            </a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <!--Profile page objects-->  
+    <div class="welcome-user">
+        <div class="row">
+            <div class="col-sm-9">
+                <h2>Hello <%= username %>!</h1>
+                <a href="">🧾 <%= purchasesCount %> Recent Orders</a>
+            </div>
+            <div class="col-sm-3">
+                <img class="user-img" src="../public/user.png">
+            </div>
+        </div>
+    </div>
+    <div class="profile border-bottom">
+        <div class="row">
+            <div class="col-sm-5">
+                <h2>Orders History</h2>
+                <div class="order-history">
+                    <div class="border-bottom">
+                        <!--Add order date from db-->
+                        <h6>Ordered on September 1, 2024</h6>
+                        <!--Add order status from db; shipped=blue, delivered=green, processing=grey-->
+                        <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
+                    </div>
+                    <!--Loop over items ordered from db-->
+                    <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="../public/shirt.png" alt="Product Image">
+                            <div class="ml-3 product-info">
+                                <h2 class="h5">Black T-Shirt</h2>
+                                <p>Quantity: 1</p>
+                                <p>Price: $10.00</p>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <p class="font-weightbold">Total: $10.00</p>
+                        </div>
+                    </div>
+                    <!--Second item-->
+                    <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div class="d-flex align-items-center">
+                            <img src="../public/dress.png" alt="Product Image">
+                            <div class="ml-3 product-info">
+                                <h2 class="h5">Black Dress</h2>
+                                <p>Quantity: 2</p>
+                                <p>Price: $10.00</p>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <p class="font-weightbold">Total: $20.00</p>
+                        </div>
+                    </div>
+                    <!--Calculate / receive rand total from db-->
+                    <div class="text-right mt-4">
+                        <h5 class="order-total">Grand Total: $30.00</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5 personal-info">
+                <!--Get placeholder information from DB-->
+                <h2>Personal Information</h2>
+                <div class="information-form">
+                    <p>User Name <input placeholder="<%= user.username %>"></p>
+                    <p>Password  <input placeholder="*******" type="password"></p>
+                    <p>Email Address <input placeholder="<%= user.email %>"></p>
+                    <p>Phone Number <input placeholder="<%= user.phone %>"></p>
+                    <p>City <input placeholder="<%= user.city %>"></p>
+                    <p>Country <input placeholder="<%= user.country %>"></p>
+                    <button onclick="updateValues()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="user-stats">
+        <h2>Purchase statistics</h2>
+        <p>Amount of money spent in site per month</p>
+    </div>
+</body>
+</html>

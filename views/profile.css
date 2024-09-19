@@ -1,0 +1,57 @@
+.header{
+    background-color: rgba(46, 133, 145, 0.288);
+    padding: 5px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.welcome-user a{
+    color: black;
+    text-decoration: none;
+}
+
+.user-img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.profile{
+    margin-top: 10px;
+    margin-left: 15px;          
+}
+
+.order-history{
+    box-sizing: border-box;
+    border: 1px solid rgba(97, 90, 131, 0.5);
+    border-radius: 30px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.product-info{
+    margin-left: 5px;
+    color: rgb(23, 23, 112);
+}
+
+.information-form{
+    margin-top: px;
+    
+}
+
+.information-form input{
+    padding: 3px;
+    border: 1px solid #8587d67e;
+    border-radius: 4px;
+    width:100%;
+}
+
+.information-form button{
+    background-color: rgb(164, 193, 231);
+    border: 1px;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
