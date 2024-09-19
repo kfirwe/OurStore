@@ -103,46 +103,42 @@
         <div class="row">
             <div class="col-sm-5">
                 <h2>Orders History</h2>
-                <div class="order-history">
-                    <div class="border-bottom">
-                        <!--Add order date from db-->
-                        <h6>Ordered on September 1, 2024</h6>
-                        <!--Add order status from db; shipped=blue, delivered=green, processing=grey-->
-                        <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
-                    </div>
-                    <!--Loop over items ordered from db-->
-                    <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="../public/shirt.png" alt="Product Image">
-                            <div class="ml-3 product-info">
-                                <h2 class="h5">Black T-Shirt</h2>
-                                <p>Quantity: 1</p>
-                                <p>Price: $10.00</p>
-                            </div>
+                <% if (lastpurchase && lastpurchaseItemsCount > 0) { %>
+                    <div class="order-history">
+                        <div class="border-bottom">
+                            <h6>Ordered on <%= lastpurchase.Date %></h6>
+                            <!--Add order status from db; shipped=blue, delivered=green, processing=grey-->
+                            <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
+                            <h6>Number of Items ordered - <%= lastpurchaseItemsCount %></h6>
                         </div>
-                        <div class="product-info">
-                            <p class="font-weightbold">Total: $10.00</p>
-                        </div>
-                    </div>
-                    <!--Second item-->
-                    <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
-                        <div class="d-flex align-items-center">
-                            <img src="../public/dress.png" alt="Product Image">
-                            <div class="ml-3 product-info">
-                                <h2 class="h5">Black Dress</h2>
-                                <p>Quantity: 2</p>
-                                <p>Price: $10.00</p>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <p class="font-weightbold">Total: $20.00</p>
+                        <!--Loop over items ordered from db-->
+                        <% lastpurchase.productsInfo.forEach(function(item) { %>
+                            <% if (item !== null) { %>
+                                <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div class="d-flex align-items-center">
+                                        <img src="data:image/<%= item.imageType %>;base64,<%= item.image.toString('base64') %>"
+                                            class="d-block w-100" alt="<%= item.name %>"
+                                            style="object-fit: cover; height: 150px; border-radius: 10px;">
+                                        <div class="ml-3 product-info">
+                                            <h2 class="h5"><%= item.name %></h2>
+                                            <p>Company: <%= item.company %></p>
+                                            <p>Amount: 1</p>
+                                            <p>Price: $<%= item.price %></p>
+                                        </div>
+                                    </div>
+                                    <div class="product-info">
+                                        <p class="font-weightbold">Total: $<%= item.price %></p>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% }); %>
+                        <div class="text-right mt-4">
+                            <h5 class="order-total">Grand Total: $<%= lastpurchase.TotalAmount %></h5>
                         </div>
                     </div>
-                    <!--Calculate / receive rand total from db-->
-                    <div class="text-right mt-4">
-                        <h5 class="order-total">Grand Total: $30.00</h5>
-                    </div>
-                </div>
+                <% } else { %>
+                    <h1> No Recent purchases</h1>
+                <% } %>
             </div>
             <div class="col-sm-5 personal-info">
                 <!--Get placeholder information from DB-->
