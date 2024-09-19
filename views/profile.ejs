@@ -99,7 +99,7 @@
             
             <div class="col-sm-9">
                 <h2>Hello <%= capitalizeFirstLetter(username) %>!</h1>
-                <a href="">🧾 <%= purchasesCount %> Recent Orders</a>
+                <a href="/profile/purchase-history">🧾 <%= purchasesCount %> Recent Orders</a>
             </div>
             <div class="col-sm-3">
                 <img class="user-img" src="/user.png">
@@ -169,4 +169,58 @@
         <p>Amount of money spent in site per month</p>
     </div>
 </body>
+<script>
+    // Logout function
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the login page
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+                alert('An error occurred while logging out.');
+            });
+    }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+            window.location.href = "/login";
+        <% } %>
+    }
+
+    function renderAdminPage() {
+        window.location.href = "/admin"; // Redirects the user to the /admin page
+    }
+
+    function redirectToCart() {
+        <% if (!username) { %>
+            window.location.href = '/login'; // Redirect to login if not authenticated
+        <% } else { %>
+            window.location.href = '/cart'; // Redirect to the cart page if logged in
+        <% } %>
+    }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+          window.location.href = "/login";
+        <% } %>
+      }
+
+    // Redirect to profile or login if not logged in
+    function redirectToProfile() {
+        <% if (!username) { %>
+              window.location.href = '/login'; // Redirect to login if not authenticated
+        <% } else { %>
+              window.location.href = '/profile'; // Redirect to the profile page if logged in
+        <% } %>
+      }
+
+</script>
 </html>

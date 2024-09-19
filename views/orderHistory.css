@@ -1,0 +1,30 @@
+.headerNav img{
+    height: 40px; 
+    margin-right: 10px;
+}
+
+.header{
+    background-color: rgba(46, 133, 145, 0.288);
+    padding: 5px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.order-history{
+    box-sizing: border-box;
+    border: 1px solid rgba(97, 90, 131, 0.5);
+    border-radius: 30px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.order-history img{
+    object-fit: cover; 
+    height: 10px; 
+    border-radius: 10px;
+}
+
+.product-info{
+    margin-left: 5px;
+    color: rgb(23, 23, 112);
+}
