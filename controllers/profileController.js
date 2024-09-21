@@ -8,6 +8,8 @@ const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
 const Coupon = require("../models/Coupon");
 const addToCart = require("../helpers/adminHelper");
+const createLog = require("../helpers/logHelper");
+const { Log } = require("../models/Log");
 
 // Example route using the middleware
 router.get("/profile", ensureAuthenticated, async (req, res) => {
@@ -18,7 +20,7 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
         await createLog("INFO", username, "User feth attempt failed. User not found");
         return res
             .status(404)
-            .json({message: "User data fetch failed. Invalid username or password."})
+            .json({message: `1. User data fetch failed. ${username} Invalid username or password.`})
       }
 
       // Fetch user with username
@@ -27,7 +29,7 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
         await createLog("INFO", username, "User fetch attempt Failed. User not found");
         return res
           .status(404)
-          .json({ message: "User data fetch failed. Invalid username or password." });
+          .json({ message: `2. User data fetch failed. ${username} Invalid username or password.` });
       }
 
       // Set number of orders made by user
@@ -68,25 +70,34 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
   });
 
 // Update user Info route
-router.post(
-  "/profile/update-user",
-  ensureAuthenticated,
-  async (req, res) => {
+router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
     try {
-      const { userId, username, email, phone, adress } = req.body;
-      await User.findByIdAndUpdate(userId, {
-        username,
-        email,
-        phone,
-        adress
-      });
-      res.redirect("/profile");
-      await createLog(
-        "INFO",
-        req.session.user.username,
-        `User with ID ${userId} updated.`
-      );
-    } catch (error) {
+      // Get vars from the request nbody 
+      const { email, phone, city, country } = req.body;
+      const username = req.session.user.username;
+
+      // Fetch user with username
+      const user = await User.findOne({ username });
+      
+      if (user){
+        const userId = user._id;
+        const newUser = await User.findByIdAndUpdate(userId, {
+          email,
+          phone,
+          city,
+          country
+        });
+
+        await createLog(
+          "INFO",
+          req.session.user.username,
+          `User with ID ${userId} updated. to ${newUser}`
+        );
+        res.status(200).json(`User with ID ${userId} updated. to ${newUser}`);
+      }
+      
+    } 
+    catch (error) {
       console.error(error);
       await createLog(
         "ERROR",
@@ -95,8 +106,8 @@ router.post(
       );
       res.status(500).send("Server error");
     }
-  }
-);
+});
+
 
 // Example route using the middleware
 router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) => {
@@ -150,6 +161,5 @@ router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) =>
     res.status(500).send("Server error");
   }
 });
-
 
 module.exports = router;

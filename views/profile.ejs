@@ -153,13 +153,29 @@
                 <!--Get placeholder information from DB-->
                 <h2>Personal Information</h2>
                 <div class="information-form">
-                    <p>User Name <input placeholder="<%= user.username %>"></p>
-                    <p>Password  <input placeholder="*******" type="password"></p>
-                    <p>Email Address <input placeholder="<%= user.email %>"></p>
-                    <p>Phone Number <input placeholder="<%= user.phone %>"></p>
-                    <p>City <input placeholder="<%= user.city %>"></p>
-                    <p>Country <input placeholder="<%= user.country %>"></p>
-                    <button onclick="updateValues()">Save Changes</button>
+                    <form>
+                        <label for="inputUname">User Name </label><br>
+                        <input id="inputUname" readonly=true value="<%= user.username %>"><br>
+                        <label for="inputEmail">Email Address </label><br>
+                        <input id="inputEmail" value="<%= user.email %>"><br>
+                        <label for="inputPhone">Phone Number </label><br>
+                        <input id="inputPhone" value="<%= user.phone %>"><br>
+                        <label for="inputCity">City </label><br>
+                        <input id="inputCity" value="<%= user.city %>"><br>
+                        <label for="inputCountry">Country </label><br>
+                        <input id="inputCountry" value="<%= user.country %>"><br>
+                        <button onclick="updateUserFields()">Save Changes</button>
+                    </form>
+                    <h2>Change Password</h2>
+                    <form>
+                        <label for="oldPassword">Current Password </label><br>
+                        <input type="password" id="oldPassword" required><br>
+                        <label for="newPassword">New Password </label><br>
+                        <input type="password" id="newPassword" required><br>
+                        <label for="passwordConfirm">Confirm New Password </label><br>
+                        <input id="passwordConfirm" type="password" required><br>
+                        <button type="button" onclick="updatePassword()">Change Password</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -221,6 +237,43 @@
               window.location.href = '/profile'; // Redirect to the profile page if logged in
         <% } %>
       }
+
+    function updateUserFields() {
+        const password = document.getElementById('inputPassword').value;
+        const email = document.getElementById('inputEmail').value;
+        const phone = document.getElementById('inputPhone').value;
+        const city = document.getElementById('inputCity').value;
+        const country = document.getElementById('inputCountry').value;
+
+        const userData = { email, phone, city, country };
+
+        fetch(`/profile/update-user`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch((error) => {
+            console.error(`Error: ${error}`);
+            alert(`An error occurred while updating user field ${error}`);
+        });
+        alert('done');
+                    
+    }
+
+    function updatePassword(){
+        const currentPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('passwordConfirm').value;
+
+        if (newPassword !== confirmNewPassword) {
+            alert('New passwords do not match!');
+            return;
+        }
+    }
 
 </script>
 </html>
