@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: "MyCustomFont", Arial, sans-serif;
+  font-family: 'Merriweather', serif;
   /* background-image: url("/background.avif"); */
   background-size: cover; /* Stretch the image to cover the entire screen width */
   background-repeat: no-repeat; /* Prevent the image from repeating */
@@ -19,11 +19,15 @@ body {
   min-height: 100vh; /* Ensure body takes at least the full height of the viewport */
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif;
+}
+
 .cart-badge {
   position: absolute;
   top: -5px;
   right: -10px;
-  background-color: red;
+  background-color: rgb(119, 194, 178);
   color: white;
   border-radius: 50%;
   padding: 2px 6px;
@@ -72,7 +76,7 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: red;
+  background-color: rgb(98, 129, 185);
   color: white;
   padding: 5px 10px;
   font-size: 14px;
@@ -103,7 +107,7 @@ body {
   top: 10px;
   right: 10px;
   font-size: 24px;
-  color: #ff0000;
+  color: #4c8ba3;
   cursor: pointer;
 }
 
@@ -112,7 +116,7 @@ body {
 }
 
 .wishlist-icon.fa-heart {
-  color: #ff0000;
+  color: #b1367e;
 }
 
 /* Ensure proper size and visibility for Font Awesome icons */
@@ -180,7 +184,7 @@ h1.text-center {
 }
 
 #filterForm {
-  background-color: #6f9dda; /* Dark background similar to navbar */
+  background-color: #4d7dbb; /* Dark background similar to navbar */
   padding: 10px 15px; /* Slightly larger padding for clarity */
   border-radius: 5px;
   margin-bottom: 20px; /* Space below filter bar */
@@ -191,7 +195,7 @@ h1.text-center {
 
 #filterForm .form-control,
 #filterForm .btn {
-  background-color: #495057; /* Slightly lighter dark background for inputs and button */
+  background-color: #5b6d80; /* Slightly lighter dark background for inputs and button */
   border: none;
   color: white;
   font-size: 0.9rem; /* Consistent font size */
@@ -203,8 +207,8 @@ h1.text-center {
 }
 
 #filterForm .btn-primary {
-  background-color: #007bff; /* Standard Bootstrap primary button color */
-  border-color: #007bff;
+  background-color: #4b85c4; /* Standard Bootstrap primary button color */
+  border-color: #4973a0;
   font-size: 0.9rem; /* Slightly smaller font size */
   padding: 8px 12px;
 }

@@ -12,17 +12,11 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         rel="stylesheet"
     />
-    <style>
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("/MyCustomFont.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 
-body,
-html {
-  font-family: "MyCustomFont", Arial, sans-serif;
+    <style>
+body {
+  font-family: 'Roboto', sans-serif;
   height: 100%;
   margin: 0;
   display: flex;
@@ -33,7 +27,7 @@ html {
   position: absolute;
   top: -8px; /* Adjusts vertical position of the badge */
   right: -10px; /* Adjusts horizontal position of the badge */
-  background-color: red; /* Red background for the badge */
+  background-color: rgb(109, 156, 175); /* Red background for the badge */
   color: white; /* White text color for the badge */
   border-radius: 50%; /* Makes the badge circular */
   padding: 2px 6px; /* Padding inside the badge */
@@ -142,10 +136,12 @@ footer {
 }
 
 .centered-buttons button {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.267);
   border: none;
+  border-radius: 5px;
   padding: 15px 30px;
-  font-size: 24px;
+  font-size: 50px;
+  font-weight: bold;
   cursor: pointer;
   margin: 10px;
   transition: transform 0.3s;

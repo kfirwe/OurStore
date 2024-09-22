@@ -211,4 +211,40 @@ router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) =>
   }
 });
 
+// Purchase data route for charts
+router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
+  const username = req.session.user ? req.session.user.username : "";
+  try{
+    const user = await User.findOne({ username }).populate('purchaseHistory.productsInfo');
+    if (!user){
+      return res.status(404).send('User not found');
+    }
+
+    // Aggregate spending by designer
+    const spendingByDesigner = user.purchaseHistory.reduce((acc, purchase) => {
+        purchase.productsInfo.forEach(product => {
+            if (!acc[product.company]) {
+                acc[product.company] = 0;
+            }
+            // when amount of product bought will be in the model
+            // acc[product.company] += product.price * product.amount;
+            acc[product.company] += product.price;
+        });
+        return acc;
+    }, {});
+
+    res.json(spendingByDesigner);
+    await createLog(
+      "INFO",
+      req.session.user.username,
+      `Purchase data retrieved.`
+    );
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+
 module.exports = router;
