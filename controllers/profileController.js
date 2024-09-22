@@ -17,16 +17,16 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
       // Fetch the current user's username
       const username = req.session.user ? req.session.user.username : "";
       if (!username){
-        await createLog("INFO", username, "User feth attempt failed. User not found");
+        await createLog("INFO", username, `User feth attempt failed. ${req.session.user} User not found`);
         return res
             .status(404)
-            .json({message: `1. User data fetch failed. ${username} Invalid username or password.`})
+            .json({message: `1. User data fetch failed. ${req.session.user} Invalid username or password.`})
       }
 
       // Fetch user with username
       const user = await User.findOne({ username })
       if (!user){
-        await createLog("INFO", username, "User fetch attempt Failed. User not found");
+        await createLog("INFO", username, `User fetch attempt Failed. User ${username} not found`);
         return res
           .status(404)
           .json({ message: `2. User data fetch failed. ${username} Invalid username or password.` });
@@ -69,18 +69,15 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
     }
   });
 
+
 // Update user Info route
 router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
     try {
-      // Get vars from the request nbody 
+      // Get vars from the request body 
       const { email, phone, city, country } = req.body;
-      const username = req.session.user.username;
-
-      // Fetch user with username
-      const user = await User.findOne({ username });
+      const userId = req.session.user.id;
       
-      if (user){
-        const userId = user._id;
+      if (userId){
         const newUser = await User.findByIdAndUpdate(userId, {
           email,
           phone,
@@ -88,12 +85,16 @@ router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
           country
         });
 
+        res.status(200).json(`User with ID ${userId} updated. to ${newUser}`);
+
         await createLog(
           "INFO",
           req.session.user.username,
-          `User with ID ${userId} updated. to ${newUser}`
+          `User with ID ${userId} updated. to ${newUser}.`
         );
-        res.status(200).json(`User with ID ${userId} updated. to ${newUser}`);
+        
+      } else {
+        return res.status(400).send("Invalid User ID");
       }
       
     } 
@@ -106,8 +107,54 @@ router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
       );
       res.status(500).send("Server error");
     }
-});
+  }
+);
 
+//Route for updating user password
+router.post("/profile/update-password", ensureAuthenticated, async (req, res) => {
+  try {
+    // Get vars from the request body 
+    const { currentPassword, newPassword } = req.body;
+    const username = req.session.user ? req.session.user.username : "";
+
+    // Fetch user with username
+    const user = await User.findOne({ username });
+    
+    if (!user){
+      return res.status(404).send('User not found');
+    }
+
+    const correctPassword = await user.comparePassword(currentPassword);
+    console.debug(`Password validation ${correctPassword}`);
+    if (!correctPassword){
+      console.debug('in the if');
+      return res.status(400).send('Current password entered is incorrect');
+    }
+
+    // Update user password
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json(`Password for User ${username} updated.`);
+
+    await createLog(
+      "INFO",
+      req.session.user.username,
+      `Password for User updated.`
+    );
+      
+  } 
+  catch (error) {
+    console.error(error);
+    await createLog(
+      "ERROR",
+      req.session.user.username,
+      `Failed to update password for user.`
+    );
+    console.debug('In error');
+    res.status(500).send("Server error");
+  }
+});
 
 // Example route using the middleware
 router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) => {
@@ -155,7 +202,9 @@ router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) =>
       userPurchases,
       purchasesCount,
       cartItemCount // Number of distinct items in the cart  for NavBar
-    });
+    }
+);
+
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");

@@ -236,7 +236,6 @@
       }
 
     function updateUserFields() {
-        const password = document.getElementById('inputPassword').value;
         const email = document.getElementById('inputEmail').value;
         const phone = document.getElementById('inputPhone').value;
         const city = document.getElementById('inputCity').value;
@@ -244,24 +243,27 @@
 
         const userData = { email, phone, city, country };
 
-        fetch(`/profile/update-user`, {
+        fetch('/profile/update-user', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(userData),
         })
-        .then(response => response.json())
-        .then(data => console.log(data))
+        .then((response) => {
+            if (!response.ok) {
+                alert(`Error updating field, ${response}`);
+            }
+        })
         .catch((error) => {
             console.error(`Error: ${error}`);
             alert(`An error occurred while updating user field ${error}`);
         });
-        alert('done');
+        window.location.href = "/profile";
                     
     }
 
-    function updatePassword(){
+    function updatePassword() {
         const currentPassword = document.getElementById('oldPassword').value;
         const newPassword = document.getElementById('newPassword').value;
         const confirmNewPassword = document.getElementById('passwordConfirm').value;
@@ -270,6 +272,32 @@
             alert('New passwords do not match!');
             return;
         }
+        const passwords = { currentPassword, newPassword };
+        alert(JSON.stringify(passwords));
+        fetch('/profile/update-password', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(passwords),
+        })
+        .then((response) => {
+            return response.text().then(text => {
+                if (!response.ok) {
+                    throw new Error(text);
+                }
+                return text;
+            });
+        })
+        .then((message) => {
+            alert(`Success: ${message}`);
+            window.location.href = "/profile";
+        })
+        .catch((error) => {
+            console.error(`Error: ${error}`);
+            alert(`An error occurred while updating user password ${error.message}`);
+        });
+
     }
 
 </script>
