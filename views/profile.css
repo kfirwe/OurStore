@@ -10,14 +10,6 @@
     text-decoration: none;
 }
 
-.user-img{
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    overflow: hidden;
-    object-fit: cover;
-}
-
 .profile{
     margin-top: 10px;
     margin-left: 15px;          
