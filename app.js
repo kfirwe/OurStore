@@ -15,6 +15,7 @@ const { ensureAuthenticated } = require("./middleware/auth"); // Import middlewa
 const { Product } = require("./models/Product");
 const { Cart } = require("./models/Cart");
 const homepageController = require("./controllers/homepageController");
+const profileController = require("./controllers/profileController");
 const createLog = require("./helpers/logHelper"); // Import the log helper
 
 mongoose
@@ -131,6 +132,7 @@ app.use("/", cartRoutes);
 app.use("/", logoutRoutes);
 app.use("/", signUpRoutes);
 app.use("/", adminRoutes); // Use admin routes
+app.use("/", profileController); // Use profile routes
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

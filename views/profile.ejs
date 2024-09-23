@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+
+    <!-- Bootstrap CSS (Optional) -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    />
+
+    <!--Custom page CSS-->
+    <link rel="stylesheet" href="/profile.css">
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<% 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+%>
+<!-- D3.js -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<body>
+    <!--Navigation Bar-->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" />
+                    By A Thread
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/homePage">
+                                <i class="fas fa-home fa-lg"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-flag fa-lg"></i> Landing Page
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-info-circle fa-lg"></i> About
+                            </a>
+                        </li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                                <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                                <% if (cartItemCount > 0) { %>
+                                <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                                <% } %>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="redirectToProfile()">
+                                <i class="fas fa-user fa-lg"></i> Profile
+                            </a>
+                        </li>
+                        <% if (!username) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">
+                                <i class="fas fa-sign-in-alt fa-lg"></i> Login
+                            </a>
+                        </li>
+                        <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt fa-lg"></i> Logout
+                            </a>
+                        </li>
+                        <% } %>
+                        <% if (isAdmin) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="renderAdminPage()">
+                                <i class="fas fa-tools fa-lg"></i> Admin tools
+                            </a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <!--Profile page objects-->  
+    <div class="welcome-user">
+    </br>
+        <div class="row">
+            
+            <div class="col-sm-9">
+                <h2>Hello <%= capitalizeFirstLetter(username) %>!</h1>
+                <a href="/profile/purchase-history">🧾 <%= purchasesCount %> Recent Orders</a>
+            </div>
+        </div>
+    </div>
+    <div class="profile border-bottom">
+        <div class="row">
+            <div class="col-sm-5">
+                <h2>Orders History</h2>
+                <% if (lastpurchase && lastpurchaseItemsCount > 0) { %>
+                    <div class="order-history">
+                        <div class="border-bottom">
+                            <h6>Ordered on <%= lastpurchase.Date %></h6>
+                            <!--Add order status from db; shipped=blue, delivered=green, processing=grey-->
+                            <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
+                            <h6>Number of Items ordered - <%= lastpurchaseItemsCount %></h6>
+                        </div>
+                        <!--Loop over items ordered from db-->
+                        <% lastpurchase.productsInfo.forEach(function(item) { %>
+                            <% if (item !== null) { %>
+                                <div class="order-item d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div class="d-flex align-items-center">
+                                        <img src="data:image/<%= item.imageType %>;base64,<%= item.image.toString('base64') %>"
+                                            class="d-block w-100" alt="<%= item.name %>"
+                                            style="object-fit: cover; height: 150px; border-radius: 10px;">
+                                        <div class="ml-3 product-info">
+                                            <h2 class="h5"><%= item.name %></h2>
+                                            <p>Company: <%= item.company %></p>
+                                            <p>Amount: <%= item.quantityPurchased %></p>
+                                            <p>Price: $<%= item.price %></p>
+                                        </div>
+                                    </div>
+                                    <div class="product-info">
+                                        <p class="font-weightbold">Total: $<%= item.price %></p>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% }); %>
+                        <div class="text-right mt-4">
+                            <h5 class="order-total">Grand Total: $<%= lastpurchase.TotalAmount %></h5>
+                        </div>
+                    </div>
+                <% } else { %>
+                    </br>
+                    <h4>You Have not Made Any Purchases Yet,</h4>
+                    <h4>Start Your Shopping Journey Now💗</h4>
+                <% } %>
+            </div>
+            <div class="col-sm-5 personal-info">
+                <!--Get placeholder information from DB-->
+                <h2>Personal Information</h2>
+                <div class="information-form">
+                    <form>
+                        <label for="inputUname">User Name </label><br>
+                        <input id="inputUname" readonly=true value="<%= user.username %>"><br>
+                        <label for="inputEmail">Email Address </label><br>
+                        <input id="inputEmail" value="<%= user.email %>"><br>
+                        <label for="inputPhone">Phone Number </label><br>
+                        <input id="inputPhone" value="<%= user.phone %>"><br>
+                        <label for="inputCity">City </label><br>
+                        <input id="inputCity" value="<%= user.city %>"><br>
+                        <label for="inputCountry">Country </label><br>
+                        <input id="inputCountry" value="<%= user.country %>"><br>
+                        <button onclick="updateUserFields()">Save Changes</button>
+                    </form>
+                    <h2>Change Password</h2>
+                    <form>
+                        <label for="oldPassword">Current Password </label><br>
+                        <input type="password" id="oldPassword" required><br>
+                        <label for="newPassword">New Password </label><br>
+                        <input type="password" id="newPassword" required><br>
+                        <label for="passwordConfirm">Confirm New Password </label><br>
+                        <input id="passwordConfirm" type="password" required><br>
+                        <button type="button" onclick="updatePassword()">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="user-stats">
+        <h2>Purchase statistics</h2>
+        <p>Amount of money spent in site per designer</p>
+        <div class="user-graph row mb-3">
+            <div class="col-md-4">
+                <label for="dateRange" class="form-label">Select Date Range</label>
+                <select id="dateRange" class="form-select" onchange="updateChart()">
+                    <option value="last24h">Last 24 Hours</option>
+                    <option value="lastWeek">Last Week</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="lastYear">Last Year</option>
+                    <option value="last5Years">Last 5 Years</option>
+                </select>
+            </div>
+        </div>
+        <div id="chart"></div>
+    </div>
+</body>
+<script>
+    // Logout function
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the login page
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+                alert('An error occurred while logging out.');
+            });
+    }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+            window.location.href = "/login";
+        <% } %>
+    }
+
+    function renderAdminPage() {
+        window.location.href = "/admin"; // Redirects the user to the /admin page
+    }
+
+    function redirectToCart() {
+        <% if (!username) { %>
+            window.location.href = '/login'; // Redirect to login if not authenticated
+        <% } else { %>
+            window.location.href = '/cart'; // Redirect to the cart page if logged in
+        <% } %>
+    }
+
+    // Redirect to login if not logged in
+    function redirectToLoginIfNotLoggedIn() {
+        <% if (!username) { %>
+          window.location.href = "/login";
+        <% } %>
+      }
+
+    // Redirect to profile or login if not logged in
+    function redirectToProfile() {
+        <% if (!username) { %>
+              window.location.href = '/login'; // Redirect to login if not authenticated
+        <% } else { %>
+              window.location.href = '/profile'; // Redirect to the profile page if logged in
+        <% } %>
+      }
+
+    function updateUserFields() {
+        const email = document.getElementById('inputEmail').value;
+        const phone = document.getElementById('inputPhone').value;
+        const city = document.getElementById('inputCity').value;
+        const country = document.getElementById('inputCountry').value;
+
+        const userData = { email, phone, city, country };
+
+        fetch('/profile/update-user', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                alert(`Error updating field, ${response}`);
+            }
+        })
+        .catch((error) => {
+            console.error(`Error: ${error}`);
+            alert(`An error occurred while updating user field ${error}`);
+        });
+        window.location.href = "/profile";
+                    
+    }
+
+    function updatePassword() {
+        const currentPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('passwordConfirm').value;
+
+        if (newPassword !== confirmNewPassword) {
+            alert('New passwords do not match!');
+            return;
+        }
+        const passwords = { currentPassword, newPassword };
+        fetch('/profile/update-password', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(passwords),
+        })
+        .then((response) => {
+            return response.text().then(text => {
+                if (!response.ok) {
+                    throw new Error(text);
+                }
+                return text;
+            });
+        })
+        .then((message) => {
+            alert(`Success: ${message}`);
+            window.location.href = "/profile";
+        })
+        .catch((error) => {
+            console.error(`Error: ${error}`);
+            alert(`An error occurred while updating user password ${error.message}`);
+        });
+
+    }
+
+// Chart parameters    
+const margin = { top: 20, right: 30, bottom: 40, left: 90 },
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+const svg = d3.select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+function updateChart() {
+
+    const dateRange = document.getElementById('dateRange').value;
+    console.log('Selected date range: ', dateRange);
+
+    // Fetch data from the server based on the selected date range
+    fetch(`/profile/purchase-data?range=${dateRange}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Filtered data:", data);
+            renderChart(data);
+        })
+        .catch(error => {
+            console.error("Error fetching purchase data:", error);
+        });
+}
+    
+function renderChart(data) {
+
+    svg.selectAll("*").remove();
+    const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([0, width])
+                .padding(0.1);
+
+    const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .range([height, 0]);
+
+    svg.append("g")
+       .attr("transform", `translate(0,${height})`)
+       .call(d3.axisBottom(x));
+
+    svg.append("g")
+       .call(d3.axisLeft(y));
+
+    svg.selectAll("rect")
+       .data(Object.entries(data))
+       .enter()
+       .append("rect")
+       .attr("x", d => x(d[0]))
+       .attr("y", d => y(d[1]))
+       .attr("width", x.bandwidth())
+       .attr("height", d => height - y(d[1]))
+       .attr("fill", "steelblue");
+}
+
+</script>
+</html>

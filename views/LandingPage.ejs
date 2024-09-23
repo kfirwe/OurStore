@@ -14,17 +14,12 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         rel="stylesheet"
     />
-    <style>
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("/MyCustomFont.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
-body,
-html {
-  font-family: "MyCustomFont", Arial, sans-serif;
+
+    <style>
+body {
+  font-family: 'Poppins', sans-serif;
   height: 100%;
   margin: 0;
   display: flex;
@@ -35,7 +30,7 @@ html {
   position: absolute;
   top: -8px; /* Adjusts vertical position of the badge */
   right: -10px; /* Adjusts horizontal position of the badge */
-  background-color: red; /* Red background for the badge */
+  background-color: rgb(109, 156, 175); /* Red background for the badge */
   color: white; /* White text color for the badge */
   border-radius: 50%; /* Makes the badge circular */
   padding: 2px 6px; /* Padding inside the badge */
@@ -144,10 +139,12 @@ footer {
 }
 
 .centered-buttons button {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.267);
   border: none;
+  border-radius: 5px;
   padding: 15px 30px;
-  font-size: 24px;
+  font-size: 50px;
+  font-weight: bold;
   cursor: pointer;
   margin: 10px;
   transition: transform 0.3s;
@@ -205,7 +202,7 @@ footer {
   
                   <!-- Disabled Profile and Cart Links if not logged in -->
                   <li class="nav-item">
-                      <a class="nav-link <%= !username ? 'disabled' : '' %>" href="#">
+                      <a class="nav-link <%= !username ? 'disabled' : '' %>" onclick="redirectToProfile()">
                           <i class="fas fa-user fa-lg"></i> Profile
                       </a>
                   </li>
@@ -268,6 +265,7 @@ footer {
     <%- include('_footer') %>
 
     <script>
+
       function redirectToFilteredPage(gender) {
         // Redirect to the home page with the selected gender filter
         window.location.href = `/homePage?gender=${gender}`;
@@ -292,10 +290,21 @@ footer {
 
       // Redirect to login if not logged in
       function redirectToLoginIfNotLoggedIn() {
-            <% if (!username) { %>
-                window.location.href = "/login";
-            <% } %>
-        }
+        <% if (!username) { %>
+          window.location.href = "/login";
+        <% } %>
+      }
+
+
+      // Redirect to profile or login if not logged in
+      function redirectToProfile() {
+        <% if (!username) { %>
+              window.location.href = '/login'; // Redirect to login if not authenticated
+        <% } else { %>
+              window.location.href = '/profile'; // Redirect to the profile page if logged in
+        <% } %>
+      }
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>

@@ -1,0 +1,74 @@
+body {
+    font-family: 'Merriweather', serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+}
+
+.header{
+    background-color: rgba(46, 133, 145, 0.288);
+    padding: 5px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.headerNav img{
+    height: 40px; 
+    margin-right: 10px;
+}
+
+.welcome-user a{
+    color: black;
+    text-decoration: none;
+}
+
+.profile{
+    margin-top: 10px;
+    margin-left: 15px;          
+}
+
+.order-history{
+    box-sizing: border-box;
+    border: 1px solid rgba(97, 90, 131, 0.5);
+    border-radius: 30px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.order-history img{
+    object-fit: cover; 
+    height: 10px; 
+    border-radius: 10px;
+}
+
+.product-info{
+    margin-left: 5px;
+    color: rgb(12, 12, 75);
+}
+
+.information-form{
+    margin-top: px;
+    
+}
+
+.information-form input{
+    padding: 3px;
+    border: 1px solid #8587d67e;
+    border-radius: 4px;
+    width:100%;
+}
+
+.information-form button{
+    background-color: rgb(164, 193, 231);
+    border: 1px;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.user-stats{
+    margin-left: 20px;
+    margin-top: 10px;
+}
