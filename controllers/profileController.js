@@ -151,7 +151,7 @@ router.post("/profile/update-password", ensureAuthenticated, async (req, res) =>
       req.session.user.username,
       `Failed to update password for user.`
     );
-    console.debug('In error');
+
     res.status(500).send("Server error");
   }
 });
@@ -213,24 +213,56 @@ router.get("/profile/purchase-history", ensureAuthenticated, async (req, res) =>
 
 // Purchase data route for charts
 router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
+  
   const username = req.session.user ? req.session.user.username : "";
-  try{
+  // Set start and end date according to given range
+  const { range } = req.query;
+  let endDate = new Date();
+  let startDate;
+    
+  if (range === 'last24h') {
+      startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - 1);
+  } else if (range === 'lastWeek') {
+      startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - 7);
+  } else if (range === 'lastMonth') {
+      startDate = new Date(endDate);
+      startDate.setMonth(endDate.getMonth() - 1);
+  } else if (range == 'lastYear') {
+      startDate = new Date(endDate);
+      startDate.setFullYear(endDate.getFullYear() - 1);
+  } else if (range == 'last5Years') {
+      startDate = new Date(endDate);
+      startDate.setFullYear(endDate.getFullYear() - 5);
+  }
+
+  startDate = new Date(startDate.toISOString().split('T')[0]);
+  endDate = new Date(endDate.toISOString().split('T')[0]);
+
+  try {
     const user = await User.findOne({ username }).populate('purchaseHistory.productsInfo');
     if (!user){
       return res.status(404).send('User not found');
     }
 
-    // Aggregate spending by designer
+    // Aggregate spending by designer and in date range
     const spendingByDesigner = user.purchaseHistory.reduce((acc, purchase) => {
+
+      const purchaseDate = new Date(purchase.Date); // Assuming purchase has a date field
+
+      // Check if purchase date is within the specified range
+      if (purchaseDate >= startDate && purchaseDate <= endDate) {
         purchase.productsInfo.forEach(product => {
-            if (!acc[product.company]) {
-                acc[product.company] = 0;
-            }
-            // when amount of product bought will be in the model
-            // acc[product.company] += product.price * product.amount;
-            acc[product.company] += product.price;
+          if (!acc[product.company]) {
+            acc[product.company] = 0;
+          }
+          // when amount of product bought will be in the model
+          // acc[product.company] += product.price * product.amount;
+          acc[product.company] += product.price;
         });
-        return acc;
+      }
+      return acc;
     }, {});
 
     res.json(spendingByDesigner);

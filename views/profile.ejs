@@ -129,7 +129,7 @@
                                         <div class="ml-3 product-info">
                                             <h2 class="h5"><%= item.name %></h2>
                                             <p>Company: <%= item.company %></p>
-                                            <p>Amount: 1</p>
+                                            <p>Amount: <%= item.quantityPurchased %></p>
                                             <p>Price: $<%= item.price %></p>
                                         </div>
                                     </div>
@@ -187,11 +187,11 @@
             <div class="col-md-4">
                 <label for="dateRange" class="form-label">Select Date Range</label>
                 <select id="dateRange" class="form-select" onchange="updateChart()">
-                    <option value="24h">Last 24 Hours</option>
-                    <option value="7d">Last Week</option>
-                    <option value="1m">Last Month</option>
-                    <option value="1y">Last Year</option>
-                    <option value="5y">Last 5 Years</option>
+                    <option value="last24h">Last 24 Hours</option>
+                    <option value="lastWeek">Last Week</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="lastYear">Last Year</option>
+                    <option value="last5Years">Last 5 Years</option>
                 </select>
             </div>
         </div>
@@ -289,7 +289,6 @@
             return;
         }
         const passwords = { currentPassword, newPassword };
-        alert(JSON.stringify(passwords));
         fetch('/profile/update-password', {
             method: 'POST',
             headers: {
@@ -316,57 +315,64 @@
 
     }
 
-    // Chart parameters
-    const margin = { top: 20, right: 30, bottom: 40, left: 90 },
-              width = 800 - margin.left - margin.right,
-              height = 400 - margin.top - margin.bottom;
+// Chart parameters    
+const margin = { top: 20, right: 30, bottom: 40, left: 90 },
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
-    const svg = d3.select("#chart")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+const svg = d3.select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    function updateChart() {
-        // Fetch data from the server based on the selected date range
-        fetch('/profile/purchase-data')
-            .then(response => response.json())
-            .then(data => {
-                renderChart(data);
-            })
-            .catch(error => {
-                console.error("Error fetching purchase data:", error);
-            });
-    }
+function updateChart() {
 
-    function renderChart(data){
-        const x = d3.scaleLinear()
-                    .domain([0, d3.max(Object.values(data))])
-                    .range([0, width]);
+    const dateRange = document.getElementById('dateRange').value;
+    console.log('Selected date range: ', dateRange);
 
-        const y = d3.scaleBand()
-                    .domain(Object.keys(data))
-                    .range([0, height])
-                    .padding(0.1);
+    // Fetch data from the server based on the selected date range
+    fetch(`/profile/purchase-data?range=${dateRange}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Filtered data:", data);
+            renderChart(data);
+        })
+        .catch(error => {
+            console.error("Error fetching purchase data:", error);
+        });
+}
+    
+function renderChart(data) {
 
-        svg.append("g")
-           .call(d3.axisLeft(y));
+    svg.selectAll("*").remove();
+    const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([0, width])
+                .padding(0.1);
 
-        svg.selectAll("rect")
-           .data(Object.entries(data))
-           .enter()
-           .append("rect")
-           .attr("x", x(0))
-           .attr("y", d => y(d[0]))
-           .attr("width", d => x(d[1]))
-           .attr("height", y.bandwidth())
-           .attr("fill", "steelblue");
+    const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .range([height, 0]);
 
-        svg.append("g")
-           .attr("transform", `translate(0,${height})`)
-           .call(d3.axisBottom(x));
-    }
+    svg.append("g")
+       .attr("transform", `translate(0,${height})`)
+       .call(d3.axisBottom(x));
+
+    svg.append("g")
+       .call(d3.axisLeft(y));
+
+    svg.selectAll("rect")
+       .data(Object.entries(data))
+       .enter()
+       .append("rect")
+       .attr("x", d => x(d[0]))
+       .attr("y", d => y(d[1]))
+       .attr("width", x.bandwidth())
+       .attr("height", d => height - y(d[1]))
+       .attr("fill", "steelblue");
+}
 
 </script>
 </html>
