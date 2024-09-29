@@ -222,6 +222,13 @@ router.post("/cart/purchase", async (req, res) => {
 
     await cart.save(); // Save the cleared cart
 
+    // Add the purchase to the user's purchase history
+    const user = await User.findOne({ username: username });
+    if (user) {
+      user.purchaseHistory.push(newPurchase); // Add the purchase to the history
+      await user.save(); // Save the updated user with the new purchase history
+    }
+
     res.json({
       success: true,
       message: "Purchase completed successfully.",

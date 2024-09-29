@@ -159,7 +159,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <% if (currentPage === 'profile') { %>active<% } %>" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+              <a class="nav-link <% if (currentPage === 'profile') { %>active<% } %>" href="#" onclick="redirectToProfile()">
                 <i class="fas fa-user fa-lg"></i> Profile
               </a>
             </li>
@@ -229,13 +229,13 @@
             <input type="number" value="<%= item.quantity %>" class="form-control cart-quantity-input" min="1" max="99" onchange="updateCartItem('<%= item.prodId %>', '<%= item.color %>', '<%= item.size %>', this.value)">
           </td>
           <td>
-            <% if (item.originalPrice !== item.discountedPrice) { %>
-            <span style="text-decoration: line-through;">$<%= item.originalPrice.toFixed(2) %></span>
-            <span style="color: red;">$<%= item.discountedPrice %></span>
+            <% if (item.originalPrice && item.discountedPrice && parseFloat(item.originalPrice) !== parseFloat(item.discountedPrice)) { %>
+              <span style="text-decoration: line-through;">$<%= item.originalPrice.toFixed(2) %></span>
+              <span style="color: red;">$<%= item.discountedPrice %></span>
             <% } else { %>
-            $<%= item.originalPrice.toFixed(2) %>
+              $<%= item.originalPrice.toFixed(2) %>
             <% } %>
-          </td>
+          </td>          
           <td>$<%= (item.discountedPrice * item.quantity).toFixed(2) %></td>
           <td>
             <button class="btn btn-danger btn-sm" onclick="removeCartItem('<%= item.prodId %>', '<%= item.color %>', '<%= item.size %>')">
@@ -544,7 +544,14 @@ function removeCartItem(prodId, color, size) {
   });
 }
 
-
+// Redirect to profile or login if not logged in
+function redirectToProfile() {
+    <% if (!username) { %>
+          window.location.href = '/login'; // Redirect to login if not authenticated
+    <% } else { %>
+          window.location.href = '/profile'; // Redirect to the profile page if logged in
+    <% } %>
+}
 
     // function handlePurchase() {
     //   if (confirm('Are you sure you want to purchase these items?')) {

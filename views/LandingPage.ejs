@@ -68,29 +68,6 @@ footer {
   justify-content: space-between;
 }
 
-/* Navbar styles */
-.navbar {
-  background-color: #333;
-}
-
-.navbar a {
-  color: white;
-  padding: 14px 20px;
-  text-decoration: none;
-  text-align: center;
-}
-
-.navbar a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-/* Disable Profile and Cart links */
-.navbar .disabled {
-  color: grey;
-  pointer-events: none;
-}
-
 /* Slider */
 .slider {
   position: relative;
@@ -154,13 +131,33 @@ footer {
   transform: scale(1.1);
 }
 
-.navbar .nav-link i {
-  margin-right: 5px; /* Reduce space between icon and text */
-}
+.navbar {
+        background-color: #333;
+      }
 
-.navbar .nav-item {
-  margin-left: 20px; /* Increase space between each tab */
-}
+      .navbar a {
+        justify-content: space-between;
+        margin-right: 10px;
+        color: white;
+        padding: 14px 20px;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .navbar a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+
+      .navbar .nav-link.active {
+        background-color: #fff;
+        color: #333;
+        border-radius: 5px;
+      }
+
+      .navbar .nav-link {
+        cursor: pointer;
+      }
 
     </style>
   </head>
@@ -168,65 +165,68 @@ footer {
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
-          <a class="navbar-brand d-flex align-items-center" href="/">
-              <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" /> <!-- Adjust height as necessary -->
-              By A Thread
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav ms-auto">
-                  <!-- Homepage Link -->
-                  <li class="nav-item">
-                      <a class="nav-link" href="/homePage">
-                          <i class="fas fa-home fa-lg"></i> Homepage
-                      </a>
-                  </li>
-  
-                  <!-- Show "Login" if not logged in, otherwise show "Logout" -->
-                  <% if (!username) { %>
-                  <li class="nav-item">
-                      <a class="nav-link" href="/login">
-                          <i class="fas fa-sign-in-alt fa-lg"></i> Login
-                      </a>
-                  </li>
-                  <% } else { %>
-                  <li class="nav-item">
-                      <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
-                          <i class="fas fa-sign-out-alt fa-lg"></i> Logout
-                      </a>
-                  </li>
-                  <% } %>
-  
-                  <!-- Disabled Profile and Cart Links if not logged in -->
-                  <li class="nav-item">
-                      <a class="nav-link <%= !username ? 'disabled' : '' %>" onclick="redirectToProfile()">
-                          <i class="fas fa-user fa-lg"></i> Profile
-                      </a>
-                  </li>
-                  <li class="nav-item position-relative">
-                    <a class="nav-link" href="/cart" onclick="redirectToLoginIfNotLoggedIn()">
-                      <i class="fas fa-shopping-cart fa-lg"></i> Cart
-                      <% if (cartItemCount > 0) { %>
-                        <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
-                      <% } %>
-                    </a>
-                  </li>
-  
-                  <!-- Show Admin Tools if user is an admin -->
-                  <% if (isAdmin) { %>
-                  <li class="nav-item">
-                      <a class="nav-link" href="/admin">
-                          <i class="fas fa-tools fa-lg"></i> Admin Tools
-                      </a>
-                  </li>
-                  <% } %>
-              </ul>
-          </div>
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img src="/ByAThread.webp" alt="Logo" style="height: 40px; margin-right: 10px;" />
+          By A Thread
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/homePage">
+                <i class="fas fa-home fa-lg"></i> Homepage
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/">
+                <i class="fas fa-flag fa-lg"></i> Landing Page
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="fas fa-info-circle fa-lg"></i> About
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= !username ? 'disabled' : '' %>" onclick="redirectToProfile()">
+                <i class="fas fa-user fa-lg"></i> Profile
+              </a>
+            </li>
+            <li class="nav-item position-relative">
+              <a class="nav-link" href="/cart" onclick="redirectToLoginIfNotLoggedIn()">
+                <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                <% if (cartItemCount > 0) { %>
+                  <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
+                <% } %>
+              </a>
+            </li>
+            <% if (!username) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/login">
+                  <i class="fas fa-sign-in-alt fa-lg"></i> Login
+                </a>
+              </li>
+              <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);" onclick="handleLogout()">
+                  <i class="fas fa-sign-out-alt fa-lg"></i> Logout
+                </a>
+              </li>
+              <% } %>
+            <% if (isAdmin) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">
+                <i class="fas fa-tools fa-lg"></i> Admin Tools
+              </a>
+            </li>
+            <% } %>
+          </ul>
+        </div>
       </div>
-  </nav>
+    </nav>
   
 
     <!-- Main content wrapper -->
