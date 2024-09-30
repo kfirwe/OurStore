@@ -75,7 +75,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/homePage">
+                            <a class="nav-link" aria-current="page" href="/homePage">
                                 <i class="fas fa-home fa-lg"></i> Home
                             </a>
                         </li>
@@ -85,16 +85,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link active" href="/about">
                                 <i class="fas fa-info-circle fa-lg"></i> About
                             </a>
                         </li>
                         <li class="nav-item position-relative">
-                            <a class="nav-link" href="#" onclick="redirectToLoginIfNotLoggedIn()">
+                            <a class="nav-link" href="/cart" onclick="redirectToLoginIfNotLoggedIn()">
                                 <i class="fas fa-shopping-cart fa-lg"></i> Cart
+                                <!-- <% if (cartItemCount) { %> -->
                                 <% if (cartItemCount > 0) { %>
                                 <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
                                 <% } %>
+                                <!-- <% } %> -->
                             </a>
                         </li>
                         <li class="nav-item">
