@@ -16,6 +16,7 @@ const { Product } = require("./models/Product");
 const { Cart } = require("./models/Cart");
 const homepageController = require("./controllers/homepageController");
 const profileController = require("./controllers/profileController");
+const abouController = require("./controllers/aboutController");
 const createLog = require("./helpers/logHelper"); // Import the log helper
 
 mongoose
@@ -133,6 +134,7 @@ app.use("/", logoutRoutes);
 app.use("/", signUpRoutes);
 app.use("/", adminRoutes); // Use admin routes
 app.use("/", profileController); // Use profile routes
+app.use("/", abouController); // Use about us controller
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
