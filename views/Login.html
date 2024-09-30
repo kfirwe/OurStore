@@ -2,23 +2,14 @@
 <html lang="en">
   <head>
     <link rel="icon" href="/favicon.webp" type="image/webp" />
-
     <title>Our Website</title>
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
       rel="stylesheet"
     />
     <!--Stylesheet-->
-    <style media="screen">
-      *,
-      *:before,
-      *:after {
+    <style>
+      * {
         padding: 0;
         margin: 0;
         box-sizing: border-box;
@@ -95,9 +86,6 @@
         font-size: 14px;
         font-weight: 300;
       }
-      ::placeholder {
-        color: #6d6868;
-      }
       button {
         margin-top: 25px;
         width: 100%;
@@ -126,6 +114,20 @@
       .signIn button:hover {
         background-color: rgba(255, 255, 255, 0.47);
       }
+
+      /* Forgot Password Link */
+      .forgot-password {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+      .forgot-password a {
+        color: #0044cc;
+        text-decoration: none;
+      }
+      .forgot-password a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -144,6 +146,10 @@
       <input type="password" placeholder="Password" id="password" />
 
       <button type="button" onclick="validateLogin()">Log In</button>
+
+      <div class="forgot-password">
+        <a href="/forgot-password">Forgot Password?</a>
+      </div>
 
       <div class="signIn">
         <button type="button" onclick="redirectToSignUp()">Sign Up</button>
