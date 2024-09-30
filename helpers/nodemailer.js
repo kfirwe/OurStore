@@ -12,19 +12,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Function to send password reset email
-const sendPasswordResetEmail = async (userEmail, resetToken) => {
-  const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
+const sendPasswordResetEmail = async (email, token, username) => {
+  // Include both email and username as query parameters in the reset link
+  const resetLink = `http://localhost:3000/reset-password/${token}?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`;
 
   const mailOptions = {
-    from: "byathread77@gmail.com", // Your email address
-    to: userEmail,
+    from: "ByAThread@gmail.com",
+    to: email,
     subject: "Password Reset Request",
-    text: `Please click the following link to reset your password: ${resetURL}`,
-    html: `<p>Please click the following link to reset your password:</p><a href="${resetURL}">Reset Password</a>`,
+    text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
+    html: `<p>You requested a password reset. Click the link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Password reset email sent");
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
 
 module.exports = { sendPasswordResetEmail };

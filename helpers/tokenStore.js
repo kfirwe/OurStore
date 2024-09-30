@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const tokens = {};
 
 const storeToken = (email, token, expiry) => {
@@ -20,10 +22,11 @@ const deleteToken = (email) => {
 };
 
 const hashPassword = async (password) => {
-  // Assume you're using bcrypt or any other hashing function
-  const bcrypt = require("bcrypt");
+  console.log(password);
   const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
+  new_password = await bcrypt.hash(password, salt);
+  console.log(new_password);
+  return new_password;
 };
 
 module.exports = { storeToken, verifyToken, deleteToken, hashPassword };
