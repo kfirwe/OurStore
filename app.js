@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
 const app = express();
+const forgetPasswordRoutes = require("./controllers/ResetPasswordController");
 const loginRoutes = require("./controllers/loginController");
 const wishListRoutes = require("./controllers/wishlistController");
 const cartRoutes = require("./controllers/cartController");
@@ -127,6 +128,7 @@ app.get(
 );
 // app.post("/add-to-cart", homepageController.addToCart);
 
+app.use("/", forgetPasswordRoutes);
 app.use("/", loginRoutes);
 app.use("/", wishListRoutes);
 app.use("/", cartRoutes);

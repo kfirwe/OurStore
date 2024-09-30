@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 const createLog = require("../helpers/logHelper"); // Import the log helper
 
 router.post("/login", async (req, res) => {
@@ -21,7 +22,7 @@ router.post("/login", async (req, res) => {
     const isAdmin = user.role === "admin";
 
     // Compare input password with the hashed password in the database
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       await createLog("INFO", username, "Failed login attempt.");
       return res.status(401).json({ message: "Invalid credentials." });
