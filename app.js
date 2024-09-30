@@ -88,7 +88,7 @@ app.get("/confirmation", async (req, res) => {
   const { purchaseId, country, city, street, number } = req.query;
 
   // Assuming you have `username` stored in session or JWT token
-  const username = req.session.username; // adjust according to how you store the user
+  const username = req.session.user.username; // adjust according to how you store the user
 
   const isAdmin = req.session.user && req.session.user.role === "admin";
 
