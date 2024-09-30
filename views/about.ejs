@@ -20,6 +20,45 @@
     />
 
 </head>
+<style>
+    .insight{
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .insight h4{
+        display: inline-block; 
+        background-color:  rgb(164, 193, 231); 
+        border-radius: 5px; 
+        padding: 2px;
+    }
+    .ourTeam img{
+        height: 200px;
+        border-radius: 50%;
+        margin-left: 10px;
+        margin-bottom: 15px;
+        box-shadow: 2px 2px 5px 0px rgb(93, 91, 91);
+    }
+    .information h1{
+        text-align: center;
+    }
+    .information{
+        margin-bottom: 5px;
+    }
+    body {
+        font-family: 'Merriweather', serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
+    }
+
+    .aboutUs{
+        font-size: 20px;
+        margin-left: 15px;
+    }
+
+</style>
 <body>
     <!--Navigation Bar-->
     <header>
@@ -90,9 +129,9 @@
     </header>
     <!--Profile page objects-->  
     </br>
-    <div class="profile border-bottom">
-        <div class="row">
-            <h2 style="text-align: center;">About Us 💙 </h2>
+    <div class="aboutUs">
+        <div class="information row">
+            <h1>About Us 💙 </h1>
             <div class="col-sm-3">
                 <img src="/logo.png">
             </div>
@@ -106,8 +145,8 @@
             </div>
         </div>
         <div class="row">
-            <div style="text-align: center;">
-                <h4 style="display: inline-block; background-color: rgba(116, 191, 205, 0.501); border-radius: 5px; padding: 2px;">Fast Delivery</h4>
+            <div class="insight">
+                <h4>Fast Delivery</h4>
                 <p>No need to delay your satisfaction, buy today and wear tommorow.</p>
 
                 <h4>Wide Vareity</h4>
@@ -121,18 +160,24 @@
                 <p>We care about our environment and for that reason we are trying to influence the environment for the better</p>
                 <p>By making sure our clothes can last you a long time and using high quality sustainable metirials.</p>
 
-                <h4>And most importantly we care about you! we want you to feel like the most confident version of yourself and leave our site with a sweet taste for more!</h4>
+                <h4>And most importantly we care about you! we want you to feel like the most confident version of yourself and leave our site with a taste for more!</h4>
             </div>
-            <div>
+            <div class="ourTeam">
                 <h2>Our Team 👨‍👩‍👧‍👧</h2>
+                <img src="roy.jpg">
+                <img src="ofek.jpg">
+                <img src="kfir.jpg">
+                <img src="amit.jpg">
                 <h4>By A Thread was established in 2024 by Roy Edri, Ofek Naim, Kfir weissman and Amit Avisar</h4>
-                <p>All of the site's founders are computer science undergraduates and established this site in persuit of their passion to elevate people to be the best version of themselves inside and out.</p>
-                <p>Our agenda is to provide people with joy by making their closets more fun and vibrant in addition to allowing them to express themself by their cloths and feel more confident.</p>
+                <p>All of the site's founders are computer science undergraduates who established this site in persuit of their passion to elevate people to be the best version of themselves inside and out.</p>
+                <p>Our agenda is to provide people with joy by making their closets more fun and vibrant in addition to allowing them to express themself by their clothes and feel more confident.</p>
                 <p>We hope that you will leave our site feeling better than you came in, every descision made in designing this site was made to make your expirience more enjoyable</p>
 
             </div>
         </div>    
     </div>
+    <!--Add footer-->
+    <%- include("_footer") %>
 </body>
 <script>
     // Logout function

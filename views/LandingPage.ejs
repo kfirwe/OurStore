@@ -186,7 +186,7 @@ footer {
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="/about-us">
                 <i class="fas fa-info-circle fa-lg"></i> About
               </a>
             </li>
@@ -198,7 +198,7 @@ footer {
             <li class="nav-item position-relative">
               <a class="nav-link" href="/cart" onclick="redirectToLoginIfNotLoggedIn()">
                 <i class="fas fa-shopping-cart fa-lg"></i> Cart
-                <% if (cartItemCount > 0) { %>
+                <% if (cartItemCount && cartItemCount > 0) { %>
                   <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
                 <% } %>
               </a>
