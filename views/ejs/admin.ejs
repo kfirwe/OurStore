@@ -481,7 +481,15 @@
                     <input type="number" class="form-control" name="price" placeholder="Price" value="<%= typeof filters.price !== 'undefined' ? filters.price : '' %>">
                 </div>
                 <div class="col-md-2">
-                    <input type="text" class="form-control" name="category" placeholder="Category" value="<%= typeof filters.category !== 'undefined' ? filters.category : '' %>">
+                  <select name="category" class="form-select">
+                      <option value="">All Categories</option>
+                      <option value="Tops" <%= filters.category === 'Tops' ? 'selected' : '' %>>Tops</option>
+                      <option value="Bottoms" <%= filters.category === 'Bottoms' ? 'selected' : '' %>>Bottoms</option>
+                      <option value="Outerwear" <%= filters.category === 'Outerwear' ? 'selected' : '' %>>Outerwear</option>
+                      <option value="Dresses" <%= filters.category === 'Dresses' ? 'selected' : '' %>>Dresses</option>
+                      <option value="Footwear" <%= filters.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
+                      <option value="Accessories" <%= filters.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+                  </select>
                 </div>
                 <div class="col-md-2">
                     <input type="text" class="form-control" name="company" placeholder="Company" value="<%= typeof filters.company !== 'undefined' ? filters.company : '' %>">
@@ -494,9 +502,9 @@
                         <option value="unisex" <%= filters.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <!-- <div class="col-md-2">
                     <input type="number" class="form-control" name="amount" placeholder="Amount" value="<%= typeof filters.amount !== 'undefined' ? filters.amount : '' %>">
-                </div>
+                </div> -->
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-filter"></i> Filter
@@ -517,7 +525,7 @@
             <th>Category</th>
             <th>Company</th>
             <th>Gender</th>
-            <th>Amount</th>
+            <!-- <th>Amount</th> -->
             <th>Image</th>
             <th>Colors and Sizes</th>
             <th>Actions</th>
@@ -573,7 +581,7 @@
                   <option value="unisex" <%= product.gender === 'unisex' ? 'selected' : '' %>>Unisex</option>
                 </select>
               </td>
-              <td>
+              <!-- <td>
                 <input
                     type="number"
                     class="form-control"
@@ -583,7 +591,7 @@
                     onblur="updateField('<%= product._id %>', 'amount', this.value)"
                     required
                 />
-              </td>
+              </td> -->
               <td>
                 <img
                   src="data:image/<%= product.imageType %>;base64,<%= product.image.toString('base64') %>"
@@ -651,6 +659,8 @@
                       <option value="Blue">Blue</option>
                       <option value="Green">Green</option>
                       <option value="Yellow">Yellow</option>
+                      <option value="Brown">Brown</option>
+                      <option value="Grey">Grey</option>
                       <option value="Black">Black</option>
                       <option value="White">White</option>
                     </select>

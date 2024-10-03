@@ -87,24 +87,49 @@ footer {
   width: 100%;
   height: 100%;
   display: flex;
-  animation: slide 12s infinite;
+  animation: slide 24s infinite ease-in-out;
 }
 
 @keyframes slide {
   0% {
     transform: translateX(0);
   }
-  33% {
+  15% {
+    transform: translateX(0);
+  }
+  20% {
     transform: translateX(-100%);
   }
-  66% {
+  35% {
+    transform: translateX(-100%);
+  }
+  40% {
     transform: translateX(-200%);
+  }
+  55% {
+    transform: translateX(-200%);
+  }
+  60% {
+    transform: translateX(-300%);
+  }
+  75% {
+    transform: translateX(-300%);
+  }
+  80% {
+    transform: translateX(-400%);
+  }
+  95% {
+    transform: translateX(-400%);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
 
+
 .slider .slide {
   min-width: 100%;
-  transition: opacity 1s ease;
+  transition: opacity 2s ease;
 }
 
 .centered-buttons {
@@ -240,15 +265,19 @@ footer {
           </div>
           <!-- Slide 2 -->
           <div class="slide">
-            <video src="2.mp4" autoplay muted loop></video>
+            <video src="2.mp4" autoplay muted loop **playsinline**></video>
           </div>
           <!-- Slide 3 -->
           <div class="slide">
-            <img src="3.png" alt="Image 3" />
+            <img src="3.jpg" alt="Image 3" />
           </div>
           <!-- Slide 4 -->
           <div class="slide">
-            <img src="4.png" alt="Image 4" />
+            <img src="4.jpg" alt="Image 4" />
+          </div>
+          <!-- Slide 5 -->
+          <div class="slide">
+            <video src="5.mp4" autoplay muted loop **playsinline**></video>
           </div>
         </div>
 
@@ -265,6 +294,8 @@ footer {
     <%- include('_footer') %>
 
     <script>
+
+      
 
       function redirectToFilteredPage(gender) {
         // Redirect to the home page with the selected gender filter

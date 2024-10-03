@@ -21,10 +21,13 @@ const abouController = require("./controllers/aboutController");
 const createLog = require("./helpers/logHelper"); // Import the log helper
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/OurStore", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://kfirweissman02:XabebIwa5OgoJ4CH@cluster0.jgs60.mongodb.net/OurStore",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log("Connected to MongoDB");
     createLog("INFO", "System", "Connected to MongoDB"); // Log the successful connection
