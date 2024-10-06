@@ -1,3 +1,5 @@
+// This files handles the http requests made to the routes prefixed by /admin
+
 const express = require("express");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
@@ -22,7 +24,7 @@ const upload = multer({ storage: storage });
 // Valid sizes allowed
 const validSizes = ["S", "M", "L", "XL", "XXL"];
 
-// Example route using the middleware
+// route for GET http request to view admin page
 router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
   try {
     // Fetch discounts
@@ -73,13 +75,15 @@ router.get("/admin", ensureAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
-// Delete user route
+// Route for handling POST http request to Delete user 
 router.post(
   "/admin/delete-user",
   ensureAuthenticated,
   isAdmin,
   async (req, res) => {
     try {
+
+      // Receive user ID from request body
       const { userId } = req.body;
       await User.findByIdAndDelete(userId);
       res.redirect("/admin");
@@ -100,7 +104,7 @@ router.post(
   }
 );
 
-// Update field for User, Product, or Coupon
+// Route for handling POST http request to update a field for User, Product, or Coupon
 router.post(
   "/admin/update-field",
   ensureAuthenticated,
@@ -198,7 +202,7 @@ router.post(
   }
 );
 
-// Update user route
+// Route for a POST request to update a user
 router.post(
   "/admin/update-user",
   ensureAuthenticated,
@@ -232,7 +236,7 @@ router.post(
   }
 );
 
-// Add user route
+// Route for a POST request to add a user
 router.post(
   "/admin/add-user",
   ensureAuthenticated,
@@ -269,7 +273,7 @@ router.post(
   }
 );
 
-// Add product route
+// Route for a POST request to add a product with values from the request's body
 router.post("/admin/add-product", upload.single("image"), async (req, res) => {
   try {
     const newProduct = new Product({
@@ -302,7 +306,7 @@ router.post("/admin/add-product", upload.single("image"), async (req, res) => {
   }
 });
 
-// Update product route
+// Route for a POST request to update a product information
 router.post(
   "/admin/update-product",
   upload.single("image"),
@@ -341,7 +345,7 @@ router.post(
   }
 );
 
-// Handle image update
+// Route for a POST request to update product's image
 router.post(
   "/admin/update-product-image",
   upload.single("image"),
@@ -370,7 +374,7 @@ router.post(
   }
 );
 
-// Admin route to handle product deletion
+// Route for a POST request to handle product deletion by ID
 router.post(
   "/admin/delete-product",
   ensureAuthenticated,
@@ -397,7 +401,7 @@ router.post(
   }
 );
 
-// Route to find purchases by username
+// Route for a GET request to fetch purchases by username
 router.get(
   "/admin/find-purchases",
   ensureAuthenticated,
@@ -466,7 +470,7 @@ router.get(
   }
 );
 
-// Purchase data route for charts
+// Route for a GET requet to fetch purchase data to fill charts by selected range
 router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
   const { range } = req.query;
   let startDate;
@@ -548,7 +552,7 @@ router.get("/admin/purchase-data", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Add coupon route
+// Route for a POST request to add a coupon
 router.post(
   "/admin/add-coupon",
   ensureAuthenticated,
@@ -582,7 +586,7 @@ router.post(
   }
 );
 
-// Update coupon route
+// Route for a POST request to update a coupon's values
 router.post(
   "/admin/update-coupon",
   ensureAuthenticated,
@@ -614,7 +618,7 @@ router.post(
   }
 );
 
-// Delete coupon route
+// Route for a POST request to delete a coupon
 router.post(
   "/admin/delete-coupon",
   ensureAuthenticated,
@@ -642,6 +646,7 @@ router.post(
   }
 );
 
+// Route for a GET request to fetch system logs
 router.get("/admin/logs", ensureAuthenticated, isAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 20, date, type, username, message } = req.query;
@@ -679,15 +684,19 @@ router.get("/admin/logs", ensureAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+// Route for GET request to fetch filtered users
 router.get(
   "/admin/filter-users",
   ensureAuthenticated,
   isAdmin,
   async (req, res) => {
+
+    // Get user filters from the request
     const { username, email, phone, city, country, role } = req.query;
 
     let query = {};
 
+    // Create user filters with given values and search formatching users
     if (username) query.username = new RegExp(username, "i"); // Case-insensitive search
     if (email) query.email = new RegExp(email, "i");
     if (phone) query.phone = new RegExp(phone, "i");
@@ -746,16 +755,20 @@ router.get(
   }
 );
 
+// Route for a GET request to fetch filtered products
 router.get(
   "/admin/filter-products",
   ensureAuthenticated,
   isAdmin,
   async (req, res) => {
+
+    // Receive filter parameters from request
     const { prodId, name, price, category, company, gender, amount } =
       req.query;
 
     let query = {};
 
+    // Create products filters and find matching products
     if (prodId) query.prodId = new RegExp(prodId, "i");
     if (name) query.name = new RegExp(name, "i");
     if (price) query.price = price;
@@ -815,6 +828,7 @@ router.get(
   }
 );
 
+// Route for a GET request to fetch filtered coupons
 router.get(
   "/admin/filter-coupons",
   ensureAuthenticated,
@@ -824,6 +838,7 @@ router.get(
 
     let query = {};
 
+    // Create coupons filters and try to find matching coupons
     if (code) query.code = new RegExp(code, "i"); // case-insensitive match
     if (discountPercentage) query.discountPercentage = discountPercentage;
 
@@ -878,6 +893,7 @@ router.get(
   }
 );
 
+// Route for a GET request to fetch filtered logs
 router.get(
   "/admin/filter-logs",
   ensureAuthenticated,
@@ -887,6 +903,7 @@ router.get(
 
     let query = {};
 
+    // Create logs filters and try to find matching logs
     if (date) {
       const dateStart = new Date(date);
       const dateEnd = new Date(date);
@@ -949,7 +966,7 @@ router.get(
   }
 );
 
-// Route to add a new discount
+// Route for a POST request to add a new discount
 router.post("/admin/add-discount", async (req, res) => {
   try {
     console.log(req.body);
@@ -1006,7 +1023,7 @@ router.post("/admin/add-discount", async (req, res) => {
   }
 });
 
-// Route to delete a discount
+// Route for a POST request to delete a discount
 router.post("/admin/delete-discount", async (req, res) => {
   try {
     const { id } = req.body;
@@ -1021,7 +1038,7 @@ router.post("/admin/delete-discount", async (req, res) => {
   }
 });
 
-// Route to filter discounts based on criteria
+// Route for a GET request to fetch filtered discounts based on discount precentage
 router.get("/admin/filter-discounts", async (req, res) => {
   try {
     const { discountPercentage } = req.query;
@@ -1081,6 +1098,7 @@ router.get("/admin/filter-discounts", async (req, res) => {
   }
 });
 
+// Route for a POST request to update a product parameters by ID
 router.post("/admin/update-color-size", async (req, res) => {
   const { productId, color, size, quantity } = req.body;
   try {
@@ -1095,7 +1113,7 @@ router.post("/admin/update-color-size", async (req, res) => {
   }
 });
 
-// Route to add a new size to an existing color
+// Route for a POST request to add a new size to an existing product with a color
 router.post("/admin/add-size", async (req, res) => {
   let { productId, color, newSize, newQuantity } = req.body;
 
@@ -1140,6 +1158,7 @@ router.post("/admin/add-size", async (req, res) => {
   }
 });
 
+// Route for a POST request to delete a product's size
 router.post("/admin/delete-size", async (req, res) => {
   const { productId, color, size } = req.body;
   try {
@@ -1154,7 +1173,7 @@ router.post("/admin/delete-size", async (req, res) => {
   }
 });
 
-// Route to add a new color with a size and quantity
+// Route for a POST request to add a new color with a size and quantity
 router.post("/admin/add-color", async (req, res) => {
   let { productId, newColor, newSize, newQuantity } = req.body;
 
@@ -1194,6 +1213,7 @@ router.post("/admin/add-color", async (req, res) => {
   }
 });
 
+// Route for a POST request to delete a product's color
 router.post("/admin/delete-color", async (req, res) => {
   const { productId, color } = req.body;
   try {
@@ -1208,7 +1228,7 @@ router.post("/admin/delete-color", async (req, res) => {
   }
 });
 
-// Add the multer middleware to handle image uploads
+// Route for a POST request to use multer middleware for handling image uploads and post tweets
 router.post("/admin/post-tweet", upload.single("image"), postTweet);
 
 module.exports = router;

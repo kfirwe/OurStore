@@ -1,3 +1,5 @@
+// This file hanles the HTTP request for the home page
+
 const { Product } = require("../models/Product");
 const { Wishlist } = require("../models/Wishlist");
 const Discount = require("../models/Discount"); // Include the discount model

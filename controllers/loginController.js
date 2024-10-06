@@ -1,9 +1,12 @@
+// This file handles HTTP requests made for the /login route
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const createLog = require("../helpers/logHelper"); // Import the log helper
 
+// Route for a POST request to login to the system (by validating user information)
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 

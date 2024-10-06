@@ -1,3 +1,5 @@
+// This file handles HTTP requests made to a urls used for by the cart
+
 const express = require("express");
 const router = express.Router();
 const { Cart } = require("../models/Cart");
@@ -19,8 +21,10 @@ const axios = require("axios");
 // Load environment variables
 require("dotenv").config();
 
+// Route for a POST request to add an item to cart
 router.post("/add-to-cart", addToCart);
 
+// Route for a POST request to update a current purchase
 router.post("/cart/purchase", async (req, res) => {
   const username = req.session.user.username;
   const { shippingData, paymentData, couponCode } = req.body;
@@ -283,6 +287,7 @@ async function verifyLocation(shippingData) {
 //   }
 // });
 
+// Route for a POST request to remove an item from the cart 
 router.post("/cart/remove-item", async (req, res) => {
   const { prodId, color, size } = req.body;
   const username = req.session.user.username;
@@ -355,6 +360,7 @@ router.post("/cart/remove-item", async (req, res) => {
   }
 });
 
+// Route for a POST request to update an item in the cart
 router.post("/cart/update-item", async (req, res) => {
   const { prodId, color, size, newQuantity } = req.body;
   const username = req.session.user.username;
@@ -461,6 +467,7 @@ router.post("/cart/update-item", async (req, res) => {
 //   }
 // });
 
+// Route for a GET request to fetch the user's cart content
 router.get("/cart", ensureAuthenticated, async (req, res) => {
   try {
     const username = req.session.user.username; // Get logged-in user
@@ -532,6 +539,7 @@ router.get("/cart", ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Route for a POST request to remove a coupon in the cart
 router.post("/cart/remove-coupon", async (req, res) => {
   const username = req.session.user.username;
 
@@ -556,6 +564,7 @@ router.post("/cart/remove-coupon", async (req, res) => {
   }
 });
 
+// Route for a POST request to apply a coupon in the cart
 router.post("/cart/apply-coupon", async (req, res) => {
   const { couponCode } = req.body;
   const username = req.session.user.username;

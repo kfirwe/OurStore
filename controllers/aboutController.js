@@ -1,3 +1,5 @@
+// This file contains the code that handles the requests made to /about
+
 const express = require("express");
 const router = express.Router();
 const { ensureAuthenticated } = require("../middleware/auth");
@@ -5,7 +7,7 @@ const User = require("../models/User");
 const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const createLog = require("../helpers/logHelper");
 
-// Example route using the middleware
+// GET route made to create the about page with the user information
 router.get("/about", async (req, res) => {
   try {
     // Fetch the current user's username

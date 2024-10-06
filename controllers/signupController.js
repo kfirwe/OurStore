@@ -1,9 +1,11 @@
+// This file handles HTTP requests to signup
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User"); // Import the User model
 const createLog = require("../helpers/logHelper"); // Import the log helper
 
-// Handle user registration
+// Route for a POST to handle user registration
 router.post("/signup", async (req, res) => {
   const { username, password, email } = req.body;
 

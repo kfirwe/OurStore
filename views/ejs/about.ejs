@@ -158,11 +158,9 @@ h1, h2, h3, h4, h5, h6 {
                         <li class="nav-item position-relative">
                             <a class="nav-link" href="#" onclick="redirectToCart()">
                                 <i class="fas fa-shopping-cart fa-lg"></i> Cart
-                                <!-- <% if (cartItemCount) { %> -->
-                                <% if (cartItemCount > 0) { %>
+                                <% if (cartItemCount && cartItemCount > 0) { %>
                                 <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
                                 <% } %>
-                                <!-- <% } %> -->
                             </a>
                         </li>
                         <li class="nav-item">

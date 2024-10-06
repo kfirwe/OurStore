@@ -1,8 +1,10 @@
+// this file handles HTTP requests made to logout
+
 const express = require("express");
 const router = express.Router();
 const createLog = require("../helpers/logHelper"); // Import the log helper
 
-// Logout route
+// Route for a GET request to logout
 router.get("/logout", (req, res) => {
   const username = req.session.user
     ? req.session.user.username

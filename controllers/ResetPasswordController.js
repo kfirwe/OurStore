@@ -1,3 +1,5 @@
+// This file handles password reset HTTP requests
+
 const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
@@ -10,12 +12,12 @@ const {
   hashPassword,
 } = require("../helpers/tokenStore");
 
-// Render the forgot password page (GET request)
+// Route for a GET request to render the forgot password page
 router.get("/forgot-password", (req, res) => {
-  res.render("forgot-password"); // Make sure you have a `forgot-password.ejs` in the views folder
+  res.render("forgot-password"); 
 });
 
-// GET route to render the reset password form
+// Route for a GET request to render the reset password form
 router.get("/reset-password/:token", (req, res) => {
   const { token } = req.params;
   const { email, username } = req.query;
@@ -28,7 +30,7 @@ router.get("/reset-password/:token", (req, res) => {
   res.render("reset-password", { token, email, username });
 });
 
-// Forgot password route
+// Route for a POST request to send an email to reset password 
 router.post("/forgot-password", async (req, res) => {
   const { email, username } = req.body;
 
@@ -56,7 +58,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-// Reset password route
+// Route for a POST request to reset password
 router.post("/reset-password/:token", async (req, res) => {
   const { token } = req.params;
   const { email, username, password, confirmPassword } = req.body;

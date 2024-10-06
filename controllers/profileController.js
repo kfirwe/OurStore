@@ -1,20 +1,18 @@
+// This file is used to handle HTTP request for the user's profile and purchase history page
+
 const express = require("express");
 const router = express.Router();
-const { v4: uuidv4 } = require("uuid");
 const { ensureAuthenticated } = require("../middleware/auth");
 const User = require("../models/User");
 const { Cart } = require("../models/Cart"); // Assuming you have a Cart model
 const { Product } = require("../models/Product");
 const { Purchase } = require("../models/Purchase");
-const Coupon = require("../models/Coupon");
-const addToCart = require("../helpers/adminHelper");
 const createLog = require("../helpers/logHelper");
-const { Log } = require("../models/Log");
 
-// Example route using the middleware
+// Route for a GET request to fetch the profile page
 router.get("/profile", ensureAuthenticated, async (req, res) => {
   try {
-    // Fetch the current user's username
+    // Fetch the current user's username from the session
     const username = req.session.user ? req.session.user.username : "";
     if (!username) {
       await createLog(
@@ -79,7 +77,7 @@ router.get("/profile", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Update user Info route
+// Route for a POST request to update user information
 router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
   try {
     // Get vars from the request body
@@ -87,6 +85,8 @@ router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
     const userId = req.session.user.id;
 
     if (userId) {
+
+      // update users fields
       const newUser = await User.findByIdAndUpdate(userId, {
         email,
         phone,
@@ -115,13 +115,13 @@ router.post("/profile/update-user", ensureAuthenticated, async (req, res) => {
   }
 });
 
-//Route for updating user password
+// Route for a POST request to update user password
 router.post(
   "/profile/update-password",
   ensureAuthenticated,
   async (req, res) => {
     try {
-      // Get vars from the request body
+      // Get password vars from the request body and username from the sesion
       const { currentPassword, newPassword } = req.body;
       const username = req.session.user ? req.session.user.username : "";
 
@@ -163,13 +163,13 @@ router.post(
   }
 );
 
-// Example route using the middleware
+// Route for a GET request to fetch user's purchase history 
 router.get(
   "/profile/purchase-history",
   ensureAuthenticated,
   async (req, res) => {
     try {
-      // Fetch the current user's username
+      // Fetch the current user's username from the session
       const username = req.session.user ? req.session.user.username : "";
       if (!username) {
         await createLog(
@@ -182,7 +182,7 @@ router.get(
         });
       }
 
-      // Fetch user with username
+      // Find user with session's username
       const user = await User.findOne({ username });
       if (!user) {
         await createLog(
@@ -228,9 +228,11 @@ router.get(
   }
 );
 
-// Purchase data route for charts
+// Route for a GET request to fetch user's filtered purchase data for the chart
 router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
   const username = req.session.user ? req.session.user.username : "";
+
+  // Set start ad end dates from the range selected by the user 
   const { range } = req.query;
   let endDate = new Date();
   let startDate;
@@ -263,6 +265,7 @@ router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
       return res.status(404).send("User not found");
     }
 
+    // Filter purchase data by time range an group by company
     const spendingByDesigner = user.purchaseHistory.reduce((acc, purchase) => {
       const purchaseDate = new Date(purchase.Date);
 
