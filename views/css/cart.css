@@ -1,0 +1,109 @@
+     /* General Styling */
+    body {
+        background-color: #f9f9f9;
+        font-family: 'Merriweather', serif;
+      }
+  
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+      }
+  
+      /* Navbar Styling */
+      .navbar {
+        font-family: 'Merriweather', serif;
+        background-color: #343a40; /* Dark background for the navbar */
+      }
+  
+      .navbar-nav .nav-link {
+        color: #ffffff; /* White color for the nav links */
+      }
+  
+      .navbar-brand img {
+        height: 40px;
+      }
+  
+      .navbar .nav-link:hover {
+        color: #85827a; /* Hover color for links */
+      }
+  
+      .badge {
+        font-size: 0.8rem;
+        padding: 0.3em 0.6em;
+        background-color: rgb(129, 213, 228); /* Cart badge background */
+      }
+  
+      /* Table Styling */
+      table {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+  
+      table th,
+      table td {
+        text-align: center;
+        vertical-align: middle;
+      }
+  
+      table img {
+        border-radius: 8px;
+      }
+  
+      /* Button Styling */
+      .btn {
+        border-radius: 20px;
+      }
+  
+      .btn-primary,
+      .btn-secondary {
+        padding: 10px 20px;
+      }
+  
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+  
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+  
+      .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+  
+      /* Coupon Section Styling */
+      .input-group {
+        margin-top: 20px;
+      }
+  
+      /* Custom CSS for active nav links */
+      .nav-link.active {
+          font-weight: bold;
+          color: #efefec !important; /* Gold color for active links */
+          background-color: #343a40; /* Same as navbar background to keep it seamless */
+          border-bottom: 3px solid #FFD700; /* Adds a nice gold underline for active state */
+          padding-bottom: 8px; /* Adjust space for underline */
+      }
+  
+  
+      /* Cart Summary Section */
+      #cart-total {
+        margin-top: 20px;
+        font-size: 1.5rem;
+      }
+  
+      #prevPrice {
+        color: #999;
+        text-decoration: line-through;
+      }
+  
+      #priceArrow {
+        font-weight: bold;
+        color: #333;
+      }
+  
+      .footer {
+        font-family: 'Merriweather', serif;
+      }

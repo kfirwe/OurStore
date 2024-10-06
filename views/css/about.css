@@ -1,0 +1,94 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    font-family: 'Merriweather', serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+}
+.information {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap; /* Ensure the content wraps when needed */
+}
+
+.col-sm-3 {
+    flex: 0 0 auto;
+    margin-left: 20px;
+    max-width: 100%; /* Ensure the column doesn't overflow on smaller screens */
+}
+
+.col-sm-3 img{
+    width: 350px;
+    margin-top: 25px;
+}
+
+.col-sm-9 {
+    flex: 1;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+img {
+    display: block;
+    margin-bottom: 10px;
+    max-width: 50%; /* Ensure the image doesn't overflow its container */
+    height: auto;
+}
+
+#map {
+    height: 300px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    
+    text-align: center;
+}
+
+.insight {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.insight h4 {
+    display: inline-block;
+    background-color: rgb(164, 193, 231);
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.ourTeam {
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.ourTeam img {
+    height: 200px;
+    border-radius: 50%;
+    margin: 10px;
+    box-shadow: 2px 2px 5px 0px rgb(93, 91, 91);
+}
+
+.information h1 {
+    text-align: center;
+}
+
+.aboutUs {
+    font-size: 20px;
+    margin-left: 15px;
+}
+
+.twitter-section{
+    text-align: center; 
+    margin-top: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+}
