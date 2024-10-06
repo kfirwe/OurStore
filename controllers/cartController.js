@@ -291,7 +291,7 @@ router.post("/cart/remove-item", async (req, res) => {
     // Remove the item from the cart
     await Cart.updateOne(
       { userName: username },
-      { $pull: { products: { prodId, color, size } } } // Match the product, color, and size
+      { $pull: { products: { prodId, color, size } } } // Match the product, color, and size and remove it
     );
 
     // Fetch the updated cart after removing the item

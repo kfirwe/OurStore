@@ -17,7 +17,7 @@ const productInPurchaseSchema = new mongoose.Schema({
 
 // Add a compound index for prodId, color, and size
 productInPurchaseSchema.index(
-  { prodId: 1, color: 1, size: 1 },
+  { prodId: 1, color: 1, size: 1 }, // use index searhing, 1 means ascending
   { unique: true }
 );
 
