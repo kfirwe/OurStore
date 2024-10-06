@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const discountSchema = new mongoose.Schema({
   prodIds: {
-    type: [String], // Now this is correctly defined as an array of product IDs
+    type: [String],
     required: true,
   },
   discountPercentage: {

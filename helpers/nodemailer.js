@@ -13,6 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Create a password reset email
 const sendPasswordResetEmail = async (email, token, username) => {
   // Include both email and username as query parameters in the reset link
   const resetLink = `http://localhost:3000/reset-password/${token}?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`;
@@ -25,6 +26,7 @@ const sendPasswordResetEmail = async (email, token, username) => {
     html: `<p>You requested a password reset. Click the link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
   };
 
+  // Try to send email for password reset
   try {
     await transporter.sendMail(mailOptions);
     console.log("Password reset email sent");

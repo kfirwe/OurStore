@@ -1,4 +1,4 @@
-// paymentHelper.js
+// paymentHelper file for purchases
 
 // Validate card number using Luhn Algorithm
 function validateCardNumber(cardNumber) {
@@ -22,6 +22,7 @@ function validateCardNumber(cardNumber) {
   return sum % 10 === 0;
 }
 
+// Validate card's expiry date has not passed
 function validateExpiryDate(expiryDate) {
   const [month, year] = expiryDate.split("/");
   if (!month || !year || month.length !== 2 || year.length !== 2) return false;
@@ -39,6 +40,7 @@ function validateExpiryDate(expiryDate) {
   return true;
 }
 
+// Validate card's CVV is 3/4 digits
 function validateCVV(cvv) {
   return /^\d{3,4}$/.test(cvv); // Validate CVV (3 or 4 digits)
 }

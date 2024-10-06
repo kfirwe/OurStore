@@ -21,7 +21,7 @@ const addToCart = async (req, res) => {
     // Convert Map to Object for easier handling
     const colorsObject = mapToObject(product.colors);
 
-    // Check if the color and size are valid
+    // Check if the color and the size are valid
     if (!colorsObject[color] || !colorsObject[color][size]) {
       return res
         .status(400)
@@ -41,7 +41,7 @@ const addToCart = async (req, res) => {
       cart = new Cart({ userName, products: [] });
     }
 
-    // Check if the product with the same color and size already exists in the cart
+    // Check if the products with the same color and size already exist in the cart
     const productInCart = cart.products.find(
       (p) => p.prodId === prodId && p.color === color && p.size === size
     );

@@ -5,8 +5,6 @@ function isAdmin(req, res, next) {
     return res
       .status(403)
       .send("Access denied. You do not have permission to view this page.");
-    // Or you can redirect them to another page
-    // return res.redirect('/homePage');
   }
 }
 
