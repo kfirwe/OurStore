@@ -229,7 +229,6 @@ router.get(
 );
 
 // Purchase data route for charts
-// Purchase data route for charts
 router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
   const username = req.session.user ? req.session.user.username : "";
   const { range } = req.query;
@@ -277,8 +276,6 @@ router.get("/profile/purchase-data", ensureAuthenticated, async (req, res) => {
       }
       return acc;
     }, {});
-
-    console.log("Spending By Designer:", spendingByDesigner); // Debugging output
 
     if (Object.keys(spendingByDesigner).length === 0) {
       return res.json({});

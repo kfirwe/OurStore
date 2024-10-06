@@ -14,22 +14,24 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     rel="stylesheet"
    />
+   <link 
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Merriweather:wght@400;700&display=swap" 
+    rel="stylesheet"
+   />
   <style>
     /* Ensure the footer is pushed to the bottom */
-    @font-face {
-        font-family: "MyCustomFont";
-        src: url("/MyCustomFont.ttf") format("truetype");
-        font-weight: normal;
-        font-style: normal;
-    }
 
     body,
     html {
-      font-family: "MyCustomFont", Arial, sans-serif;
+      font-family: 'Merriweather', serif;
       height: 100%;
       margin: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Roboto', sans-serif;
     }
 
     .content {
@@ -141,21 +143,21 @@
     }
 
     .cart-badge {
-  position: absolute;
-  top: -8px; /* Adjusts vertical position of the badge */
-  right: -10px; /* Adjusts horizontal position of the badge */
-  background-color: red; /* Red background for the badge */
-  color: white; /* White text color for the badge */
-  border-radius: 50%; /* Makes the badge circular */
-  padding: 2px 6px; /* Padding inside the badge */
-  font-size: 12px; /* Font size of the number */
-  font-weight: bold; /* Makes the number bold */
-  display: flex; /* Flexbox to center the text */
-  justify-content: center; /* Centers the text horizontally */
-  align-items: center; /* Centers the text vertically */
-  min-width: 20px; /* Ensures the badge is at least 20px wide */
-  height: 20px; /* Ensures the badge is 20px tall */
-}
+      position: absolute;
+      top: -8px; /* Adjusts vertical position of the badge */
+      right: -10px; /* Adjusts horizontal position of the badge */
+      background-color: rgb(129, 213, 228); /* Red background for the badge */
+      color: white; /* White text color for the badge */
+      border-radius: 50%; /* Makes the badge circular */
+      padding: 2px 6px; /* Padding inside the badge */
+      font-size: 12px; /* Font size of the number */
+      font-weight: bold; /* Makes the number bold */
+      display: flex; /* Flexbox to center the text */
+      justify-content: center; /* Centers the text horizontally */
+      align-items: center; /* Centers the text vertically */
+      min-width: 20px; /* Ensures the badge is at least 20px wide */
+      height: 20px; /* Ensures the badge is 20px tall */
+    }
 
 .list-group {
   padding-left: 0; /* Remove default padding */

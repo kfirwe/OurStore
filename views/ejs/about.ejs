@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us</title>
+    <link rel="icon" href="/favicon.webp" type="image/webp">
 
     <!--Custom page CSS-->
     <link rel="stylesheet" href="/profile.css">
@@ -37,13 +38,19 @@
 
 .col-sm-3 {
     flex: 0 0 auto;
-    margin-right: 20px;
+    margin-left: 20px;
     max-width: 100%; /* Ensure the column doesn't overflow on smaller screens */
+}
+
+.col-sm-3 img{
+    width: 350px;
+    margin-top: 25px;
 }
 
 .col-sm-9 {
     flex: 1;
-    margin-top: 80px;
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 
 img {
@@ -54,11 +61,13 @@ img {
 }
 
 #map {
-    height: 100px;
-    width: 100px;
+    height: 300px;
+    width: 300px;
     border-radius: 10px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     margin-top: 10px;
+    
+    text-align: center;
 }
 
 .insight {
@@ -75,7 +84,7 @@ img {
 
 .ourTeam {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     flex-wrap: wrap;
     margin-bottom: 15px;
 }
@@ -103,6 +112,15 @@ h1, h2, h3, h4, h5, h6 {
 .aboutUs {
     font-size: 20px;
     margin-left: 15px;
+}
+
+.twitter-section{
+    text-align: center; 
+    margin-top: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
 }
 
 
@@ -180,14 +198,13 @@ h1, h2, h3, h4, h5, h6 {
     <!--Profile page objects-->  
     </br>
     <div class="aboutUs">
-        <div class="information row">
+        
+        <div class="row information">
             <h1>About Us 💙 </h1>
             <div class="col-sm-3">
                 <img src="/logo.png">
-                <div id="map" style="height: 300px; width: 300px;"></div>
             </div>
             <div class="col-sm-9">
-                </br></br>
                 <h3>Weaving Style and Technology Together</h3>
 
                 <h4>In By A Thread, we are working our hardest to bring you the most cutting edge clothing.</h4>
@@ -214,7 +231,7 @@ h1, h2, h3, h4, h5, h6 {
                 <h4>And most importantly we care about you! we want you to feel like the most confident version of yourself and leave our site with a taste for more!</h4>
             </div>
             <div class="ourTeam">
-                <h2>Our Team 👨‍👩‍👧‍👧</h2>
+                <h2>Our Team 👨‍👩‍👧‍👧</h2></br>
                 <img src="roy.jpg">
                 <img src="ofek.jpg">
                 <img src="kfir.jpg">
@@ -227,13 +244,15 @@ h1, h2, h3, h4, h5, h6 {
                 <p>We hope that you will leave our site feeling better than you came in, every descision made in designing this site was made to make your expirience more enjoyable</p>
             </div>
         </div>    
-        <div class="twitter-section" style="text-align: center; margin-top: 20px;">
+        <div class="twitter-section">
             <h4>
-              <a href="https://x.com/OurStore_israel" target="_blank" style="text-decoration: none; color: blue;">
+              <a href="https://x.com/OurStore_israel" target="_blank" style="text-decoration: none; color: rgb(131, 175, 231);">
                 <i class="fab fa-twitter"></i> Check Our Twitter!
               </a>
-            </h4>
-          </div>          
+            </h4> 
+            <div id="map"></div>
+          </div>
+                  
     </div>
     <!--Add footer-->
     <%- include("_footer") %>
