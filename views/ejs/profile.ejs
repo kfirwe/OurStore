@@ -18,6 +18,10 @@
       function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
       }
+
+      function dateFormatter(myDate){
+        return (myDate.toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(',', ''));
+      }
     %>
 <!-- D3.js -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -102,13 +106,11 @@
     <div class="profile border-bottom">
         <div class="row">
             <div class="col-sm-5">
-                <h2>Orders History</h2>
+                <h2>Most Recent Order</h2>
                 <% if (lastpurchase && lastpurchaseItemsCount > 0) { %>
                     <div class="order-history">
                         <div class="border-bottom">
-                            <h6>Ordered on <%= lastpurchase.Date %></h6>
-                            <!--Add order status from db; shipped=blue, delivered=green, processing=grey-->
-                            <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
+                            <h6>Ordered on <%= dateFormatter(lastpurchase.Date) %></h6>
                             <h6>Number of Items ordered - <%= lastpurchaseItemsCount %></h6>
                         </div>
                         <!--Loop over items ordered from db-->

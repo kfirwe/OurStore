@@ -15,42 +15,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/profile.css">
 
-    <style>
-        html, body{
-            height: 100%;
-            margin: 0;
-        }
-        .navbar {
-            font-family: 'Merriweather', serif;
-        }
-        /* Ensure the image fits well in the container */
-        .order-item img {
-            max-width: 100px; /* Set a max-width to prevent oversized images */
-            max-height: 100px; /* Set a max-height to control image size */
-            object-fit: cover; /* Ensure the image keeps its aspect ratio */
-            border-radius: 10px; /* Add a bit of rounding to the image */
-            margin-right: 15px; /* Space between image and text */
-        }
-
-        .order-item .product-info {
-            margin-left: 10px; /* Space between image and text */
-        }
-
-        .footer{
-            font-family: 'Merriweather', serif;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .fill-page-block {
-            height: 50vh;
-            width: 50vw;  
-        }
-    </style>
 </head>
-
+<% 
+    function dateFormatter(myDate){
+        return (myDate.toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(',', ''));
+      }
+%>
 <body>
     <!-- Navigation Bar -->
     <header>
@@ -131,8 +101,7 @@
                 <% if (userPurchase !== null) { %>
                 <div class="order-history">
                     <div class="border-bottom">
-                        <h6>Ordered on <%= userPurchase.Date %></h6>
-                        <h6>Delivery status - <span style="color: rgb(69, 69, 185);">Shipped</span></h6>
+                        <h6>Ordered on <%= dateFormatter(userPurchase.Date) %></h6>
                         <h6>Number of Items ordered - <%= userPurchase.productsInfo.length %></h6>
                     </div>
                     <!-- Loop over items ordered -->

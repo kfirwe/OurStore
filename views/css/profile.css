@@ -1,5 +1,6 @@
 body {
     font-family: 'Merriweather', serif;
+    height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -37,6 +38,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .order-history img{
+    max-width: 150px; 
+    max-height: 150px;
     object-fit: cover; 
     height: 10px; 
     border-radius: 10px;
@@ -71,4 +74,16 @@ h1, h2, h3, h4, h5, h6 {
 .user-stats{
     margin-left: 20px;
     margin-top: 10px;
+}
+
+.footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.fill-page-block {
+    height: 50vh;
+    width: 50vw;  
 }
