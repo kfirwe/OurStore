@@ -2,7 +2,7 @@
 ## This is the repository for our store called - By  A Thread :) 
 We created this repository to store all of our site's code and when the code is in your PC you can use it to deploy our site.
 
-Our site uses JS, bootstrap, EJS and CSS
+Our site uses JS, bootstrap, EJS, HTML and CSS
 
 Have Fun:)
 
