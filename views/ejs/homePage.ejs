@@ -50,7 +50,7 @@
                           </a>
                       </li>
                       <li class="nav-item position-relative">
-                          <a class="nav-link" href="#" onclick="redirectToCart()">
+                          <a class="nav-link" id="hrefToCart" href="#" onclick="redirectToCart()">
                               <i class="fas fa-shopping-cart fa-lg"></i> Cart
                               <% if (cartItemCount > 0) { %>
                               <span class="badge badge-danger cart-badge"><%= cartItemCount %></span>
@@ -582,7 +582,7 @@ function addToCart() {
 
             // If the cart badge doesn't exist yet, create it dynamically
             if (!cartBadge) {
-                const cartLink = document.querySelector('a[href="/cart"]');
+                const cartLink = document.getElementById('hrefToCart');
                 cartBadge = document.createElement('span');
                 cartBadge.classList.add('badge', 'badge-danger', 'cart-badge');
                 cartLink.appendChild(cartBadge); // Add badge to the cart link
