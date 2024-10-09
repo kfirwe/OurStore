@@ -389,19 +389,19 @@
                   <ul class="pagination justify-content-center">
                       <% if (currentPage > 1) { %>
                       <li class="page-item">
-                          <a class="page-link" href="/homePage?page=<%= currentPage - 1 %>" aria-label="Previous">
+                          <a class="page-link" href="/homePage?page=<%= currentPage - 1 %><%= Object.keys(filters).length ? '&' + new URLSearchParams(filters).toString() : '' %>" aria-label="Previous">
                               <span aria-hidden="true">&laquo; Previous</span>
                           </a>
                       </li>
                       <% } %>
                       <% for (let i = 1; i <= totalPages; i++) { %>
                       <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                          <a class="page-link" href="/homePage?page=<%= i %>"><%= i %></a>
+                          <a class="page-link" href="/homePage?page=<%= i %><%= Object.keys(filters).length ? '&' + new URLSearchParams(filters).toString() : '' %>"><%= i %></a>
                       </li>
                       <% } %>
                       <% if (currentPage < totalPages) { %>
                       <li class="page-item">
-                          <a class="page-link" href="/homePage?page=<%= currentPage + 1 %>" aria-label="Next">
+                          <a class="page-link" href="/homePage?page=<%= currentPage + 1 %><%= Object.keys(filters).length ? '&' + new URLSearchParams(filters).toString() : '' %>" aria-label="Next">
                               <span aria-hidden="true">Next &raquo;</span>
                           </a>
                       </li>
